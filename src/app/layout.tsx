@@ -4,7 +4,7 @@ import { EazoProvider } from "@eazo/sdk/react";
 import { cn } from "@/utils/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { UserSyncEffect } from "@/components/user-profile/user-sync-effect";
-import AppShell from "@/components/layout/app-shell";
+import { AppShell } from "@/components/layout/app-shell";
 
 export const metadata: Metadata = {
   title: "MindPace — 神经多样性友好咨询预约",
