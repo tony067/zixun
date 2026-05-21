@@ -24,5 +24,11 @@ export const counselors = pgTable("counselors", {
   totalHours: integer("total_hours").default(0),
   totalSessions: integer("total_sessions").default(0),
   rating: integer("rating").default(45),                      // 4.5 stored as 45
+  // 详情页扩展字段（JSON 字符串数组存储）
+  qualifications: text("qualifications").array().default([]), // 从业资质
+  education: text("education").array().default([]),           // 教育背景
+  trainings: text("trainings").array().default([]),           // 受训经历
+  workExperiences: text("work_experiences").array().default([]), // 工作经验
+  sessionDescription: text("session_description").default(""), // 咨询过程与方式
   createdAt: timestamp("created_at").defaultNow(),
 });
