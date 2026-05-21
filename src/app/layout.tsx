@@ -6,10 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { UserSyncEffect } from "@/components/user-profile/user-sync-effect";
 import AppShell from "@/components/layout/app-shell";
 
-const SITE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
-
 export const metadata: Metadata = {
-  ...(SITE_URL ? { metadataBase: new URL(SITE_URL) } : {}),
   title: "MindPace — 神经多样性友好咨询预约",
   description: "连接神经多样性来访者与专业认证咨询师的预约平台",
   icons: { icon: "https://eazo.ai/favicon.ico" },
@@ -28,101 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <EazoProvider>
           <UserSyncEffect />
           <AppShell>{children}</AppShell>
-          <Toaster />
-        </EazoProvider>
-      </body>
-    </html>
-  );
-}
-
-const SITE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
-
-export const metadata: Metadata = {
-  ...(SITE_URL ? { metadataBase: new URL(SITE_URL) } : {}),
-  title: "MindPace — 神经多样性友好咨询预约",
-  description: "连接神经多样性来访者与专业认证咨询师的预约平台",
-  icons: { icon: "https://eazo.ai/favicon.ico" },
-};
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="zh-CN" className={cn("h-full antialiased")}>
-      <body className="min-h-full flex flex-col">
-        <EazoProvider>
-          <UserSyncEffect />
-          <AppShell>{children}</AppShell>
-          <Toaster />
-        </EazoProvider>
-      </body>
-    </html>
-  );
-}
-
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
-
-// Public origin used to resolve relative URLs in OG / Twitter Card tags
-// and `canonical`. Picks up Vercel's auto-injected hostname; on other
-// hosts (or when using a custom domain whose OG should not show the
-// `*.vercel.app` URL), point `metadataBase` at the canonical URL
-// directly instead of relying on this.
-const SITE_URL = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : undefined;
-
-const SITE_TITLE = "Eazo Developer Home";
-const SITE_DESCRIPTION =
-  "Developer onboarding, secure session flow, and backend verification examples.";
-
-export const metadata: Metadata = {
-  ...(SITE_URL ? { metadataBase: new URL(SITE_URL) } : {}),
-  title: SITE_TITLE,
-  description: SITE_DESCRIPTION,
-  icons: {
-    icon: "https://eazo.ai/favicon.ico",
-  },
-  // Social preview cards (Open Graph + Twitter). Most platforms (X,
-  // Facebook, LinkedIn, Slack, Discord, WeChat, iMessage) read these
-  // tags directly. For the preview image, drop a 1200×630 PNG/JPG at
-  // `src/app/opengraph-image.png` — Next.js auto-detects file-based
-  // metadata and overrides `openGraph.images` below at build time.
-  openGraph: {
-    type: "website",
-    siteName: "Eazo",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    url: "/",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-  },
-};
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en" className={cn("h-full antialiased", "font-sans", geist.variable)}>
-      <body className="min-h-full flex flex-col">
-        <EazoProvider>
-          <UserSyncEffect />
-          {children}
           <Toaster />
         </EazoProvider>
       </body>
