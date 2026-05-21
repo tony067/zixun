@@ -188,7 +188,7 @@ export function ExploreScreen() {
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[13px]"
             style={{ borderColor: "#C2BDB7", color: "#7D736A", background: "white" }}>
-            <BookOpen className="w-3.5 h-3.5" />新手必读
+            <span className="text-sm">📖</span>新手必读
           </button>
           {user ? (
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
