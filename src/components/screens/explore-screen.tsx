@@ -205,28 +205,29 @@ export function ExploreScreen() {
         </div>
       </div>
 
-      {/* ── 绿色 Banner ── */}
       <div className="mx-5 mb-4 rounded-3xl overflow-hidden relative"
         style={{ background: "linear-gradient(145deg, #8DB87E 0%, #A8C898 100%)", minHeight: 160 }}>
         <div className="relative z-10 p-5">
           <div className="inline-flex items-center gap-1.5 mb-3 px-3 py-1 rounded-full text-[12px] font-medium"
-            style={{ background: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.95)" }}>
+            style={{ background: "rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.95)" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
             联盟认证平台
           </div>
-          <h2 className="text-[24px] font-bold leading-snug mb-4 text-white">
+          <h2 className="text-[20px] font-bold leading-snug mb-4 text-white">
             神经多样性友好<br />咨询师联盟
           </h2>
           <div className="flex gap-2 flex-wrap">
             {["专业培训认证", "按你的节奏", "安全支持空间"].map(t => (
               <span key={t} className="text-[13px] px-3 py-1 rounded-full"
-                style={{ background: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.95)" }}>{t}</span>
+                style={{ background: "rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.92)" }}>{t}</span>
             ))}
           </div>
         </div>
-        {/* 装饰圆 */}
-        <div className="absolute right-4 top-4 w-20 h-20 rounded-full opacity-20" style={{ background: "rgba(255,255,255,0.8)" }} />
-        <div className="absolute right-0 bottom-0 w-32 h-32 rounded-full opacity-10 translate-x-8 translate-y-8" style={{ background: "white" }} />
+        {/* 装饰圆：右上大圆 + 底部小圆，半透明 */}
+        <div className="absolute right-0 top-0 w-36 h-36 rounded-full"
+          style={{ background: "rgba(255,255,255,0.18)", transform: "translate(25%,-25%)" }} />
+        <div className="absolute right-12 bottom-0 w-20 h-20 rounded-full"
+          style={{ background: "rgba(255,255,255,0.12)", transform: "translateY(40%)" }} />
       </div>
 
       {/* ── 搜索 + 预约督导 ── */}
