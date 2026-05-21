@@ -197,8 +197,8 @@ export function ExploreScreen() {
             </div>
           ) : (
             <button onClick={() => auth.login()}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold leading-tight"
-              style={{ background: "transparent", color: "#9CB48A", border: "1.5px solid #9CB48A" }}>
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold leading-none"
+              style={{ background: "#9CB48A", color: "white" }}>
               登录
             </button>
           )}
