@@ -205,8 +205,9 @@ export function ExploreScreen() {
         </div>
       </div>
 
+      {/* ── 绿色 Banner ── */}
       <div className="mx-5 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(145deg, #7EA870 0%, #9CB48A 60%, #B8CCA6 100%)", minHeight: 156 }}>
+        style={{ background: "linear-gradient(145deg, #6A9058 0%, #8DB87A 55%, #A8C898 100%)", minHeight: 156 }}>
         <div className="relative z-10 p-5">
           <div className="inline-flex items-center gap-1.5 mb-3 px-3 py-1 rounded-full text-[12px] font-medium"
             style={{ background: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.96)" }}>
