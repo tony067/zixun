@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, Star, Clock, X, MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { auth, useEazo } from "@eazo/sdk/react";
+import { useEazo } from "@eazo/sdk/react";
+import { auth } from "@eazo/sdk";
 
 type Counselor = {
   id: string; displayName: string; title: string; bio: string;
