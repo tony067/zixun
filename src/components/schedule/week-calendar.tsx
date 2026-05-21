@@ -1,159 +1,191 @@
 "use client";
-
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 
-export type CalRule = {
+/* ── 时间轴参数 ───────────────────────────────────────────── */
+const HOUR_START = 8;   // 08:00
+const HOUR_END   = 21;  // 21:00 (不含)
+const HOURS = Array.from({ length: HOUR_END - HOUR_START }, (_, i) => HOUR_START + i);
+const PX_PER_HOUR = 60; // 每小时 60px
+
+type SlotType = "available" | "blocked" | "fixed";
+
+interface CalSlot {
+  startIso: string;  // "HH:MM" on a given date
+  date: string;      // "YYYY-MM-DD"
+  durationMinutes: number;
+  type: SlotType;
+  label?: string;
+}
+
+interface Rule {
   id: string;
-  type: "available" | "blocked" | "fixed";
-  weekdays?: string | null;    // "0,1,4"  (0=周一)
-  startTime?: string | null;   // "09:00"
+  type: SlotType;
+  weekdays?: string | null;  // "0,1,4" — 0=周一…6=周日
+  startTime?: string | null; // "09:00"
   durationMinutes?: number | null;
   validFrom?: string | null;
   validUntil?: string | null;
+  fixedClientId?: string | null;
   isSingle?: boolean | null;
   singleDate?: string | null;
   singleTime?: string | null;
+  isActive?: boolean | null;
+}
+
+/* ── 颜色 ─────────────────────────────────────────────────── */
+const TYPE_COLOR: Record<SlotType, { bg: string; border: string; text: string }> = {
+  available: { bg: "#D1FAE5", border: "#6EE7B7", text: "#065F46" },
+  blocked:   { bg: "#FEE2E2", border: "#FCA5A5", text: "#991B1B" },
+  fixed:     { bg: "#FEF3C7", border: "#FCD34D", text: "#92400E" },
 };
 
-const HOUR_START = 7;
-const HOUR_END = 22;
-const TOTAL_HOURS = HOUR_END - HOUR_START;
-const PX_PER_HOUR = 60; // px
+/* ── 工具 ─────────────────────────────────────────────────── */
+function isoDate(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
-const COLORS = {
-  available: { bg: "#9CB48A", text: "#fff",    label: "可预约" },
-  fixed:     { bg: "#D97706", text: "#fff",    label: "固定档期" },
-  blocked:   { bg: "#DC2626", text: "#fff",    label: "已屏蔽" },
-  booked:    { bg: "#4f7bcb", text: "#fff",    label: "已预约" },
-};
-
-const WEEKDAY_SHORT = ["一", "二", "三", "四", "五", "六", "日"];
+function getMondayOfWeek(offset: number): Date {
+  const today = new Date();
+  const dow = today.getDay(); // 0=Sun
+  const diffToMon = dow === 0 ? -6 : 1 - dow;
+  const mon = new Date(today);
+  mon.setDate(today.getDate() + diffToMon + offset * 7);
+  mon.setHours(0, 0, 0, 0);
+  return mon;
+}
 
 function getWeekDates(offset: number): Date[] {
-  const today = new Date();
-  const day = today.getDay(); // 0=Sun
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1) + offset * 7);
-  monday.setHours(0, 0, 0, 0);
+  const mon = getMondayOfWeek(offset);
   return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+    const d = new Date(mon);
+    d.setDate(mon.getDate() + i);
     return d;
   });
 }
 
-function toDateStr(d: Date): string {
-  return d.toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" })
-    .replace(/\//g, "-");
+function timeToMinutes(t: string): number {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
 }
 
-type Slot = {
-  top: number;   // px from HOUR_START
-  height: number;
-  type: CalRule["type"];
-  label?: string;
-};
-
-function expandRules(rules: CalRule[], dates: Date[]): Map<string, Slot[]> {
-  const map = new Map<string, Slot[]>();
-  for (const d of dates) map.set(toDateStr(d), []);
+/* 从规则展开本周所有 slots */
+function expandRules(rules: Rule[], weekDates: Date[]): CalSlot[] {
+  const slots: CalSlot[] = [];
 
   for (const rule of rules) {
-    if (!rule.id) continue;
-    const dur = rule.durationMinutes ?? 50;
+    if (!rule.isActive) continue;
 
-    if (rule.isSingle && rule.singleDate && rule.singleTime) {
+    if (rule.isSingle) {
       // 单次规则
-      const slots = map.get(rule.singleDate);
-      if (!slots) continue;
-      const [h, m] = rule.singleTime.split(":").map(Number);
-      if (h < HOUR_START || h >= HOUR_END) continue;
+      const d = rule.singleDate;
+      const t = rule.singleTime;
+      if (!d || !t) continue;
+      if (!weekDates.some(wd => isoDate(wd) === d)) continue;
       slots.push({
-        top: (h - HOUR_START + m / 60) * PX_PER_HOUR,
-        height: (dur / 60) * PX_PER_HOUR,
+        date: d,
+        startIso: t,
+        durationMinutes: rule.durationMinutes ?? 50,
         type: rule.type,
       });
-      continue;
-    }
+    } else {
+      // 循环规则
+      if (!rule.weekdays || !rule.startTime) continue;
+      const days = rule.weekdays.split(",").map(Number); // 0=周一
+      const validFrom = rule.validFrom ?? isoDate(new Date(0));
+      const validUntil = rule.validUntil ?? "9999-12-31";
 
-    if (!rule.weekdays || !rule.startTime) continue;
-    const weekdayNums = rule.weekdays.split(",").map(Number); // 0=周一
-    const [sh, sm] = rule.startTime.split(":").map(Number);
-    if (sh < HOUR_START || sh >= HOUR_END) continue;
-    const validFrom = rule.validFrom ?? "2000-01-01";
-    const validUntil = rule.validUntil ?? "2099-12-31";
+      for (const wd of weekDates) {
+        const dateStr = isoDate(wd);
+        if (dateStr < validFrom || dateStr > validUntil) continue;
+        // JS getDay: 0=Sun,1=Mon… → 0=周一: jsDay===0?6:jsDay-1
+        const jsDay = wd.getDay();
+        const ruleDay = jsDay === 0 ? 6 : jsDay - 1;
+        if (!days.includes(ruleDay)) continue;
 
-    for (const d of dates) {
-      const dateStr = toDateStr(d);
-      if (dateStr < validFrom || dateStr > validUntil) continue;
-      // js 0=Sun → rule 0=Mon
-      const jsDay = d.getDay();
-      const ruleDay = jsDay === 0 ? 6 : jsDay - 1;
-      if (!weekdayNums.includes(ruleDay)) continue;
-
-      const slots = map.get(dateStr)!;
-      slots.push({
-        top: (sh - HOUR_START + sm / 60) * PX_PER_HOUR,
-        height: (dur / 60) * PX_PER_HOUR,
-        type: rule.type,
-        label: rule.type === "fixed" ? "固定" : undefined,
-      });
+        slots.push({
+          date: dateStr,
+          startIso: rule.startTime,
+          durationMinutes: rule.durationMinutes ?? 50,
+          type: rule.type,
+          label: rule.fixedClientId ?? undefined,
+        });
+      }
     }
   }
-  return map;
+
+  return slots;
 }
 
-export function WeekCalendar({ rules }: { rules: CalRule[] }) {
+/* ── WeekCalendar component ──────────────────────────────── */
+export function WeekCalendar({ rules }: { rules: Rule[] }) {
   const [weekOffset, setWeekOffset] = useState(0);
-  const dates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
-  const slotMap = useMemo(() => expandRules(rules, dates), [rules, dates]);
+  const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
+  const slots = useMemo(() => expandRules(rules, weekDates), [rules, weekDates]);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = isoDate(new Date());
 
-  const weekLabel = useMemo(() => {
-    const first = dates[0];
-    const last = dates[6];
-    return `${first.toLocaleDateString("zh-CN", { month: "long", day: "numeric" })} — ${last.toLocaleDateString("zh-CN", { day: "numeric" })}`;
-  }, [dates]);
-
-  const hours = Array.from({ length: TOTAL_HOURS + 1 }, (_, i) => HOUR_START + i);
+  const weekLabel = (() => {
+    const mon = weekDates[0];
+    const sun = weekDates[6];
+    if (weekOffset === 0) return "本周";
+    const fmt = (d: Date) => `${d.getMonth() + 1}/${d.getDate()}`;
+    return `${fmt(mon)} – ${fmt(sun)}`;
+  })();
 
   return (
-    <div className="flex flex-col" style={{ background: "var(--color-mp-card)" }}>
-      {/* 周导航 */}
-      <div className="flex items-center justify-between px-4 py-3 border-b sticky top-0 z-10"
-        style={{ borderColor: "var(--color-mp-border)", background: "var(--color-mp-card)" }}>
-        <motion.button whileTap={{ scale: 0.9 }} onClick={() => setWeekOffset(w => w - 1)}
-          className="w-8 h-8 rounded-xl border flex items-center justify-center"
-          style={{ borderColor: "var(--color-mp-border)", background: "var(--color-mp-surface)" }}>
-          <ChevronLeft className="w-4 h-4" style={{ color: "var(--color-mp-muted)" }} />
+    <div
+      className="flex flex-col rounded-2xl overflow-hidden border"
+      style={{ background: "var(--color-mp-card)", borderColor: "var(--color-mp-border)" }}
+    >
+      {/* ── 头部：周导航 ── */}
+      <div
+        className="flex items-center justify-between px-4 py-3 border-b"
+        style={{ borderColor: "var(--color-mp-border)" }}
+      >
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setWeekOffset(w => w - 1)}
+          className="w-8 h-8 rounded-xl flex items-center justify-center"
+          style={{ background: "var(--color-mp-surface)", color: "var(--color-mp-muted)" }}
+        >
+          <ChevronLeft className="w-4 h-4" />
         </motion.button>
-        <div className="text-sm font-medium" style={{ color: "var(--color-mp-text)" }}>
-          {weekOffset === 0 ? "本周 · " : weekOffset === 1 ? "下周 · " : ""}{weekLabel}
-        </div>
-        <motion.button whileTap={{ scale: 0.9 }} onClick={() => setWeekOffset(w => w + 1)}
-          className="w-8 h-8 rounded-xl border flex items-center justify-center"
-          style={{ borderColor: "var(--color-mp-border)", background: "var(--color-mp-surface)" }}>
-          <ChevronRight className="w-4 h-4" style={{ color: "var(--color-mp-muted)" }} />
+        <span className="text-sm font-semibold" style={{ color: "var(--color-mp-text)" }}>
+          {weekLabel}
+        </span>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setWeekOffset(w => w + 1)}
+          className="w-8 h-8 rounded-xl flex items-center justify-center"
+          style={{ background: "var(--color-mp-surface)", color: "var(--color-mp-muted)" }}
+        >
+          <ChevronRight className="w-4 h-4" />
         </motion.button>
       </div>
 
-      {/* 列标题 */}
-      <div className="flex border-b sticky top-[49px] z-10"
-        style={{ borderColor: "var(--color-mp-border)", background: "var(--color-mp-card)" }}>
-        <div className="w-10 flex-shrink-0" />
-        {dates.map((d, i) => {
-          const isToday = d.getTime() === today.getTime();
+      {/* ── 星期表头 ── */}
+      <div
+        className="grid border-b"
+        style={{
+          gridTemplateColumns: "44px repeat(7, 1fr)",
+          borderColor: "var(--color-mp-border)",
+        }}
+      >
+        <div /> {/* 时间轴占位 */}
+        {weekDates.map((d, i) => {
+          const isToday = isoDate(d) === today;
           return (
-            <div key={i} className="flex-1 flex flex-col items-center py-2 gap-0.5">
-              <span className="text-[10px]" style={{ color: "var(--color-mp-faint)" }}>
-                {WEEKDAY_SHORT[i]}
+            <div key={i} className="flex flex-col items-center py-2 gap-0.5">
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: "var(--color-mp-muted)" }}
+              >
+                {["周一", "周二", "周三", "周四", "周五", "周六", "周日"][i]}
               </span>
               <span
-                className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold"
+                className={`text-sm font-bold w-7 h-7 flex items-center justify-center rounded-full ${isToday ? "text-white" : ""}`}
                 style={{
                   background: isToday ? "var(--color-mp-primary)" : "transparent",
                   color: isToday ? "#fff" : "var(--color-mp-text)",
@@ -166,71 +198,105 @@ export function WeekCalendar({ rules }: { rules: CalRule[] }) {
         })}
       </div>
 
-      {/* 时间轴主体 */}
-      <div className="flex overflow-y-auto" style={{ maxHeight: "calc(100svh - 200px)" }}>
-        {/* 时间刻度 */}
-        <div className="w-10 flex-shrink-0 relative" style={{ height: TOTAL_HOURS * PX_PER_HOUR }}>
-          {hours.map(h => (
-            <div
-              key={h}
-              className="absolute right-2 text-[9px] leading-none"
-              style={{
-                top: (h - HOUR_START) * PX_PER_HOUR - 5,
-                color: "var(--color-mp-faint)",
-              }}
-            >
-              {h}:00
-            </div>
-          ))}
-        </div>
-
-        {/* 7 天列 */}
-        <div className="flex flex-1 relative">
-          {/* 横向小时线 */}
-          <div className="absolute inset-0 pointer-events-none">
-            {hours.map(h => (
+      {/* ── 时间轴主体 ── */}
+      <div className="overflow-y-auto" style={{ maxHeight: "480px" }}>
+        <div
+          className="relative grid"
+          style={{
+            gridTemplateColumns: "44px repeat(7, 1fr)",
+            height: `${HOURS.length * PX_PER_HOUR}px`,
+          }}
+        >
+          {/* 时间刻度列 */}
+          <div className="relative">
+            {HOURS.map(h => (
               <div
                 key={h}
-                className="absolute left-0 right-0 border-t"
+                className="absolute right-2 text-[10px] leading-none"
                 style={{
-                  top: (h - HOUR_START) * PX_PER_HOUR,
-                  borderColor: "var(--color-mp-border)",
-                  opacity: 0.6,
+                  top: `${(h - HOUR_START) * PX_PER_HOUR - 6}px`,
+                  color: "var(--color-mp-faint)",
                 }}
-              />
+              >
+                {String(h).padStart(2, "0")}
+              </div>
             ))}
           </div>
 
-          {dates.map((d, di) => {
-            const dateStr = toDateStr(d);
-            const slots = slotMap.get(dateStr) ?? [];
+          {/* 7天竖列 */}
+          {weekDates.map((wd, colIdx) => {
+            const dateStr = isoDate(wd);
+            const daySlots = slots.filter(s => s.date === dateStr);
             return (
               <div
-                key={di}
-                className="flex-1 relative border-l"
-                style={{
-                  height: TOTAL_HOURS * PX_PER_HOUR,
-                  borderColor: "var(--color-mp-border)",
-                  opacity: d.getTime() < today.getTime() ? 0.55 : 1,
-                }}
+                key={colIdx}
+                className="relative border-l"
+                style={{ borderColor: "var(--color-mp-border)" }}
               >
-                {slots.map((slot, si) => {
-                  const col = COLORS[slot.type];
+                {/* 整点横线 */}
+                {HOURS.map(h => (
+                  <div
+                    key={h}
+                    className="absolute w-full border-t"
+                    style={{
+                      top: `${(h - HOUR_START) * PX_PER_HOUR}px`,
+                      borderColor: `${colIdx === 0 ? "var(--color-mp-border)" : "transparent"}`,
+                    }}
+                  />
+                ))}
+                {/* 通用横线 — 每小时在所有列 */}
+                {HOURS.map(h => (
+                  <div
+                    key={`line-${h}`}
+                    className="absolute w-full"
+                    style={{
+                      top: `${(h - HOUR_START) * PX_PER_HOUR}px`,
+                      height: "1px",
+                      background: "var(--color-mp-border)",
+                      opacity: 0.5,
+                    }}
+                  />
+                ))}
+
+                {/* 时间槽方块 */}
+                {daySlots.map((slot, si) => {
+                  const startMin = timeToMinutes(slot.startIso);
+                  const topPx = (startMin / 60 - HOUR_START) * PX_PER_HOUR;
+                  const heightPx = Math.max((slot.durationMinutes / 60) * PX_PER_HOUR, 20);
+                  const c = TYPE_COLOR[slot.type];
                   return (
-                    <div
+                    <motion.div
                       key={si}
-                      className="absolute left-0.5 right-0.5 rounded-md flex items-start px-1 pt-0.5 overflow-hidden"
+                      initial={{ opacity: 0, scaleY: 0.8 }}
+                      animate={{ opacity: 1, scaleY: 1 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="absolute inset-x-0.5 rounded-md overflow-hidden border-l-2 px-1 py-0.5"
                       style={{
-                        top: slot.top,
-                        height: Math.max(slot.height, 18),
-                        background: col.bg,
-                        color: col.text,
+                        top: `${topPx}px`,
+                        height: `${heightPx}px`,
+                        background: c.bg,
+                        borderLeftColor: c.border,
+                        borderTopColor: c.border,
+                        borderTopWidth: "1px",
+                        borderRightColor: c.border,
+                        borderRightWidth: "1px",
+                        borderBottomColor: c.border,
+                        borderBottomWidth: "1px",
                       }}
                     >
-                      <span className="text-[9px] font-semibold leading-tight truncate">
-                        {slot.label ?? col.label}
-                      </span>
-                    </div>
+                      <p
+                        className="text-[9px] font-semibold leading-tight truncate"
+                        style={{ color: c.text }}
+                      >
+                        {slot.startIso}
+                        {slot.label ? ` · ${slot.label}` : ""}
+                      </p>
+                      {heightPx >= 32 && (
+                        <p className="text-[8px] leading-tight truncate" style={{ color: c.text, opacity: 0.7 }}>
+                          {slot.durationMinutes} 分钟
+                        </p>
+                      )}
+                    </motion.div>
                   );
                 })}
               </div>
@@ -240,12 +306,17 @@ export function WeekCalendar({ rules }: { rules: CalRule[] }) {
       </div>
 
       {/* 图例 */}
-      <div className="flex gap-4 px-4 py-3 border-t text-[10px]"
-        style={{ borderColor: "var(--color-mp-border)", color: "var(--color-mp-muted)" }}>
-        {Object.entries(COLORS).map(([k, v]) => (
-          <span key={k} className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: v.bg }} />
-            {v.label}
+      <div
+        className="flex items-center gap-4 px-4 py-2 border-t text-[10px]"
+        style={{ borderColor: "var(--color-mp-border)", color: "var(--color-mp-muted)" }}
+      >
+        {(["available", "fixed", "blocked"] as SlotType[]).map(t => (
+          <span key={t} className="flex items-center gap-1">
+            <span
+              className="w-3 h-3 rounded-sm border-l-2 inline-block"
+              style={{ background: TYPE_COLOR[t].bg, borderLeftColor: TYPE_COLOR[t].border }}
+            />
+            {{ available: "可预约", fixed: "固定档期", blocked: "已屏蔽" }[t]}
           </span>
         ))}
       </div>
