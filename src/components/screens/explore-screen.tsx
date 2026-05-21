@@ -188,7 +188,7 @@ export function ExploreScreen() {
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[13px]"
             style={{ borderColor: "#C2BDB7", color: "#7D736A", background: "white" }}>
-            📖 新手必读
+            <BookOpen className="w-3.5 h-3.5" />新手必读
           </button>
           {user ? (
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
@@ -197,9 +197,9 @@ export function ExploreScreen() {
             </div>
           ) : (
             <button onClick={() => auth.login()}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
-              style={{ background: "#EBE7DF", color: "#7D736A" }}>
-              登
+              className="px-3 py-1.5 rounded-full text-sm font-medium"
+              style={{ background: "transparent", color: "#9CB48A", border: "1px solid #9CB48A" }}>
+              登录
             </button>
           )}
         </div>
