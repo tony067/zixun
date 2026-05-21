@@ -242,12 +242,10 @@ export function ExploreScreen() {
             value={search} onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <Link href="/supervisor">
-          <button className="px-4 py-2.5 rounded-2xl text-[14px] font-medium flex-shrink-0"
-            style={{ background: "#EEE8F8", color: "#7040C0", border: "1px solid #DDD0F0" }}>
-            预约督导
-          </button>
-        </Link>
+        <button className="px-4 py-2.5 rounded-2xl text-[14px] font-medium flex-shrink-0 whitespace-nowrap"
+          style={{ background: "#F5F0E8", color: "#7B5EA7", border: "1px solid #E0DAD0" }}>
+          预约督导
+        </button>
       </div>
 
       {/* ── 8格分类 ── */}
