@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Share2, MessageCircle, Bookmark, Clock, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEazo } from "@eazo/sdk/react";
 import { request } from "@/lib/api/request";
 
