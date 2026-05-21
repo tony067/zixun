@@ -35,6 +35,35 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   );
 }
 
+const SITE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
+
+export const metadata: Metadata = {
+  ...(SITE_URL ? { metadataBase: new URL(SITE_URL) } : {}),
+  title: "MindPace — 神经多样性友好咨询预约",
+  description: "连接神经多样性来访者与专业认证咨询师的预约平台",
+  icons: { icon: "https://eazo.ai/favicon.ico" },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="zh-CN" className={cn("h-full antialiased")}>
+      <body className="min-h-full flex flex-col">
+        <EazoProvider>
+          <UserSyncEffect />
+          <AppShell>{children}</AppShell>
+          <Toaster />
+        </EazoProvider>
+      </body>
+    </html>
+  );
+}
+
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 // Public origin used to resolve relative URLs in OG / Twitter Card tags
