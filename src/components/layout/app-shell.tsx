@@ -2,124 +2,108 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/utils/utils";
+import { motion } from "framer-motion";
+import { Search, Calendar, MessageCircle, User, LayoutDashboard, BookOpen, Settings } from "lucide-react";
 import { useEazo } from "@eazo/sdk/react";
-import UserBadge from "@/components/user-profile/user-badge";
+import { UserBadge } from "@/components/user-profile/user-badge";
 
-// 底部导航配置（三端自适应）
+// 不显示底部导航的路径
+const HIDE_NAV = ["/chat/"];
+
+// 来访端 tab
 const CLIENT_TABS = [
-  { href: "/",              label: "探索",   icon: "🔍" },
-  { href: "/my-bookings",   label: "预约",   icon: "📅" },
-  { href: "/messages",      label: "消息",   icon: "💬" },
-  { href: "/profile",       label: "我的",   icon: "👤" },
+  { href: "/", icon: Search, label: "探索" },
+  { href: "/my-bookings", icon: BookOpen, label: "预约" },
+  { href: "/messages", icon: MessageCircle, label: "消息" },
+  { href: "/profile", icon: User, label: "我的" },
 ];
 
+// 咨询师端 tab
 const COUNSELOR_TABS = [
-  { href: "/counselor/bookings",  label: "预约",  icon: "📋" },
-  { href: "/counselor/schedule",  label: "档期",  icon: "🗓️" },
-  { href: "/messages",            label: "消息",  icon: "💬" },
-  { href: "/counselor/stats",     label: "统计",  icon: "📊" },
+  { href: "/counselor/bookings", icon: BookOpen, label: "预约" },
+  { href: "/counselor/schedule", icon: Calendar, label: "档期" },
+  { href: "/messages", icon: MessageCircle, label: "消息" },
+  { href: "/counselor/profile", icon: User, label: "我的" },
 ];
 
+// 管理端 tab
 const ADMIN_TABS = [
-  { href: "/admin",         label: "总览",   icon: "🏠" },
-  { href: "/admin/counselors", label: "咨询师", icon: "👥" },
-  { href: "/admin/bookings",   label: "预约",  icon: "📋" },
+  { href: "/admin", icon: LayoutDashboard, label: "概览" },
+  { href: "/admin/counselors", icon: User, label: "咨询师" },
+  { href: "/messages", icon: MessageCircle, label: "消息" },
+  { href: "/admin/settings", icon: Settings, label: "设置" },
 ];
 
-// 不显示底部导航的页面
-const HIDE_NAV = ["/booking-time", "/chat/"];
+function getTabsForPath(pathname: string) {
+  if (pathname.startsWith("/admin")) return ADMIN_TABS;
+  if (pathname.startsWith("/counselor")) return COUNSELOR_TABS;
+  return CLIENT_TABS;
+}
+
+function isActive(href: string, pathname: string) {
+  if (href === "/") return pathname === "/";
+  return pathname.startsWith(href);
+}
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const user = useEazo((s) => s.auth.user);
-
   const hideNav = HIDE_NAV.some((p) => pathname.startsWith(p));
-
-  // 根据路径判断当前端
-  const isCounselor = pathname.startsWith("/counselor");
-  const isAdmin = pathname.startsWith("/admin");
-  const tabs = isAdmin ? ADMIN_TABS : isCounselor ? COUNSELOR_TABS : CLIENT_TABS;
+  const tabs = getTabsForPath(pathname);
 
   return (
-    <div className="min-h-svh flex flex-col" style={{ background: "var(--color-mp-surface)" }}>
-      {/* 顶栏 */}
+    <div className="flex flex-col min-h-svh" style={{ background: "var(--color-mp-surface)" }}>
+      {/* 顶部 header（桌面侧边栏候选区域，移动端只有 logo + user） */}
       <header
-        className="sticky top-0 z-30 flex items-center justify-between px-5 pt-safe-top pb-3 border-b"
+        className="sticky top-0 z-20 flex items-center justify-between px-4 h-14 border-b md:hidden"
         style={{ background: "var(--color-mp-card)", borderColor: "var(--color-mp-border)" }}
       >
-        <div className="flex items-center gap-2">
-          <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm"
-            style={{ background: "var(--color-mp-primary)" }}
-          >M</div>
-          <span className="text-base font-semibold" style={{ color: "var(--color-mp-text)" }}>
-            MindPace
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          {/* 角色切换 */}
-          {user && (
-            <div className="flex gap-1 text-xs">
-              <Link href="/" className={cn(
-                "px-2.5 py-1 rounded-full transition-colors",
-                !isCounselor && !isAdmin
-                  ? "text-white font-semibold"
-                  : "text-[var(--color-mp-muted)] hover:text-[var(--color-mp-text)]"
-              )}
-              style={!isCounselor && !isAdmin ? { background: "var(--color-mp-primary)" } : {}}>
-                来访端
-              </Link>
-              <Link href="/counselor/bookings" className={cn(
-                "px-2.5 py-1 rounded-full transition-colors",
-                isCounselor
-                  ? "text-white font-semibold"
-                  : "text-[var(--color-mp-muted)] hover:text-[var(--color-mp-text)]"
-              )}
-              style={isCounselor ? { background: "var(--color-mp-primary)" } : {}}>
-                咨询师
-              </Link>
-              <Link href="/admin" className={cn(
-                "px-2.5 py-1 rounded-full transition-colors",
-                isAdmin
-                  ? "text-white font-semibold"
-                  : "text-[var(--color-mp-muted)] hover:text-[var(--color-mp-text)]"
-              )}
-              style={isAdmin ? { background: "var(--color-mp-primary)" } : {}}>
-                管理员
-              </Link>
-            </div>
-          )}
-          <UserBadge />
-        </div>
+        <Link href="/" className="flex items-center gap-2">
+          <span className="text-base font-bold" style={{ color: "var(--color-mp-primary)" }}>MindPace</span>
+        </Link>
+        <UserBadge />
       </header>
 
-      {/* 主内容 */}
-      <main className="flex-1 overflow-x-hidden">
+      {/* 内容区 */}
+      <main className="flex-1 w-full max-w-2xl mx-auto pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-8">
         {children}
       </main>
 
-      {/* 底部导航 */}
+      {/* 底部导航（移动端） */}
       {!hideNav && (
         <nav
-          className="sticky bottom-0 z-30 flex border-t pb-safe-bottom"
-          style={{ background: "var(--color-mp-card)", borderColor: "var(--color-mp-border)" }}
+          className="fixed bottom-0 left-0 right-0 z-20 flex md:hidden border-t"
+          style={{
+            background: "var(--color-mp-card)",
+            borderColor: "var(--color-mp-border)",
+            paddingBottom: "env(safe-area-inset-bottom)",
+          }}
         >
           {tabs.map((tab) => {
-            const active = tab.href === "/"
-              ? pathname === "/"
-              : pathname.startsWith(tab.href);
+            const active = isActive(tab.href, pathname);
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={cn(
-                  "flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors",
-                  active ? "text-[var(--color-mp-primary)]" : "text-[var(--color-mp-faint)]"
-                )}
+                className="flex-1 flex flex-col items-center justify-center gap-1 py-2 min-h-[52px]"
               >
-                <span className="text-xl leading-none">{tab.icon}</span>
-                <span>{tab.label}</span>
+                <tab.icon
+                  className="w-5 h-5"
+                  style={{ color: active ? "var(--color-mp-primary)" : "var(--color-mp-faint)" }}
+                />
+                <span
+                  className="text-[10px] font-medium"
+                  style={{ color: active ? "var(--color-mp-primary)" : "var(--color-mp-faint)" }}
+                >
+                  {tab.label}
+                </span>
+                {active && (
+                  <motion.div
+                    layoutId="nav-dot"
+                    className="absolute bottom-1 w-1 h-1 rounded-full"
+                    style={{ background: "var(--color-mp-primary)" }}
+                  />
+                )}
               </Link>
             );
           })}
