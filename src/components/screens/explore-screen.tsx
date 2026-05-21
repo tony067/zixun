@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ChevronDown, SlidersHorizontal, Clock } from "lucide-react";
+import { Search, ChevronDown, Clock, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { useEazo } from "@eazo/sdk/react";
 import { auth } from "@eazo/sdk";
