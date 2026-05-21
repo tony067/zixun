@@ -27,7 +27,7 @@ export function CounselorScheduleScreen() {
 
   useEffect(() => { loadRules(); }, [user]);
 
-  const handleAdd = async (form: Parameters<typeof import("@/components/schedule/rules-panel").RulesPanel>[0]["onAdd"]>[0]) => {
+  const handleAdd = async (form: Record<string, unknown>) => {
     setSaving(true);
     try {
       await request("/api/counselor/schedule", {
