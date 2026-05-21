@@ -277,5 +277,4 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
   );
 }
 
-// Need Link import
-import Link from "next/link";
+
