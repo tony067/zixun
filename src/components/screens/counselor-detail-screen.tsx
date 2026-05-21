@@ -1,9 +1,9 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, MapPin, Share2, MessageCircle, Bookmark } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 type Counselor = {
   id: string; displayName: string; title: string; bio: string; tagline: string;
@@ -12,36 +12,28 @@ type Counselor = {
   languages: string[]; location: string; avatarUrl: string | null;
   isAccepting: boolean; counselorTypes: string[]; isSupervisor: boolean;
   totalHours: number; totalSessions: number; rating: number;
-  qualifications?: string[]; education?: string[];
-  trainings?: string[]; workExperiences?: string[];
-  sessionDescription?: string;
+  qualifications: string[]; education: string[];
+  trainings: string[]; workExperiences: string[];
+  sessionDescription: string;
 };
 
-const AVATAR_BG: Record<number, { bg: string; text: string }> = {
-  0: { bg: "#C4D8C0", text: "#2d5a28" },
-  1: { bg: "#E5DCC5", text: "#6b5a30" },
-  2: { bg: "#C0D0E0", text: "#1e3d6b" },
-  3: { bg: "#D8C8E4", text: "#5a2878" },
-  4: { bg: "#E8CFC8", text: "#7a3020" },
-};
+const AVATAR_COLORS = [
+  { bg: "#D4EBC8", text: "#2D5A20" },
+  { bg: "#C8D8E8", text: "#1E3D5C" },
+  { bg: "#E8D0C8", text: "#5C2A1E" },
+  { bg: "#D0C8E8", text: "#3A2A5C" },
+  { bg: "#C8E8D8", text: "#1E5C3A" },
+];
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="py-5 border-b border-[#EBE7DF]">
-      <h3 className="text-base font-bold mb-3" style={{ color: "#3B332C" }}>{title}</h3>
-      {children}
-    </div>
-  );
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-base font-bold text-[#2A2420] mt-7 mb-3">{children}</h2>;
 }
 
-function TagList({ items, bg = "#F5F1E8", border = "#EBE7DF", color = "#3B332C" }: {
-  items: string[]; bg?: string; border?: string; color?: string;
-}) {
+function TagList({ items, color = "bg-[#F5F1E8] text-[#5C5552] border-[#DDD8D0]" }: { items: string[]; color?: string }) {
   return (
     <div className="flex flex-wrap gap-2">
       {items.map(t => (
-        <span key={t} className="text-sm px-3 py-1.5 rounded-full border"
-          style={{ background: bg, borderColor: border, color }}>{t}</span>
+        <span key={t} className={`text-sm px-3.5 py-1.5 rounded-full border ${color}`}>{t}</span>
       ))}
     </div>
   );
@@ -51,20 +43,24 @@ function BulletList({ items }: { items: string[] }) {
   return (
     <ul className="space-y-2">
       {items.map((item, i) => (
-        <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed" style={{ color: "#3B332C" }}>
-          <span className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ background: "#9CB48A" }} />
-          {item}
+        <li key={i} className="flex items-start gap-2">
+          <span className="mt-1.5 w-2 h-2 rounded-full bg-[#9CB48A] flex-shrink-0" />
+          <span className="text-sm text-[#3B332C] leading-relaxed">{item}</span>
         </li>
       ))}
     </ul>
   );
 }
 
+function Divider() {
+  return <div className="h-px bg-[#EBE7DF] my-0" />;
+}
+
 export function CounselorDetailScreen({ counselorId }: { counselorId: string }) {
   const router = useRouter();
   const [c, setC] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState(true);
-  const [bookmarked, setBookmarked] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     fetch(`/api/counselors/${counselorId}`)
@@ -72,203 +68,189 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
   }, [counselorId]);
 
   if (loading) return (
-    <div className="min-h-svh p-6 space-y-4" style={{ background: "#F5F1E8" }}>
+    <div className="min-h-svh bg-[#F5F1E8] p-6 space-y-4">
       <div className="w-24 h-24 rounded-2xl skeleton mx-auto" />
-      <div className="h-6 w-32 skeleton mx-auto" />
-      <div className="h-4 w-48 skeleton mx-auto" />
-      {[1,2,3].map(i => <div key={i} className="h-20 skeleton rounded-2xl" />)}
+      <div className="h-7 w-32 skeleton mx-auto" />
+      <div className="h-28 skeleton rounded-2xl" />
+      {[1,2,3].map(i => <div key={i} className="h-16 skeleton rounded-xl" />)}
     </div>
   );
 
   if (!c) return (
-    <div className="min-h-svh flex items-center justify-center" style={{ background: "#F5F1E8" }}>
-      <p className="text-sm" style={{ color: "#7D736A" }}>未找到该咨询师</p>
+    <div className="min-h-svh flex items-center justify-center bg-[#F5F1E8]">
+      <p className="text-[#7D736A]">未找到该咨询师</p>
     </div>
   );
 
-  const avatarCol = AVATAR_BG[c.displayName.charCodeAt(0) % 5];
-  const roleTags = [...(c.counselorTypes ?? [])];
-  if (c.isSupervisor && !roleTags.includes("督导")) roleTags.push("督导");
+  const colorIdx = c.id.charCodeAt(c.id.length - 1) % AVATAR_COLORS.length;
+  const col = AVATAR_COLORS[colorIdx];
+  const roleTags = c.counselorTypes?.length ? c.counselorTypes : (c.isSupervisor ? ["督导"] : []);
 
   return (
-    <div className="min-h-svh pb-28" style={{ background: "#F5F1E8" }}>
+    <div className="min-h-svh bg-[#F5F1E8] pb-28">
       {/* 返回按钮 */}
-      <div className="sticky top-0 z-10 px-4 pt-12 pb-2" style={{ background: "#F5F1E8" }}>
+      <div className="sticky top-0 z-10 bg-[#F5F1E8]/95 backdrop-blur px-4 pt-12 pb-2 flex items-center">
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => router.back()}
-          className="w-9 h-9 rounded-full flex items-center justify-center border border-[#EBE7DF]"
-          style={{ background: "#FDFBF7" }}>
-          <ArrowLeft className="w-4 h-4" style={{ color: "#7D736A" }} />
+          className="w-9 h-9 rounded-full bg-white border border-[#EBE7DF] flex items-center justify-center shadow-sm">
+          <ArrowLeft className="w-4 h-4 text-[#7D736A]" />
         </motion.button>
       </div>
 
-      <div className="px-4">
-        {/* 大头像 + 姓名 + 角色 + 累计时长 + 地区 */}
-        <div className="text-center mb-6 pt-2">
-          {c.avatarUrl ? (
-            <img src={c.avatarUrl} alt={c.displayName}
-              className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4 shadow-sm" />
-          ) : (
-            <div className="w-24 h-24 rounded-2xl flex items-center justify-center text-4xl font-bold mx-auto mb-4 shadow-sm"
-              style={{ background: avatarCol.bg, color: avatarCol.text }}>
-              {c.displayName[0]}
-            </div>
-          )}
-          <h1 className="text-2xl font-bold mb-2" style={{ color: "#3B332C" }}>{c.displayName}</h1>
-          {/* 角色标签 */}
-          <div className="flex flex-wrap justify-center gap-1.5 mb-3">
-            {roleTags.map(t => (
-              <span key={t} className="text-sm px-3 py-1 rounded-full font-medium"
-                style={{ background: "#EEF5EA", color: "#3a6b30" }}>{t}</span>
-            ))}
+      <div className="px-5">
+        {/* Hero：居中头像 + 姓名 + 角色标签 + 时长 + 地点 */}
+        <div className="flex flex-col items-center pt-2 pb-6">
+          <div className="w-28 h-28 rounded-[22px] flex items-center justify-center text-4xl font-bold mb-4 shadow-sm"
+            style={{ background: col.bg, color: col.text }}>
+            {c.displayName[0]}
           </div>
-          {/* 累计时长 */}
-          {c.totalHours > 0 && (
-            <div className="flex items-center justify-center gap-1.5 text-sm mb-1.5" style={{ color: "#7D736A" }}>
-              <Clock className="w-4 h-4" />
-              累计咨询 <span className="font-semibold">{c.totalHours}+</span> 小时
-            </div>
-          )}
-          {/* 地区 */}
+          <h1 className="text-2xl font-bold text-[#2A2420] mb-2">{c.displayName}</h1>
+          {roleTags.map(t => (
+            <span key={t} className="text-sm px-4 py-1 rounded-full font-medium text-[#4A7A40] bg-[#EBF2E6] mb-2">
+              {t}
+            </span>
+          ))}
+          <div className="flex items-center gap-1 text-sm text-[#7D736A] mb-1">
+            <Clock className="w-3.5 h-3.5" />
+            <span>累计咨询 <strong className="text-[#3B332C]">{c.totalHours}+</strong> 小时</span>
+          </div>
           {c.location && (
-            <div className="flex items-center justify-center gap-1 text-sm" style={{ color: "#7D736A" }}>
+            <div className="flex items-center gap-1 text-sm text-[#9B9590]">
               <MapPin className="w-3.5 h-3.5" />
-              {c.location}
-              {c.sessionModes.includes("视频") && "（视频全国可约）"}
+              <span>{c.location}</span>
             </div>
           )}
         </div>
 
-        {/* 咨询师寄语 */}
+        <Divider />
+
+        {/* 寄语卡 */}
         {c.tagline && (
-          <div className="rounded-2xl p-5 mb-2 relative" style={{ background: "#EDE8DC" }}>
-            <span className="text-4xl font-serif absolute top-3 left-4 opacity-30" style={{ color: "#9CB48A" }}>"</span>
-            <p className="text-base leading-relaxed pt-4 italic" style={{ color: "#3B332C" }}>{c.tagline}</p>
-            <p className="text-right text-sm mt-3" style={{ color: "#7D736A" }}>—— {c.displayName}</p>
+          <div className="my-5 bg-[#EDE8DC] rounded-2xl px-5 py-5 relative overflow-hidden">
+            <span className="absolute top-2 left-3 text-4xl font-serif text-[#9CB48A] leading-none opacity-60">"</span>
+            <p className="text-sm text-[#3B332C] leading-relaxed pt-4 italic">{c.tagline}</p>
+            <p className="text-right text-xs text-[#9B9590] mt-3">—— {c.displayName}</p>
           </div>
         )}
 
-        {/* 分隔线 */}
-        <div className="border-t border-[#EBE7DF] my-2" />
+        <Divider />
 
         {/* 关于我 */}
         {c.bio && (
-          <Section title="关于我">
-            <p className="text-sm leading-relaxed" style={{ color: "#3B332C" }}>{c.bio}</p>
-          </Section>
+          <>
+            <SectionTitle>关于我</SectionTitle>
+            <p className="text-sm text-[#3B332C] leading-relaxed">{c.bio}</p>
+            <Divider className="mt-6" />
+          </>
         )}
 
         {/* 擅长领域 */}
         {c.specialties?.length > 0 && (
-          <Section title="擅长领域">
+          <>
+            <SectionTitle>擅长领域</SectionTitle>
             <TagList items={c.specialties} />
-          </Section>
+            <div className="mt-6" /><Divider />
+          </>
         )}
 
         {/* 工作人群 */}
         {c.workingGroups?.length > 0 && (
-          <Section title="工作人群">
+          <>
+            <SectionTitle>工作人群</SectionTitle>
             <TagList items={c.workingGroups} />
-          </Section>
+            <div className="mt-6" /><Divider />
+          </>
         )}
 
         {/* 咨询取向 */}
         {c.approaches?.length > 0 && (
-          <Section title="咨询取向">
+          <>
+            <SectionTitle>咨询取向</SectionTitle>
             <TagList items={c.approaches} />
-          </Section>
+            <div className="mt-6" /><Divider />
+          </>
         )}
 
-        {/* 咨询设置三格 */}
-        <Section title="咨询设置">
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            <div className="rounded-2xl p-3 text-center" style={{ background: "#EDE8DC" }}>
-              <div className="text-xl font-bold" style={{ color: "#3B332C" }}>{c.sessionDuration}</div>
-              <div className="text-xs mt-1" style={{ color: "#7D736A" }}>分钟 / 次</div>
-            </div>
-            <div className="rounded-2xl p-3 text-center" style={{ background: "#EDE8DC" }}>
-              <div className="text-xl font-bold" style={{ color: "#3B332C" }}>{c.pricePerSession}</div>
-              <div className="text-xs mt-1" style={{ color: "#7D736A" }}>每次费用</div>
-            </div>
-            <div className="rounded-2xl p-3 text-center" style={{ background: "#EDE8DC" }}>
-              <div className="text-sm font-medium leading-tight" style={{ color: "#3B332C" }}>
-                {c.sessionModes.join(" / ")}
-              </div>
-              <div className="text-xs mt-1" style={{ color: "#7D736A" }}>咨询方式</div>
-            </div>
+        {/* 咨询设置 */}
+        <SectionTitle>咨询设置</SectionTitle>
+        <div className="grid grid-cols-3 gap-3 mb-2">
+          <div className="bg-[#EDE8DC] rounded-2xl p-4 flex flex-col items-center gap-1">
+            <span className="text-lg text-[#9CB48A]">🕐</span>
+            <p className="text-xl font-bold text-[#3B332C]">{c.sessionDuration}</p>
+            <p className="text-xs text-[#9B9590] text-center">分钟 / 次</p>
           </div>
-        </Section>
+          <div className="bg-[#EDE8DC] rounded-2xl p-4 flex flex-col items-center gap-1">
+            <span className="text-lg text-[#9CB48A]">¥</span>
+            <p className="text-xl font-bold text-[#3B332C]">{c.pricePerSession}</p>
+            <p className="text-xs text-[#9B9590] text-center">每次费用</p>
+          </div>
+          <div className="bg-[#EDE8DC] rounded-2xl p-4 flex flex-col items-center justify-center gap-1">
+            <span className="text-lg text-[#9CB48A]">📹</span>
+            <p className="text-xs font-medium text-[#3B332C] text-center leading-tight">
+              {c.sessionModes.join(" / ")}
+            </p>
+            <p className="text-xs text-[#9B9590] text-center">咨询方式</p>
+          </div>
+        </div>
+        <Divider />
 
         {/* 从业背景 */}
-        {(c.qualifications?.length || c.education?.length || c.trainings?.length || c.workExperiences?.length) ? (
-          <Section title="从业背景">
-            {c.qualifications?.length ? (
-              <div className="mb-4">
-                <h4 className="text-sm font-bold mb-2" style={{ color: "#3B332C" }}>从业资质</h4>
-                <BulletList items={c.qualifications} />
-              </div>
-            ) : null}
-            {c.education?.length ? (
-              <div className="mb-4">
-                <h4 className="text-sm font-bold mb-2" style={{ color: "#3B332C" }}>教育背景</h4>
-                <BulletList items={c.education} />
-              </div>
-            ) : null}
-            {c.trainings?.length ? (
-              <div className="mb-4">
-                <h4 className="text-sm font-bold mb-2" style={{ color: "#3B332C" }}>受训经历</h4>
-                <BulletList items={c.trainings} />
-              </div>
-            ) : null}
-            {c.workExperiences?.length ? (
-              <div className="mb-4">
-                <h4 className="text-sm font-bold mb-2" style={{ color: "#3B332C" }}>工作经验</h4>
-                <BulletList items={c.workExperiences} />
-              </div>
-            ) : null}
-          </Section>
-        ) : null}
+        {(c.qualifications?.length > 0 || c.education?.length > 0 || c.trainings?.length > 0 || c.workExperiences?.length > 0) && (
+          <>
+            <SectionTitle>从业背景</SectionTitle>
+            {c.qualifications?.length > 0 && (
+              <><h3 className="text-sm font-bold text-[#3B332C] mb-2">从业资质</h3><BulletList items={c.qualifications} /><div className="mt-4"/></>
+            )}
+            {c.education?.length > 0 && (
+              <><h3 className="text-sm font-bold text-[#3B332C] mb-2">教育背景</h3><BulletList items={c.education} /><div className="mt-4"/></>
+            )}
+            {c.trainings?.length > 0 && (
+              <><h3 className="text-sm font-bold text-[#3B332C] mb-2">受训经历</h3><BulletList items={c.trainings} /><div className="mt-4"/></>
+            )}
+            {c.workExperiences?.length > 0 && (
+              <><h3 className="text-sm font-bold text-[#3B332C] mb-2">工作经验</h3><BulletList items={c.workExperiences} /></>
+            )}
+            <div className="mt-6" /><Divider />
+          </>
+        )}
 
         {/* 咨询过程与方式 */}
         {c.sessionDescription && (
-          <Section title="咨询过程与方式">
-            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "#3B332C" }}>{c.sessionDescription}</p>
-          </Section>
+          <>
+            <SectionTitle>咨询过程与方式</SectionTitle>
+            <div className="text-sm text-[#3B332C] leading-relaxed space-y-3">
+              {c.sessionDescription.split("\n\n").map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
       {/* 底部固定操作栏 */}
-      <div className="fixed bottom-0 inset-x-0 z-30 flex items-center gap-4 px-4 py-4 border-t border-[#EBE7DF]"
-        style={{ background: "#FDFBF7", paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)" }}>
-        {/* 分享 */}
-        <button className="flex flex-col items-center gap-0.5">
-          <Share2 className="w-5 h-5" style={{ color: "#7D736A" }} />
-          <span className="text-[10px]" style={{ color: "#7D736A" }}>分享</span>
-        </button>
-        {/* 私信 */}
-        <button className="flex flex-col items-center gap-0.5">
-          <MessageCircle className="w-5 h-5" style={{ color: "#7D736A" }} />
-          <span className="text-[10px]" style={{ color: "#7D736A" }}>私信</span>
-        </button>
-        {/* 收藏 */}
-        <motion.button whileTap={{ scale: 0.9 }} onClick={() => setBookmarked(v => !v)}
-          className="flex flex-col items-center gap-0.5">
-          <Bookmark className="w-5 h-5"
-            style={{ color: bookmarked ? "#9CB48A" : "#7D736A", fill: bookmarked ? "#9CB48A" : "none" }} />
-          <span className="text-[10px]" style={{ color: "#7D736A" }}>收藏</span>
-        </motion.button>
-        {/* 预约咨询 */}
-        {c.isAccepting ? (
+      <div className="fixed bottom-0 inset-x-0 z-30 border-t border-[#EBE7DF] bg-[#F5F1E8]/98 backdrop-blur px-5 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3">
+        <div className="flex items-center gap-4 max-w-lg mx-auto">
+          <div className="flex gap-5 flex-shrink-0">
+            <button className="flex flex-col items-center gap-0.5">
+              <Share2 className="w-5 h-5 text-[#9B9590]" />
+              <span className="text-[10px] text-[#9B9590]">分享</span>
+            </button>
+            <button className="flex flex-col items-center gap-0.5">
+              <MessageCircle className="w-5 h-5 text-[#9B9590]" />
+              <span className="text-[10px] text-[#9B9590]">私信</span>
+            </button>
+            <motion.button whileTap={{ scale: 0.9 }} onClick={() => setSaved(v => !v)} className="flex flex-col items-center gap-0.5">
+              <Bookmark className={`w-5 h-5 ${saved ? "text-[#9CB48A] fill-[#9CB48A]" : "text-[#9B9590]"}`} />
+              <span className={`text-[10px] ${saved ? "text-[#9CB48A]" : "text-[#9B9590]"}`}>收藏</span>
+            </motion.button>
+          </div>
           <Link href={`/booking/${c.id}`} className="flex-1">
             <motion.button whileTap={{ scale: 0.97 }}
-              className="w-full py-3 rounded-full text-sm font-semibold text-white"
+              className="w-full h-12 rounded-2xl font-semibold text-white text-base shadow-md"
               style={{ background: "#9CB48A" }}>
               预约咨询
             </motion.button>
           </Link>
-        ) : (
-          <div className="flex-1 py-3 rounded-full text-sm text-center"
-            style={{ background: "#EBE7DF", color: "#C2BDB7" }}>暂停接诊</div>
-        )}
+        </div>
       </div>
     </div>
   );
