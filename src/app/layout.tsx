@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
-import { AuthInit } from "@eazo/sdk/react";
-import { UserSyncEffect } from "@/components/user-profile/user-sync-effect";
+import { EazoProvider } from "@eazo/sdk/react";
 
 export const metadata: Metadata = {
   title: "MindPace",
@@ -14,9 +12,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body>
-        <AuthInit />
-        <UserSyncEffect />
-        <AppShell>{children}</AppShell>
+        <EazoProvider>
+          <AppShell>{children}</AppShell>
+        </EazoProvider>
       </body>
     </html>
   );
