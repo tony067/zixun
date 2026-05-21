@@ -12,6 +12,7 @@ export type CalSlot = {
   weekdays?: string;  // "0,1,4" (0=Mon)
   isSingle?: boolean;
   singleDate?: string;  // "2026-05-28"
+  singleTime?: string;  // "10:00"
   validFrom?: string;
   validUntil?: string;
   isActive?: boolean;
