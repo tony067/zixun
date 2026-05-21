@@ -1,0 +1,9 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getCounselorById } from "@/lib/db/queries/counselors";
+
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const c = await getCounselorById(id);
+  if (!c) return NextResponse.json({ error: "not found" }, { status: 404 });
+  return NextResponse.json(c);
+}
