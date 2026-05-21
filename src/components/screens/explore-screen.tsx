@@ -20,7 +20,7 @@ const CATEGORY_GRID = [
   { id: "心理咨询师", label: "心理\n咨询师", bg: "#E8F2E4", color: "#5A8040", typeKey: "counselorType" },
   { id: "ADHD",       label: "ADHD",      bg: "#FEF3E2", color: "#D4720A", typeKey: "specialty" },
   { id: "ASD",        label: "ASD",       bg: "#EAF1FF", color: "#3B6FD4", typeKey: "specialty" },
-  { id: "2天内",      label: "2天内\n可约", bg: "#F5F0E8", color: "#7D736A", typeKey: "time" },
+  { id: "2天内",      label: "2天内\n可约", bg: "#FAF8F2", color: "#7D736A", typeKey: "time" },
   { id: "ADHD教练",   label: "ADHD\n教练", bg: "#FDE8F8", color: "#B040B0", typeKey: "counselorType" },
   { id: "特教老师",   label: "特教\n老师", bg: "#F0EBF8", color: "#8040C0", typeKey: "counselorType" },
   { id: "儿童青少年", label: "儿童\n青少年", bg: "#E5F7F0", color: "#258060", typeKey: "counselorType" },
