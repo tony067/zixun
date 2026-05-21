@@ -24,7 +24,7 @@ const CATEGORY_GRID = [
   { id: "ADHD教练",   label: "ADHD\n教练", bg: "#FDE8F8", color: "#B040B0", typeKey: "counselorType" },
   { id: "特教老师",   label: "特教\n老师", bg: "#F0EBF8", color: "#8040C0", typeKey: "counselorType" },
   { id: "儿童青少年", label: "儿童\n青少年", bg: "#E5F7F0", color: "#258060", typeKey: "counselorType" },
-  { id: "本周",       label: "本周\n可约", bg: "#F7F7F7", color: "#888",   typeKey: "time" },
+  { id: "本周",       label: "本周\n可约", bg: "#F5F0E8", color: "#7D736A", typeKey: "time" },
 ];
 
 const AV_COLORS = [
