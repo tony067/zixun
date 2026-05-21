@@ -243,8 +243,8 @@ export function ExploreScreen() {
             value={search} onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <button className="px-4 py-2.5 rounded-2xl text-[14px] font-medium flex-shrink-0 whitespace-nowrap"
-          style={{ background: "#FAF8F4", color: "#7B5EA7", border: "1px solid #E8E4DC" }}>
+        <button className="px-3.5 py-2 rounded-full text-[13px] font-medium flex-shrink-0 whitespace-nowrap"
+          style={{ background: "#FAF8F2", color: "#7B5EA7", border: "1px solid #DDD8F0" }}>
           预约督导
         </button>
       </div>
