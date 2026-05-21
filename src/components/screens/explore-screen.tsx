@@ -213,7 +213,7 @@ export function ExploreScreen() {
             <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
             联盟认证平台
           </div>
-          <h2 className="text-[20px] font-bold leading-snug mb-4 text-white">
+          <h2 className="text-[18px] font-bold leading-snug mb-4 text-white">
             神经多样性友好<br />咨询师联盟
           </h2>
           <div className="flex gap-2 flex-wrap">
