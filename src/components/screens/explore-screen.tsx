@@ -272,13 +272,16 @@ export function ExploreScreen() {
       <div className="px-5 mb-3 flex items-center gap-2">
         {["城市", "价格", "咨询方向"].map(f => (
           <button key={f} className="flex items-center gap-1 px-3 py-2 rounded-full text-[14px]"
-            style={{ background: "white", border: "1px solid #EBE7DF", color: "#7D736A" }}>
+            style={{ background: "#F5F0E8", border: "1px solid #E0DAD0", color: "#7D736A" }}>
             {f}<ChevronDown className="w-3 h-3" />
           </button>
         ))}
+        {/* 漏斗图标 */}
         <button className="ml-auto w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: "white", border: "1px solid #EBE7DF" }}>
-          <SlidersHorizontal className="w-4 h-4" style={{ color: "#7D736A" }} />
+          style={{ background: "#F5F0E8", border: "1px solid #E0DAD0" }}>
+          <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 4h14l-5 6v5l-4-2V10L3 4z" stroke="#7D736A" strokeWidth="1.5" strokeLinejoin="round" />
+          </svg>
         </button>
       </div>
 
