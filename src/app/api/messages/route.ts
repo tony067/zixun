@@ -5,8 +5,8 @@ import { getUserConversations, getOrCreateConversation } from "@/lib/db/queries/
 export async function GET(req: NextRequest) {
   const r = requireAuth(req);
   if (!r.ok) return r.response;
-  const rows = await getUserConversations(r.user.id);
-  return NextResponse.json(rows);
+  const convs = await getUserConversations(r.user.id);
+  return NextResponse.json(convs);
 }
 
 export async function POST(req: NextRequest) {
