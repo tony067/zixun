@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
-import { AuthInit } from "@/lib/auth";
+import { AuthInit } from "@eazo/sdk/react";
 
 export const metadata: Metadata = {
   title: "MindPace — 神经多样性友好咨询平台",
