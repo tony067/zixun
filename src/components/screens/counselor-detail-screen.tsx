@@ -139,7 +139,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           <>
             <SectionTitle>关于我</SectionTitle>
             <p className="text-sm text-[#3B332C] leading-relaxed">{c.bio}</p>
-            <Divider className="mt-6" />
+            <div className="mt-6" /><Divider />
           </>
         )}
 
