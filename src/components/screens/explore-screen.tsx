@@ -88,21 +88,23 @@ function getGreeting() {
   return "晚上好";
 }
 
-/* ── 线条风书本图标 ── */
+/* ── 线条风书本图标（开本样式）── */
 function BookLineIcon() {
   return (
     <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="1.5" width="14" height="15" rx="1.5" stroke="#7D736A" strokeWidth="1.4"/>
-      <path d="M5.5 5.5h7M5.5 8.5h7M5.5 11.5h4" stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round"/>
+      <path d="M3 2h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
+        stroke="#7D736A" strokeWidth="1.4"/>
+      <path d="M9 2v14M6 5.5h2M6 8.5h2M6 11.5h2" stroke="#7D736A" strokeWidth="1.3" strokeLinecap="round"/>
     </svg>
   );
 }
 
-/* ── 标准三角漏斗图标 ── */
+/* ── 标准漏斗图标（宽顶窄底）── */
 function FunnelIcon() {
   return (
     <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 3h14l-5 6v5l-4-2.5V9L2 3z" stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round"/>
+      <path d="M2.5 3h13l-4.5 5.5v5.5l-4-2V8.5L2.5 3z"
+        stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round"/>
     </svg>
   );
 }
