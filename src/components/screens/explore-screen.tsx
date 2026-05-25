@@ -67,12 +67,21 @@ function getGreeting() {
   return "晚上好";
 }
 
-/* ── 漏斗图标（三横线＋竖线样式）── */
+/* ── 新手必读：线条风格书本图标 ── */
+function BookIcon() {
+  return (
+    <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 3h5.5a2 2 0 0 1 2 2v10a2 2 0 0 0-2-2H3V3z" stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round"/>
+      <path d="M15 3H9.5a2 2 0 0 0-2 2v10a2 2 0 0 1 2-2H15V3z" stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+/* ── 漏斗图标（标准三角漏斗形）── */
 function FunnelIcon() {
   return (
-    <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 5h14M5 10h10M7 15h6" stroke="#7D736A" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M14 13v4" stroke="#7D736A" strokeWidth="1.6" strokeLinecap="round" />
+    <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 3h14l-5.5 7v5l-3-1.5V10L2 3z" stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round"/>
     </svg>
   );
 }
