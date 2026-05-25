@@ -316,7 +316,8 @@ export function ExploreScreen() {
         <span className="text-[15px]" style={{ color: "#9B8E82" }}>{getGreeting()}</span>
         <div className="flex items-center gap-2">
           {/* 新手必读 */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[13px]"
+          <button onClick={() => setShowGuide(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[13px]"
             style={{ borderColor: "#C8C4BC", color: "#7D736A", background: "white" }}>
             <BookIcon />新手必读
           </button>
