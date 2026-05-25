@@ -104,11 +104,11 @@ function BookLineIcon() {
   );
 }
 
-/* ── 标准漏斗图标（宽顶窄底）── */
+/* ── 标准漏斗图标（宽顶窄底三角形，无竖线）── */
 function FunnelIcon() {
   return (
     <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2.5 3h13l-4.5 5.5v5.5l-4-2V8.5L2.5 3z"
+      <path d="M1.5 3.5h15L11 9.5v5l-4-1.5V9.5L1.5 3.5z"
         stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round"/>
     </svg>
   );
