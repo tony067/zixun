@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ChevronDown, Clock, BookOpen } from "lucide-react";
+import { Search, ChevronDown, SlidersHorizontal, Clock } from "lucide-react";
 import Link from "next/link";
 import { useEazo } from "@eazo/sdk/react";
 import { auth } from "@eazo/sdk";
@@ -20,11 +20,11 @@ const CATEGORY_GRID = [
   { id: "心理咨询师", label: "心理\n咨询师", bg: "#E8F2E4", color: "#5A8040", typeKey: "counselorType" },
   { id: "ADHD",       label: "ADHD",      bg: "#FEF3E2", color: "#D4720A", typeKey: "specialty" },
   { id: "ASD",        label: "ASD",       bg: "#EAF1FF", color: "#3B6FD4", typeKey: "specialty" },
-  { id: "2天内",      label: "2天内\n可约", bg: "#FAF8F2", color: "#7D736A", typeKey: "time" },
+  { id: "2天内",      label: "2天内\n可约", bg: "#F7F7F7", color: "#888",   typeKey: "time" },
   { id: "ADHD教练",   label: "ADHD\n教练", bg: "#FDE8F8", color: "#B040B0", typeKey: "counselorType" },
   { id: "特教老师",   label: "特教\n老师", bg: "#F0EBF8", color: "#8040C0", typeKey: "counselorType" },
   { id: "儿童青少年", label: "儿童\n青少年", bg: "#E5F7F0", color: "#258060", typeKey: "counselorType" },
-  { id: "本周",       label: "本周\n可约", bg: "#FAF8F2", color: "#7D736A", typeKey: "time" },
+  { id: "本周",       label: "本周\n可约", bg: "#F7F7F7", color: "#888",   typeKey: "time" },
 ];
 
 const AV_COLORS = [
@@ -188,7 +188,7 @@ export function ExploreScreen() {
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[13px]"
             style={{ borderColor: "#C2BDB7", color: "#7D736A", background: "white" }}>
-            <span className="text-sm">📖</span>新手必读
+            📖 新手必读
           </button>
           {user ? (
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
@@ -197,9 +197,9 @@ export function ExploreScreen() {
             </div>
           ) : (
             <button onClick={() => auth.login()}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold leading-none"
-              style={{ background: "#9CB48A", color: "white" }}>
-              登录
+              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
+              style={{ background: "#EBE7DF", color: "#7D736A" }}>
+              登
             </button>
           )}
         </div>
@@ -207,28 +207,26 @@ export function ExploreScreen() {
 
       {/* ── 绿色 Banner ── */}
       <div className="mx-5 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(145deg, #6A9058 0%, #8DB87A 55%, #A8C898 100%)", minHeight: 156 }}>
+        style={{ background: "linear-gradient(145deg, #8DB87E 0%, #A8C898 100%)", minHeight: 160 }}>
         <div className="relative z-10 p-5">
           <div className="inline-flex items-center gap-1.5 mb-3 px-3 py-1 rounded-full text-[12px] font-medium"
-            style={{ background: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.96)" }}>
+            style={{ background: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.95)" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
             联盟认证平台
           </div>
-          <h2 className="text-[20px] font-bold leading-snug mb-4 text-white tracking-tight">
+          <h2 className="text-[24px] font-bold leading-snug mb-4 text-white">
             神经多样性友好<br />咨询师联盟
           </h2>
           <div className="flex gap-2 flex-wrap">
             {["专业培训认证", "按你的节奏", "安全支持空间"].map(t => (
-              <span key={t} className="text-[12px] px-2.5 py-1 rounded-full font-medium"
-                style={{ background: "rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.95)" }}>{t}</span>
+              <span key={t} className="text-[13px] px-3 py-1 rounded-full"
+                style={{ background: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.95)" }}>{t}</span>
             ))}
           </div>
         </div>
-        {/* 装饰圆：右上超大圆（半透明）+ 底部中圆 */}
-        <div className="absolute right-0 top-0 w-40 h-40 rounded-full pointer-events-none"
-          style={{ background: "rgba(255,255,255,0.18)", transform: "translate(30%, -30%)" }} />
-        <div className="absolute right-10 bottom-0 w-24 h-24 rounded-full pointer-events-none"
-          style={{ background: "rgba(255,255,255,0.10)", transform: "translateY(45%)" }} />
+        {/* 装饰圆 */}
+        <div className="absolute right-4 top-4 w-20 h-20 rounded-full opacity-20" style={{ background: "rgba(255,255,255,0.8)" }} />
+        <div className="absolute right-0 bottom-0 w-32 h-32 rounded-full opacity-10 translate-x-8 translate-y-8" style={{ background: "white" }} />
       </div>
 
       {/* ── 搜索 + 预约督导 ── */}
@@ -243,10 +241,12 @@ export function ExploreScreen() {
             value={search} onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <button className="px-3.5 py-2 rounded-full text-[13px] font-medium flex-shrink-0 whitespace-nowrap"
-          style={{ background: "#FAF8F2", color: "#7B5EA7", border: "1px solid #DDD8F0" }}>
-          预约督导
-        </button>
+        <Link href="/supervisor">
+          <button className="px-4 py-2.5 rounded-2xl text-[14px] font-medium flex-shrink-0"
+            style={{ background: "#EEE8F8", color: "#7040C0", border: "1px solid #DDD0F0" }}>
+            预约督导
+          </button>
+        </Link>
       </div>
 
       {/* ── 8格分类 ── */}
@@ -273,16 +273,13 @@ export function ExploreScreen() {
       <div className="px-5 mb-3 flex items-center gap-2">
         {["城市", "价格", "咨询方向"].map(f => (
           <button key={f} className="flex items-center gap-1 px-3 py-2 rounded-full text-[14px]"
-            style={{ background: "#F5F0E8", border: "1px solid #E0DAD0", color: "#7D736A" }}>
+            style={{ background: "white", border: "1px solid #EBE7DF", color: "#7D736A" }}>
             {f}<ChevronDown className="w-3 h-3" />
           </button>
         ))}
-        {/* 漏斗图标 */}
         <button className="ml-auto w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: "#F5F0E8", border: "1px solid #E0DAD0" }}>
-          <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 4h14l-5 6v5l-4-2V10L3 4z" stroke="#7D736A" strokeWidth="1.5" strokeLinejoin="round" />
-          </svg>
+          style={{ background: "white", border: "1px solid #EBE7DF" }}>
+          <SlidersHorizontal className="w-4 h-4" style={{ color: "#7D736A" }} />
         </button>
       </div>
 
