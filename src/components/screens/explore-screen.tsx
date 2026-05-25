@@ -283,6 +283,11 @@ export function ExploreScreen() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [openFilter, setOpenFilter] = useState<"city"|"price"|"direction"|null>(null);
+  const [filterCity, setFilterCity] = useState("");
+  const [filterPrice, setFilterPrice] = useState("");
+  const [filterDir, setFilterDir] = useState("");
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     setLoading(true);
