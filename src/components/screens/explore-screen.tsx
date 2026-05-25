@@ -475,7 +475,7 @@ export function ExploreScreen() {
             </div>
           ) : (
             <AnimatePresence mode="popLayout">
-              {displayed.map(c => <CounselorCard key={c.id} c={c} />)}
+              {displayed.map((c, i) => <CounselorCard key={c.id} c={c} idx={i} />)}
             </AnimatePresence>
           )}
         </div>
