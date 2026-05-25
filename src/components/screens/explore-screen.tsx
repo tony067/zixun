@@ -50,12 +50,12 @@ const DIRECTION_OPTIONS = [
 
 // 头像颜色轮转：绿 → 暖米 → 水蓝 → 麦色 → 薰衣草 → 浅杏 → 循环
 const AV_COLORS = [
-  { bg: "#C8DEB8", text: "#2E5020" }, // 绿    → index 0
-  { bg: "#E8DECE", text: "#6B5022" }, // 暖米  → index 1
-  { bg: "#C0D8E8", text: "#1A4060" }, // 水蓝  → index 2
-  { bg: "#E4D8B8", text: "#5A4218" }, // 麦色  → index 3
-  { bg: "#DDD0E8", text: "#4A1E5A" }, // 薰衣草→ index 4
-  { bg: "#F0E0C8", text: "#704020" }, // 浅杏  → index 5
+  { bg: "#E8DECE", text: "#6B5022" }, // 暖米  → index 0（陈晓雯）
+  { bg: "#C0D8E8", text: "#1A4060" }, // 水蓝  → index 1（林诗涵）
+  { bg: "#E4D8B8", text: "#5A4218" }, // 麦色  → index 2（余晓彤）
+  { bg: "#DDD0E8", text: "#4A1E5A" }, // 薰衣草→ index 3（李明华）
+  { bg: "#F0E0C8", text: "#704020" }, // 浅杏  → index 4（冯子轩）
+  { bg: "#C8DEB8", text: "#2E5020" }, // 绿    → index 5（王思远）
 ];
 
 function getAv(idx: number) {
