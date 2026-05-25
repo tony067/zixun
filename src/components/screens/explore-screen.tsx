@@ -67,7 +67,101 @@ function getGreeting() {
   return "晚上好";
 }
 
-/* ── 新手必读：线条风格书本图标 ── */
+/* ── 全国省份 ── */
+const PROVINCES = [
+  "北京","天津","上海","重庆",
+  "河北","山西","辽宁","吉林","黑龙江",
+  "浙江","江苏","安徽","福建","江西","山东",
+  "河南","湖北","湖南","广东","海南",
+  "四川","贵州","云南","陕西","甘肃","青海",
+  "内蒙古","广西","西藏","新疆","宁夏",
+  "香港","澳门","台湾",
+];
+
+const PRICE_OPTIONS = ["不限","300 以下","300—500","500 以上"];
+
+const DIRECTION_OPTIONS = [
+  "ADHD","ASD","情绪问题","睡眠问题","感官敏感","创伤",
+  "读写障碍","女性成长","人际关系","职场困境","儿童/青少年",
+  "家长支持","性议题","ADHD教练","特教老师",
+];
+
+/* ── 筛选抽屉 ── */
+type FilterType = "city" | "price" | "direction" | null;
+
+function FilterSheet({
+  type, onClose, value, onChange,
+}: {
+  type: FilterType;
+  onClose: () => void;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  if (!type) return null;
+  const title = type === "city" ? "省份/地区" : type === "price" ? "价格" : "咨询方向";
+  const options = type === "city" ? PROVINCES : type === "price" ? PRICE_OPTIONS : DIRECTION_OPTIONS;
+
+  return (
+    <motion.div className="fixed inset-0 z-50 flex items-end"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <motion.div className="relative w-full rounded-t-3xl p-5 pb-8 max-h-[75svh] flex flex-col"
+        style={{ background: "#FAF8F4" }}
+        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+        transition={{ type: "spring", stiffness: 320, damping: 34 }}>
+        <div className="w-10 h-1.5 rounded-full mx-auto mb-4" style={{ background: "#DDD8D0" }} />
+        <h3 className="text-sm font-semibold mb-4" style={{ color: "#9B8E82" }}>{title}</h3>
+        <div className="flex flex-wrap gap-2 overflow-y-auto">
+          {["全部", ...options].map(opt => (
+            <motion.button key={opt} whileTap={{ scale: 0.94 }}
+              onClick={() => { onChange(opt === "全部" ? "" : opt); onClose(); }}
+              className="px-3.5 py-2 rounded-full text-[14px] font-medium"
+              style={{
+                background: value === (opt === "全部" ? "" : opt) ? "#9CB48A" : "#F0EDE6",
+                color: value === (opt === "全部" ? "" : opt) ? "white" : "#7D736A",
+                border: "none",
+              }}>
+              {opt}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ── 新手必读弹窗 ── */
+const BEGINNER_GUIDE = [
+  { title: "什么是神经多样性？", body: "神经多样性（Neurodiversity）指的是大脑的多样性，包括 ADHD、ASD（自闭症谱系）、读写障碍等，这些都是正常的神经发育差异，而非缺陷。" },
+  { title: "咨询师是怎么筛选的？", body: "平台上的咨询师均经过联盟认证，具备神经多样性相关的专业培训背景，并承诺提供无评判、友善的咨询环境。" },
+  { title: "第一次预约怎么做？", body: "在首页选择感兴趣的咨询师，点击「预约咨询」后选择时间段，填写简单的来访信息，即可完成预约。咨询师确认后会通知你。" },
+  { title: "什么是固定档期？", body: "如果你和咨询师建立了稳定的咨询关系，可以申请固定档期——每周同一时间由咨询师专门为你预留，不需要每次重新预约。" },
+  { title: "费用怎么结算？", body: "每次咨询费用在预约时确认，咨询完成后结算。目前支持微信/支付宝，部分咨询师支持分期或弹性定价，可在详情页查看。" },
+];
+
+function BeginnerGuideSheet({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div className="fixed inset-0 z-50 flex items-end"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <motion.div className="relative w-full rounded-t-3xl p-5 pb-10 max-h-[80svh] flex flex-col"
+        style={{ background: "#FAF8F4" }}
+        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+        transition={{ type: "spring", stiffness: 320, damping: 34 }}>
+        <div className="w-10 h-1.5 rounded-full mx-auto mb-4" style={{ background: "#DDD8D0" }} />
+        <h3 className="text-base font-bold mb-4" style={{ color: "#2C2420" }}>新手必读</h3>
+        <div className="overflow-y-auto space-y-4">
+          {BEGINNER_GUIDE.map(item => (
+            <div key={item.title} className="rounded-2xl p-4" style={{ background: "#F0EDE6" }}>
+              <p className="text-sm font-semibold mb-1.5" style={{ color: "#2C2420" }}>{item.title}</p>
+              <p className="text-sm leading-relaxed" style={{ color: "#6B6460" }}>{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 function BookIcon() {
   return (
     <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
