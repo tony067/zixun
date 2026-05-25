@@ -282,7 +282,7 @@ export function ExploreScreen() {
               className="flex-1 text-[15px] bg-transparent focus:outline-none"
               style={{ color: "#2C2420" }} />
           </div>
-          <button className="px-3.5 py-2 rounded-2xl text-[13px] font-medium whitespace-nowrap"
+          <button className="px-2.5 py-1.5 rounded-xl text-[12px] font-medium whitespace-nowrap"
             style={{ background: "#F0EAF8", color: "#7040C0", border: "1px solid #D8C8F0" }}>
             预约督导
           </button>
