@@ -58,8 +58,8 @@ const AV_COLORS = [
   { bg: "#F0E0C8", text: "#704020" }, // 浅杏
 ];
 
-function getAv(id: string) {
-  return AV_COLORS[id.charCodeAt(id.length - 1) % AV_COLORS.length];
+function getAv(idx: number) {
+  return AV_COLORS[idx % AV_COLORS.length];
 }
 
 function getRoleTags(c: Counselor): string[] {
