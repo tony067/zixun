@@ -88,13 +88,18 @@ function getGreeting() {
   return "晚上好";
 }
 
-/* ── 线条风书本图标（开本样式）── */
+/* ── 线条风书本图标（打开书本，两页）── */
 function BookLineIcon() {
   return (
     <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 2h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
-        stroke="#7D736A" strokeWidth="1.4"/>
-      <path d="M9 2v14M6 5.5h2M6 8.5h2M6 11.5h2" stroke="#7D736A" strokeWidth="1.3" strokeLinecap="round"/>
+      {/* 书脊 */}
+      <path d="M9 4v11" stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round"/>
+      {/* 左页轮廓 */}
+      <path d="M9 5C7.2 4 4.5 4 2.5 5v9.5C4.5 13.5 7.2 13.5 9 14.5"
+        stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+      {/* 右页轮廓 */}
+      <path d="M9 5C10.8 4 13.5 4 15.5 5v9.5C13.5 13.5 10.8 13.5 9 14.5"
+        stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }
