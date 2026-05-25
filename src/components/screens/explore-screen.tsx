@@ -91,14 +91,12 @@ function getGreeting() {
 /* ── 线条风书本图标（打开书本，两页）── */
 function BookLineIcon() {
   return (
-    <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      {/* 书脊 */}
-      <path d="M9 4v11" stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round"/>
-      {/* 左页轮廓 */}
-      <path d="M9 5C7.2 4 4.5 4 2.5 5v9.5C4.5 13.5 7.2 13.5 9 14.5"
+    <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
+      {/* 翻开的书：两页向外展开 */}
+      <path d="M10 5v11" stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round"/>
+      <path d="M10 6C8 5 5.5 5 3.5 6V16C5.5 15 8 15 10 16"
         stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-      {/* 右页轮廓 */}
-      <path d="M9 5C10.8 4 13.5 4 15.5 5v9.5C13.5 13.5 10.8 13.5 9 14.5"
+      <path d="M10 6C12 5 14.5 5 16.5 6V16C14.5 15 12 15 10 16"
         stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
