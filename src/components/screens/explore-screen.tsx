@@ -207,8 +207,8 @@ const GUIDE_SECTIONS = [
 ];
 
 /* ── 咨询师卡片 ── */
-function CounselorCard({ c }: { c: Counselor }) {
-  const av = getAv(c.id);
+function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
+  const av = getAv(idx);
   const roleTags = getRoleTags(c);
   const avail = getAvail(c);
 
