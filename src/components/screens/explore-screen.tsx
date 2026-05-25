@@ -119,8 +119,7 @@ function BookIcon() {
 function FunnelIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      {/* 漏斗：平顶大梯形收窄到竖管 */}
-      <path d="M2.5 4h15l-5.5 6.5V17l-4-2v-4.5L2.5 4z"
+      <path d="M3 4h14l-5 6v5l-4-2V10L3 4z"
         stroke="#7D736A" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/>
     </svg>
   );
