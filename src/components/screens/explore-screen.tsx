@@ -463,6 +463,19 @@ export function ExploreScreen() {
           </button>
         </div>
 
+        {/* ── 清除筛选（有激活筛选时显示）── */}
+        {(activeCategory || activeFilterCount > 0 || search) && (
+          <div className="flex justify-end mb-2">
+            <button
+              onClick={() => { setActiveCategory(null); setSearch(""); setFilterCity(""); setFilterPrice(""); setFilterDir([]); }}
+              className="flex items-center gap-1 text-[13px] font-medium px-3 py-1 rounded-full"
+              style={{ color: "#9CB48A", background: "rgba(156,180,138,0.1)" }}>
+              <svg viewBox="0 0 14 14" fill="none" className="w-3 h-3"><path d="M2 2l10 10M12 2L2 12" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round"/></svg>
+              清除筛选
+            </button>
+          </div>
+        )}
+
         {/* ── 列表 ── */}
         <div className="pb-28">
           {loading ? (
