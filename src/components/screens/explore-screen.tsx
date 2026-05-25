@@ -91,8 +91,8 @@ function getGreeting() {
 /* ── 线条风书本图标（打开书本，两页）── */
 function BookLineIcon() {
   return (
-    <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      {/* 翻开的书：两页向外展开 */}
+    <svg viewBox="0 0 20 20" fill="none" className="w-[18px] h-[18px]" xmlns="http://www.w3.org/2000/svg">
+      {/* 翻开的书：两页向外展开，尺寸加大 */}
       <path d="M10 5v11" stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round"/>
       <path d="M10 6C8 5 5.5 5 3.5 6V16C5.5 15 8 15 10 16"
         stroke="#7D736A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
@@ -102,7 +102,7 @@ function BookLineIcon() {
   );
 }
 
-/* ── 标准漏斗图标（宽顶窄底三角形，无竖线）── */
+/* ── 漏斗图标（三角形轮廓，线条风格）── */
 function BookIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" className="w-[18px] h-[18px]" xmlns="http://www.w3.org/2000/svg">
