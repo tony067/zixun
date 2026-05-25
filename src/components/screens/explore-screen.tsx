@@ -219,7 +219,7 @@ export function ExploreScreen() {
           {/* 新手必读 */}
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[13px]"
             style={{ borderColor: "#C8C4BC", color: "#7D736A", background: "white" }}>
-            <span style={{ fontSize: 16 }}>📖</span>新手必读
+            <BookIcon />新手必读
           </button>
           {/* 头像/登录 */}
           {user ? (
