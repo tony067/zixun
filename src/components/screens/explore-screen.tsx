@@ -48,13 +48,14 @@ const DIRECTION_OPTIONS = [
   "家长支持","性议题","ADHD教练","特教老师",
 ];
 
+// 头像颜色轮转：绿 → 暖米 → 水蓝 → 麦色 → 薰衣草 → 浅杏 → 循环
 const AV_COLORS = [
-  { bg: "#E8DECE", text: "#6B5022" },
-  { bg: "#D5E4D0", text: "#2D5A28" },
-  { bg: "#D5DEF0", text: "#2A3F75" },
-  { bg: "#E8D5E8", text: "#622060" },
-  { bg: "#D5EEEA", text: "#1A6050" },
-  { bg: "#E8E4D0", text: "#5A4A22" },
+  { bg: "#C8DEB8", text: "#2E5020" }, // 绿
+  { bg: "#E8DECE", text: "#6B5022" }, // 暖米
+  { bg: "#C0D8E8", text: "#1A4060" }, // 水蓝
+  { bg: "#E4D8B8", text: "#5A4218" }, // 麦色
+  { bg: "#DDD0E8", text: "#4A1E5A" }, // 薰衣草
+  { bg: "#F0E0C8", text: "#704020" }, // 浅杏
 ];
 
 function getAv(id: string) {
