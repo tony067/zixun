@@ -105,11 +105,25 @@ function BookLineIcon() {
 }
 
 /* ── 标准漏斗图标（宽顶窄底三角形，无竖线）── */
+function BookIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="w-[18px] h-[18px]" xmlns="http://www.w3.org/2000/svg">
+      {/* 左页 */}
+      <path d="M10 16V5C10 5 7.5 4 5 4.5C3.5 4.8 3 5.5 3 5.5V16.5C3 16.5 4 16 6 16C8 16 10 16 10 16Z"
+        stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round"/>
+      {/* 右页 */}
+      <path d="M10 16V5C10 5 12.5 4 15 4.5C16.5 4.8 17 5.5 17 5.5V16.5C17 16.5 16 16 14 16C12 16 10 16 10 16Z"
+        stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
 function FunnelIcon() {
   return (
-    <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
-      <path d="M1.5 3.5h15L11 9.5v5l-4-1.5V9.5L1.5 3.5z"
-        stroke="#7D736A" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round"/>
+    <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
+      {/* 标准漏斗：宽口朝上，收窄向下，中间竖柱 */}
+      <path d="M3 4h14l-5.5 6v5l-3-1.5V10L3 4z"
+        stroke="#7D736A" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/>
     </svg>
   );
 }
