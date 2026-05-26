@@ -263,11 +263,11 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
           )}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[20px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
+              <span className="text-[18px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
               <span className="text-[12px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 rounded-2xl text-white font-semibold text-[13px]"
+              className="px-3.5 py-1.5 rounded-xl text-white font-semibold text-[12px]"
               style={{ background: "#9CB48A" }} onClick={e => e.preventDefault()}>
               预约咨询
             </motion.button>
@@ -412,7 +412,7 @@ export function ExploreScreen() {
 
       <div className="px-4">
         {/* ── 搜索 + 预约督导 ── */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex mb-4" style={{ gap: "10px" }}>
           <div className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-2xl"
             style={{ background: "white", border: "1px solid #E8E4DC" }}>
             <Search className="w-4 h-4 flex-shrink-0" style={{ color: "#C2BDB7" }} />
@@ -554,7 +554,7 @@ export function ExploreScreen() {
               {DIRECTION_OPTIONS.map(d => (
                 <OptionPill key={d} label={d}
                   active={filterDir.includes(d)}
-                  onToggle={() => { setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); setOpenModal(null); }} />
+                  onToggle={() => { setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); setOpenModal(null); window.scrollTo({top:0,behavior:"smooth"}); }} />
               ))}
             </div>
 
