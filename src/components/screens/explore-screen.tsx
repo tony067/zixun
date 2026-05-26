@@ -236,7 +236,7 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
               <div className="flex flex-wrap gap-1.5 mb-1.5">
                 {roleTags.map(t => (
                   <span key={t} className="text-[13px] px-2.5 py-0.5 rounded-full font-medium"
-                    style={{ background: "#EEF5EA", color: "#4A7A36" }}>{t}</span>
+                    style={{ background: col.tagBg, color: col.tagText }}>{t}</span>
                 ))}
               </div>
               <div className="flex items-center gap-1 text-[13px]" style={{ color: "#9B8E82" }}>
