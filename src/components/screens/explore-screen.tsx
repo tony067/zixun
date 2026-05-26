@@ -420,23 +420,45 @@ export function ExploreScreen() {
           </button>
         </div>
 
-        {/* ── 8格分类 ── */}
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          {CATEGORY_GRID.map(cat => {
-            const active = activeCategory === cat.id;
-            return (
-              <motion.button key={cat.id} whileTap={{ scale: 0.93 }}
-                onClick={() => setActiveCategory(active ? null : cat.id)}
-                className="rounded-2xl flex items-center justify-center text-center font-semibold"
-                style={{
-                  background: active ? cat.color : cat.bg,
-                  color: active ? "white" : cat.color,
-                  minHeight: 72, fontSize: 14, whiteSpace: "pre-line", lineHeight: 1.3,
-                }}>
-                {cat.label}
-              </motion.button>
-            );
-          })}
+        {/* ── 8格分类：左3彩色列 + 右1米色列，间距区分 ── */}
+        <div className="flex gap-2 mb-4">
+          {/* 左边：6个彩色格（3列×2行） */}
+          <div className="grid grid-cols-3 gap-1.5 flex-1">
+            {CATEGORY_GRID.filter(cat => cat.id !== "2天内" && cat.id !== "本周").map(cat => {
+              const active = activeCategory === cat.id;
+              return (
+                <motion.button key={cat.id} whileTap={{ scale: 0.93 }}
+                  onClick={() => setActiveCategory(active ? null : cat.id)}
+                  className="rounded-2xl flex items-center justify-center text-center font-semibold"
+                  style={{
+                    background: active ? cat.color : cat.bg,
+                    color: active ? "white" : cat.color,
+                    minHeight: 68, fontSize: 13, whiteSpace: "pre-line", lineHeight: 1.3,
+                  }}>
+                  {cat.label}
+                </motion.button>
+              );
+            })}
+          </div>
+          {/* 右边：2个米色格（1列×2行），稍窄 */}
+          <div className="flex flex-col gap-1.5" style={{ width: 76 }}>
+            {CATEGORY_GRID.filter(cat => cat.id === "2天内" || cat.id === "本周").map(cat => {
+              const active = activeCategory === cat.id;
+              return (
+                <motion.button key={cat.id} whileTap={{ scale: 0.93 }}
+                  onClick={() => setActiveCategory(active ? null : cat.id)}
+                  className="rounded-2xl flex items-center justify-center text-center font-semibold flex-1"
+                  style={{
+                    background: active ? "#888" : cat.bg,
+                    color: active ? "white" : cat.color,
+                    fontSize: 13, whiteSpace: "pre-line", lineHeight: 1.3,
+                    minHeight: 68,
+                  }}>
+                  {cat.label}
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
 
         {/* ── 筛选行 ── */}
