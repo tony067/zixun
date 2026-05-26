@@ -375,7 +375,7 @@ export function ExploreScreen() {
 
       {/* ── Banner ── */}
       <div className="mx-4 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(145deg, #9CB48A 0%, #AABF98 50%, #BED0AE 100%)", minHeight: 168 }}>
+        style={{ background: "linear-gradient(145deg, #A8C498 0%, #B8CEAA 50%, #CCE0BC 100%)", minHeight: 168 }}>
         <div className="absolute right-0 top-0 w-44 h-44 rounded-full pointer-events-none"
           style={{ background: "rgba(255,255,255,0.18)", transform: "translate(30%,-30%)" }} />
         <div className="absolute right-10 bottom-0 w-28 h-28 rounded-full pointer-events-none"
@@ -406,7 +406,7 @@ export function ExploreScreen() {
       <div className="px-4">
         {/* ── 搜索 + 预约督导 ── */}
         <div className="flex gap-2 mb-4">
-          <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-2xl"
+          <div className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-2xl"
             style={{ background: "white", border: "1px solid #E8E4DC" }}>
             <Search className="w-4 h-4 flex-shrink-0" style={{ color: "#C2BDB7" }} />
             <input type="text" placeholder="搜索名字、擅长..."
@@ -414,7 +414,7 @@ export function ExploreScreen() {
               className="flex-1 text-[15px] bg-transparent focus:outline-none" style={{ color: "#2C2420" }} />
           </div>
           {/* 预约督导：和旧版一样紧凑 */}
-          <button className="px-3 py-[5px] rounded-full text-[12px] font-medium whitespace-nowrap"
+          <button className="px-3 py-1 rounded-full text-[12px] font-medium whitespace-nowrap"
             style={{ background: "#F0EAF8", color: "#7040C0", border: "1px solid #D8C8F0" }}>
             预约督导
           </button>
@@ -433,7 +433,7 @@ export function ExploreScreen() {
                   style={{
                     background: active ? cat.color : cat.bg,
                     color: active ? "white" : cat.color,
-                    minHeight: 68, fontSize: 13, whiteSpace: "pre-line", lineHeight: 1.3,
+                    minHeight: 62, fontSize: 12, whiteSpace: "pre-line", lineHeight: 1.3,
                   }}>
                   {cat.label}
                 </motion.button>
@@ -470,7 +470,7 @@ export function ExploreScreen() {
           ].map(f => (
             <motion.button key={f.key} whileTap={{ scale: 0.95 }}
               onClick={() => setOpenModal(f.key as "city"|"price"|"direction")}
-              className="flex items-center gap-0.5 px-2.5 py-[5px] rounded-full text-[12px]"
+              className="flex items-center gap-0.5 px-2 py-1 rounded-full text-[12px]"
               style={{
                 background: f.active ? "#9CB48A" : "white",
                 border: `1px solid ${f.active ? "#9CB48A" : "#E0DAD0"}`,
@@ -483,9 +483,9 @@ export function ExploreScreen() {
           {(activeCategory || activeFilterCount > 0 || search) && (
             <button
               onClick={() => { setActiveCategory(null); setSearch(""); setFilterCity(""); setFilterPrice(""); setFilterDir([]); }}
-              className="flex items-center gap-0.5 text-[12px]"
+              className="text-[12px]"
               style={{ color: "#9B8E82" }}>
-              <X className="w-3 h-3" />清除
+              清除
             </button>
           )}
           <button className="ml-auto w-8 h-8 rounded-full flex items-center justify-center"
@@ -547,18 +547,10 @@ export function ExploreScreen() {
               {DIRECTION_OPTIONS.map(d => (
                 <OptionPill key={d} label={d}
                   active={filterDir.includes(d)}
-                  onToggle={() => setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])} />
+                  onToggle={() => { setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); }} />
               ))}
             </div>
-            {filterDir.length > 0 && (
-              <div className="pt-2 border-t" style={{ borderColor: "#EBE7DF" }}>
-                <motion.button whileTap={{ scale: 0.97 }} onClick={() => setOpenModal(null)}
-                  className="w-full py-3 rounded-2xl text-white font-semibold"
-                  style={{ background: "#9CB48A" }}>
-                  确认（已选 {filterDir.length} 项）
-                </motion.button>
-              </div>
-            )}
+
           </BottomSheet>
         )}
 
