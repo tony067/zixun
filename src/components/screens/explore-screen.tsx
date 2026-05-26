@@ -547,7 +547,7 @@ export function ExploreScreen() {
               {DIRECTION_OPTIONS.map(d => (
                 <OptionPill key={d} label={d}
                   active={filterDir.includes(d)}
-                  onToggle={() => { setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); }} />
+                  onToggle={() => { setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); setOpenModal(null); }} />
               ))}
             </div>
 
