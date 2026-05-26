@@ -218,7 +218,7 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
         <div className="py-5" style={{ borderBottom: "1px solid #EBE7DF" }}>
           <div className="flex items-start gap-3 mb-3">
             <div className="w-[88px] h-[88px] rounded-2xl flex-shrink-0 flex items-center justify-center text-3xl font-bold overflow-hidden"
-              style={{ background: av.bg, color: av.text }}>
+              style={{ background: col.avBg, color: col.avText }}>
               {c.avatarUrl
                 ? <img src={c.avatarUrl} alt={c.displayName} className="w-full h-full object-cover" />
                 : c.displayName[0]}
