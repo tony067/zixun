@@ -263,11 +263,11 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
           )}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[24px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
-              <span className="text-[14px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
+              <span className="text-[20px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
+              <span className="text-[12px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
-              className="px-5 py-2.5 rounded-2xl text-white font-semibold text-[15px]"
+              className="px-4 py-2 rounded-2xl text-white font-semibold text-[13px]"
               style={{ background: "#9CB48A" }} onClick={e => e.preventDefault()}>
               预约咨询
             </motion.button>
@@ -428,9 +428,9 @@ export function ExploreScreen() {
         </div>
 
         {/* ── 8格分类：左3彩色列 + 右1米色列，间距区分 ── */}
-        <div className="flex gap-2 mb-4">
-          {/* 左边：6个彩色格（3列×2行） */}
-          <div className="grid grid-cols-3 gap-1.5 flex-1">
+        <div className="flex mb-4" style={{ gap: 8 }}>
+          {/* 左边：6个彩色格（3列×2行），flex-1 占大部分 */}
+          <div className="grid grid-cols-3 gap-1.5" style={{ flex: "0 0 auto", width: "calc(100% - 80px)" }}>
             {CATEGORY_GRID.filter(cat => cat.id !== "2天内" && cat.id !== "本周").map(cat => {
               const active = activeCategory === cat.id;
               return (
@@ -440,7 +440,7 @@ export function ExploreScreen() {
                   style={{
                     background: active ? cat.color : cat.bg,
                     color: active ? "white" : cat.color,
-                    minHeight: 62, fontSize: 12, whiteSpace: "pre-line", lineHeight: 1.3,
+                    minHeight: 66, fontSize: 14, whiteSpace: "pre-line", lineHeight: 1.3,
                   }}>
                   {cat.label}
                 </motion.button>
@@ -448,7 +448,7 @@ export function ExploreScreen() {
             })}
           </div>
           {/* 右边：2个米色格（1列×2行），稍窄 */}
-          <div className="flex flex-col gap-1.5" style={{ width: 76 }}>
+          <div className="flex flex-col gap-1.5" style={{ width: 72 }}>
             {CATEGORY_GRID.filter(cat => cat.id === "2天内" || cat.id === "本周").map(cat => {
               const active = activeCategory === cat.id;
               return (
