@@ -461,42 +461,38 @@ export function ExploreScreen() {
           </div>
         </div>
 
-        {/* ── 筛选行 ── */}
-        <div className="flex items-center gap-1.5 mb-4">
+        {/* ── 筛选行（清除内联在右侧）── */}
+        <div className="flex items-center gap-1.5 mb-3">
           {[
-            { key: "city",      label: filterCity || "城市",      active: !!filterCity },
+            { key: "city",      label: filterCity || "地区",      active: !!filterCity },
             { key: "price",     label: filterPrice || "价格",     active: !!filterPrice },
             { key: "direction", label: filterDir.length ? `方向(${filterDir.length})` : "咨询方向", active: filterDir.length > 0 },
           ].map(f => (
             <motion.button key={f.key} whileTap={{ scale: 0.95 }}
               onClick={() => setOpenModal(f.key as "city"|"price"|"direction")}
-              className="flex items-center gap-0.5 px-2.5 py-1.5 rounded-full text-[13px]"
+              className="flex items-center gap-0.5 px-2.5 py-[5px] rounded-full text-[12px]"
               style={{
                 background: f.active ? "#9CB48A" : "white",
                 border: `1px solid ${f.active ? "#9CB48A" : "#E0DAD0"}`,
                 color: f.active ? "white" : "#7D736A",
               }}>
-              {f.label}<ChevronDown className="w-3 h-3 ml-0.5" style={{ color: f.active ? "white" : "#C2BDB7" }} />
+              {f.label}<ChevronDown className="w-2.5 h-2.5 ml-0.5" style={{ color: f.active ? "white" : "#C2BDB7" }} />
             </motion.button>
           ))}
+          {/* 清除按钮：有激活筛选时内联显示 */}
+          {(activeCategory || activeFilterCount > 0 || search) && (
+            <button
+              onClick={() => { setActiveCategory(null); setSearch(""); setFilterCity(""); setFilterPrice(""); setFilterDir([]); }}
+              className="flex items-center gap-0.5 text-[12px]"
+              style={{ color: "#9B8E82" }}>
+              <X className="w-3 h-3" />清除
+            </button>
+          )}
           <button className="ml-auto w-8 h-8 rounded-full flex items-center justify-center"
             style={{ background: activeFilterCount > 0 ? "#9CB48A" : "white", border: `1px solid ${activeFilterCount > 0 ? "#9CB48A" : "#E0DAD0"}` }}>
             <FunnelIcon />
           </button>
         </div>
-
-        {/* ── 清除筛选（有激活筛选时显示）── */}
-        {(activeCategory || activeFilterCount > 0 || search) && (
-          <div className="flex justify-end mb-2">
-            <button
-              onClick={() => { setActiveCategory(null); setSearch(""); setFilterCity(""); setFilterPrice(""); setFilterDir([]); }}
-              className="flex items-center gap-1 text-[13px] font-medium px-3 py-1 rounded-full"
-              style={{ color: "#9CB48A", background: "rgba(156,180,138,0.1)" }}>
-              <svg viewBox="0 0 14 14" fill="none" className="w-3 h-3"><path d="M2 2l10 10M12 2L2 12" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round"/></svg>
-              清除筛选
-            </button>
-          </div>
-        )}
 
         {/* ── 列表 ── */}
         <div className="pb-28">
