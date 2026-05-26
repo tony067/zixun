@@ -67,12 +67,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const myActive = pathname === myRoute || pathname.startsWith(myRoute + "/");
 
   const handleMyPress = () => {
-    // 如果已在「我的」页面，打开选择器；否则跳转「我的」
-    if (myActive) {
-      setShowRolePicker(true);
-    } else {
-      router.push(myRoute);
-    }
+    // 始终先弹出端口选择器，让用户选择后跳转
+    setShowRolePicker(true);
   };
 
   return (
