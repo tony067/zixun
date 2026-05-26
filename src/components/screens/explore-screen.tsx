@@ -76,9 +76,16 @@ function getRoleTags(c: Counselor): string[] {
 function getAvail(c: Counselor) {
   if (!c.isAccepting) return null;
   const h = c.rating % 3;
+  // 根据 id hash 生成一个未来几天内的"最早可预约"日期
+  const daysOffset = (c.id.charCodeAt(c.id.length - 1) % 20) + 1; // 1~20 天
+  const earliest = new Date();
+  earliest.setDate(earliest.getDate() + daysOffset);
+  const month = earliest.getMonth() + 1;
+  const day = earliest.getDate();
+  const dateLabel = `最早 ${month}月${day}日`;
   if (h === 0) return { label: "2 天内可约", color: "#4CAF50" };
   if (h === 1) return { label: "本周可约",   color: "#FF9800" };
-  return       { label: "接受预约",   color: "#9CB48A" };
+  return       { label: dateLabel,         color: "#9B8E82" };
 }
 
 function getGreeting() {
