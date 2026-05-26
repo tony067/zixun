@@ -263,11 +263,11 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
           )}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[18px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
+              <span className="text-[16px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
               <span className="text-[12px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
-              className="px-3.5 py-1.5 rounded-xl text-white font-semibold text-[12px]"
+              className="px-3 py-1.5 rounded-xl text-white font-semibold text-[12px]"
               style={{ background: "#9CB48A" }} onClick={e => e.preventDefault()}>
               预约咨询
             </motion.button>
@@ -428,9 +428,9 @@ export function ExploreScreen() {
         </div>
 
         {/* ── 8格分类：左3彩色列 + 右1米色列，间距区分 ── */}
-        <div className="flex mb-4" style={{ gap: 8 }}>
+        <div className="flex mb-4" style={{ gap: 12 }}>
           {/* 左边：6个彩色格（3列×2行），flex-1 占大部分 */}
-          <div className="grid grid-cols-3 gap-1.5" style={{ flex: "0 0 auto", width: "calc(100% - 80px)" }}>
+          <div className="grid grid-cols-3 gap-1.5" style={{ flex: "0 0 auto", width: "calc(100% - 92px)" }}>
             {CATEGORY_GRID.filter(cat => cat.id !== "2天内" && cat.id !== "本周").map(cat => {
               const active = activeCategory === cat.id;
               return (
