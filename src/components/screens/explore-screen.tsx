@@ -234,7 +234,7 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <span className="text-[18px] font-semibold" style={{ color: "#2C2420" }}>{c.displayName}</span>
                 {avail && (
-                  <span className="text-[12px] font-medium flex-shrink-0 flex items-center gap-1" style={{ color: avail.color }}>
+                  <span className="text-[11px] font-medium flex-shrink-0 flex items-center gap-1" style={{ color: avail.color }}>
                     <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: avail.color }} />
                     {avail.label}
                   </span>
@@ -263,11 +263,11 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
           )}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[16px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
+              <span className="text-[14px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
               <span className="text-[12px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
-              className="px-3 py-1.5 rounded-xl text-white font-semibold text-[12px]"
+              className="px-3 py-1 rounded-xl text-white font-semibold text-[12px]"
               style={{ background: "#9CB48A" }} onClick={e => e.preventDefault()}>
               预约咨询
             </motion.button>
@@ -430,7 +430,7 @@ export function ExploreScreen() {
         {/* ── 8格分类：左3彩色列 + 右1米色列，间距区分 ── */}
         <div className="flex mb-4" style={{ gap: 12 }}>
           {/* 左边：6个彩色格（3列×2行），flex-1 占大部分 */}
-          <div className="grid grid-cols-3 gap-1.5" style={{ flex: "0 0 auto", width: "calc(100% - 92px)" }}>
+          <div className="grid grid-cols-3 gap-1.5" style={{ flex: "0 0 auto", width: "calc(100% - 100px)" }}>
             {CATEGORY_GRID.filter(cat => cat.id !== "2天内" && cat.id !== "本周").map(cat => {
               const active = activeCategory === cat.id;
               return (
@@ -440,7 +440,7 @@ export function ExploreScreen() {
                   style={{
                     background: active ? cat.color : cat.bg,
                     color: active ? "white" : cat.color,
-                    minHeight: 66, fontSize: 14, whiteSpace: "pre-line", lineHeight: 1.3,
+                    minHeight: 66, fontSize: 15, whiteSpace: "pre-line", lineHeight: 1.3,
                   }}>
                   {cat.label}
                 </motion.button>
@@ -554,7 +554,7 @@ export function ExploreScreen() {
               {DIRECTION_OPTIONS.map(d => (
                 <OptionPill key={d} label={d}
                   active={filterDir.includes(d)}
-                  onToggle={() => { setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); setOpenModal(null); window.scrollTo({top:0,behavior:"smooth"}); }} />
+                  onToggle={() => { const isSelected = filterDir.includes(d); setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); if (!isSelected) setOpenModal(null); }} />
               ))}
             </div>
 
