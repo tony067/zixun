@@ -235,7 +235,7 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
               </div>
               <div className="flex flex-wrap gap-1.5 mb-1.5">
                 {roleTags.map(t => (
-                  <span key={t} className="text-[13px] px-2.5 py-0.5 rounded-full font-medium"
+                  <span key={t} className="text-[11px] px-2 py-0.5 rounded-full font-medium"
                     style={{ background: col.tagBg, color: col.tagText }}>{t}</span>
                 ))}
               </div>
@@ -414,7 +414,7 @@ export function ExploreScreen() {
               className="flex-1 text-[15px] bg-transparent focus:outline-none" style={{ color: "#2C2420" }} />
           </div>
           {/* 预约督导：和旧版一样紧凑 */}
-          <button className="px-3 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap"
+          <button className="px-3 py-[5px] rounded-full text-[12px] font-medium whitespace-nowrap"
             style={{ background: "#F0EAF8", color: "#7040C0", border: "1px solid #D8C8F0" }}>
             预约督导
           </button>
