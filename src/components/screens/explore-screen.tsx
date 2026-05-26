@@ -15,16 +15,16 @@ type Counselor = {
   avatarUrl: string | null;
 };
 
-// 8格分类
+// 8格分类 — 左6彩色 + 右2米色，整体 grid 用 gap，左右分组体现间距
 const CATEGORY_GRID = [
   { id: "心理咨询师", label: "心理\n咨询师", bg: "#EAF5E4", color: "#4A7A36" },
   { id: "ADHD",       label: "ADHD",         bg: "#FEF3E2", color: "#C86800" },
   { id: "ASD",        label: "ASD",          bg: "#EAF1FF", color: "#3060C0" },
-  { id: "2天内",      label: "2天内\n可约",   bg: "#FAF8F2", color: "#888"    },
+  { id: "2天内",      label: "2天内\n可约",   bg: "#F8F6F0", color: "#999"    },
   { id: "ADHD教练",   label: "ADHD\n教练",    bg: "#FDE8F8", color: "#A030A0" },
   { id: "特教老师",   label: "特教\n老师",    bg: "#F0EBF8", color: "#7030B8" },
   { id: "儿童青少年", label: "儿童\n青少年",  bg: "#E5F7F0", color: "#207860" },
-  { id: "本周",       label: "本周\n可约",    bg: "#FAF8F2", color: "#888"    },
+  { id: "本周",       label: "本周\n可约",    bg: "#F8F6F0", color: "#999"    },
 ];
 
 // 省份列表
