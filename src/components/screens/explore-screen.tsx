@@ -48,18 +48,18 @@ const DIRECTION_OPTIONS = [
   "家长支持","性议题","ADHD教练","特教老师",
 ];
 
-// 头像颜色轮转：绿 → 暖米 → 水蓝 → 麦色 → 薰衣草 → 浅杏 → 循环
-const AV_COLORS = [
-  { bg: "#E8DECE", text: "#6B5022" }, // 暖米  → index 0（陈晓雯）
-  { bg: "#C0D8E8", text: "#1A4060" }, // 水蓝  → index 1（林诗涵）
-  { bg: "#E4D8B8", text: "#5A4218" }, // 麦色  → index 2（余晓彤）
-  { bg: "#DDD0E8", text: "#4A1E5A" }, // 薰衣草→ index 3（李明华）
-  { bg: "#F0E0C8", text: "#704020" }, // 浅杏  → index 4（冯子轩）
-  { bg: "#C8DEB8", text: "#2E5020" }, // 绿    → index 5（王思远）
+// 每组颜色：角色标签 + 头像保持一致，按卡片 index 轮转
+const CARD_COLORS = [
+  { tagBg: "#E0F0D8", tagText: "#2E6020", avBg: "#C8DEB8", avText: "#2E5020" }, // 绿
+  { tagBg: "#F2E8D8", tagText: "#6B4820", avBg: "#E8DECE", avText: "#6B5022" }, // 暖米
+  { tagBg: "#D8ECF4", tagText: "#1A4A6A", avBg: "#C0D8E8", avText: "#1A4060" }, // 水蓝
+  { tagBg: "#EEE4CC", tagText: "#5A3A10", avBg: "#E4D8B8", avText: "#5A4218" }, // 麦色
+  { tagBg: "#EAE0F4", tagText: "#4A1E6A", avBg: "#DDD0E8", avText: "#4A1E5A" }, // 薰衣草
+  { tagBg: "#F8ECD8", tagText: "#703010", avBg: "#F0E0C8", avText: "#704020" }, // 浅杏
 ];
 
-function getAv(idx: number) {
-  return AV_COLORS[idx % AV_COLORS.length];
+function getCardColors(idx: number) {
+  return CARD_COLORS[idx % CARD_COLORS.length];
 }
 
 function getRoleTags(c: Counselor): string[] {
