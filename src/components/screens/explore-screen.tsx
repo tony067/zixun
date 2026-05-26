@@ -406,7 +406,7 @@ export function ExploreScreen() {
       <div className="px-4">
         {/* ── 搜索 + 预约督导 ── */}
         <div className="flex gap-2 mb-4">
-          <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-2xl"
+          <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-2xl"
             style={{ background: "white", border: "1px solid #E8E4DC" }}>
             <Search className="w-4 h-4 flex-shrink-0" style={{ color: "#C2BDB7" }} />
             <input type="text" placeholder="搜索名字、擅长..."
