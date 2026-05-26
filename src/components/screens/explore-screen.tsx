@@ -414,7 +414,7 @@ export function ExploreScreen() {
               className="flex-1 text-[15px] bg-transparent focus:outline-none" style={{ color: "#2C2420" }} />
           </div>
           {/* 预约督导：和旧版一样紧凑 */}
-          <button className="px-3 py-[5px] rounded-xl text-[12px] font-medium whitespace-nowrap"
+          <button className="px-3 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap"
             style={{ background: "#F0EAF8", color: "#7040C0", border: "1px solid #D8C8F0" }}>
             预约督导
           </button>
