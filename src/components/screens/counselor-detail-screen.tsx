@@ -297,6 +297,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
               </span>
               <span className="text-xs mt-1" style={{ color: "#7D736A" }}>咨询方式</span>
             </div>
+          </div>
           {/* 接待语言 */}
           {c.languages?.length > 0 && (
             <p className="text-sm mb-3" style={{ color: "#6B5E52" }}>
