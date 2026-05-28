@@ -144,9 +144,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <X size={16} style={{ color: "#7D736A" }} />
                 </button>
               </div>
-              <div className="px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+16px)] space-y-2">
+              <div className="px-4 py-3 pb-2 space-y-2">
                 {ROLE_OPTIONS.map((item) => {
-                  const isActive = item.role === role;
+                  const isActive = role === item.role;
+                  return (
+                    <button
+                      key={item.role}
+                      onClick={() => {
+                        setShowRolePicker(false);
+                        router.push(MY_ROUTE[item.role as Role]);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors"
+                      style={{ background: isActive ? "#F0F7EC" : "#F9F6F1", border: `1px solid ${isActive ? "#9CB48A" : "#EBE7DF"}` }}
+                    >
+                      <span className="text-2xl">{item.icon}</span>
+                      <div className="flex-1 min-w-0 text-left">
+                        <div className="text-sm font-semibold" style={{ color: "#2C2420" }}>{item.label}</div>
+                        <div className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{item.sub}</div>
+                      </div>
+                      {isActive
+                        ? <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#9CB48A", color: "#fff" }}>当前</span>
+                        : <ChevronRight size={16} style={{ color: "#C2BDB7" }} />
+                      }
+                    </button>
+                  );
+                })}         const isActive = item.role === role;
                   const dest     = MY_ROUTE[item.role];
                   return (
                     <Link key={item.role} href={dest}
