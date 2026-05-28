@@ -72,7 +72,7 @@ export default function CounselorProfilePage() {
         </div>
       )}
       <div className="sticky top-0 z-20 flex items-center gap-3 px-4 pt-12 pb-3 bg-[#F5F0E8]">
-        <button onClick={() => router.back()}
+        <button onClick={() => router.push("/counselor/bookings")}
           className="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-[#DDD8D0]">
           <ArrowLeft className="w-4 h-4 text-[#6B5E52]" />
         </button>
