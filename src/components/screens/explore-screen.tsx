@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ChevronDown, Clock, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEazo } from "@eazo/sdk/react";
 import { auth } from "@eazo/sdk";
 
