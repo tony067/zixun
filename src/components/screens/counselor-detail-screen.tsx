@@ -89,8 +89,8 @@ function TagList({ items }: { items: string[] }) {
   return (
     <div className="flex flex-wrap gap-2">
       {items.map((t) => (
-        <span key={t} className="px-3.5 py-1.5 rounded-full text-sm"
-          style={{ background: "#EDEBE5", color: "#3C3530", border: "1px solid #DDD8D0" }}>
+        <span key={t} className="px-3.5 py-1.5 rounded-full text-sm font-medium"
+          style={{ background: "#E4F0DC", color: "#3A6228", border: "1px solid #CCE0C0" }}>
           {t}
         </span>
       ))}
@@ -208,7 +208,8 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
         <div className="mx-4 mb-5 px-5 py-5 rounded-2xl relative"
           style={{ background: "#E8DFCC" }}>
           <div className="absolute top-4 left-4 text-4xl font-serif leading-none" style={{ color: "#9CB48A", opacity: 0.6 }}>"</div>
-          <p className="mt-4 text-base italic leading-relaxed" style={{ color: "#2C2420" }}>{c.tagline}</p>
+          <p className="mt-4 pb-6 text-base italic leading-relaxed" style={{ color: "#2C2420" }}>{c.tagline}</p>
+          <div className="absolute bottom-4 right-5 text-4xl font-serif leading-none" style={{ color: "#9CB48A", opacity: 0.6 }}>"</div>
         </div>
       )}
 
@@ -262,8 +263,8 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
             </div>
             {/* 费用 */}
             <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
-              <svg viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mb-1.5">
-                <text x="10" y="14" textAnchor="middle" fontSize="13" fontWeight="600" stroke="none" fill="#9CB48A">¥</text>
+              <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5 mb-1.5">
+                <text x="10" y="15" textAnchor="middle" fontSize="16" fontWeight="700" fill="#9CB48A">¥</text>
               </svg>
               <span className="text-2xl font-bold leading-none" style={{ color: "#2C2420" }}>{c.pricePerSession}</span>
               <span className="text-xs mt-1" style={{ color: "#7D736A" }}>每次费用</span>
