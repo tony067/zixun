@@ -168,6 +168,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       }
                     </button>
                   );
+                })}vronRight size={16} style={{ color: "#C2BDB7" }} />
+                      }
+                    </button>
+                  );
                 })}         const isActive = item.role === role;
                   const dest     = MY_ROUTE[item.role];
                   return (
