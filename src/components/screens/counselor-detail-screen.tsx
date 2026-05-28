@@ -90,7 +90,7 @@ function TagList({ items }: { items: string[] }) {
     <div className="flex flex-wrap gap-2">
       {items.map((t) => (
         <span key={t} className="px-3.5 py-1.5 rounded-full text-sm font-medium"
-          style={{ background: "#E4F0DC", color: "#3A6228", border: "1px solid #CCE0C0" }}>
+          style={{ background: "#E8DFCC", color: "#5A7A3A", border: "1px solid #D4C8B0" }}>
           {t}
         </span>
       ))}
