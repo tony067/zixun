@@ -14,8 +14,9 @@ export function AvatarUploader({
     if (!file) return;
     setUploading(true);
     try {
-      // @eazo/sdk storage.upload expects (filename: string, options: { path, data })
-      const result = await storage.upload(file.name, { path: `avatars/${Date.now()}_${file.name}`, data: file } as Parameters<typeof storage.upload>[1]);
+      // upload as raw File — cast to satisfy SDK's overloaded signature
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await (storage.upload as any)(file, { path: `avatars/${Date.now()}_${file.name}` });
       onChange((result as { url: string }).url);
     } catch { /* silent */ } finally {
       setUploading(false);
