@@ -428,9 +428,9 @@ export function ExploreScreen() {
         </div>
 
         {/* ── 8格分类：左3彩色列 + 右1米色列，间距区分 ── */}
-        <div className="flex mb-4" style={{ gap: 12 }}>
-          {/* 左边：6个彩色格（3列×2行），flex-1 占大部分 */}
-          <div className="grid grid-cols-3 gap-1.5" style={{ flex: "0 0 auto", width: "calc(100% - 100px)" }}>
+        <div className="flex mb-4" style={{ gap: 8 }}>
+          {/* 左边：6个彩色格（3列×2行），缩窄让右边米色格有呼吸空间 */}
+          <div className="grid grid-cols-3 gap-1.5" style={{ flex: "0 0 auto", width: "calc(100% - 112px)" }}>
             {CATEGORY_GRID.filter(cat => cat.id !== "2天内" && cat.id !== "本周").map(cat => {
               const active = activeCategory === cat.id;
               return (
