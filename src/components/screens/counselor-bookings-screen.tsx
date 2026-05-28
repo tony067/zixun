@@ -12,7 +12,8 @@ type Booking = {
   client: { id: string; name: string | null; email: string | null } | null;
 };
 
-const TABS = [
+// 下拉选项，不再横向滚动
+const STATUS_OPTIONS = [
   { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation"], dot: "#D97706" },
   { key: "pending_payment",      label: "待支付", statuses: ["confirmed","pending_payment"], dot: "#2563EB" },
   { key: "upcoming",             label: "待咨询", statuses: ["paid"], dot: "#059669" },
@@ -33,92 +34,105 @@ const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
   cancelled:            { color: "#9CA3AF", bg: "#F9FAFB" },
   rejected:             { color: "#EF4444", bg: "#FEE2E2" },
 };
-const modeIcon = (m: string) => m.includes("视频") ? <Video className="w-3.5 h-3.5"/> : m.includes("语音")||m.includes("电话") ? <Phone className="w-3.5 h-3.5"/> : null;
 
 function BookingCard({ b, onUpdate }: { b: Booking; onUpdate: (id: string, status: string) => void }) {
-  const [open, setOpen] = useState(false);
-  const d = new Date(b.scheduledAt);
-  const dateStr = `${d.getMonth()+1}月${d.getDate()}日 ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
-  const name = b.client?.name || b.client?.email || "匿名来访";
+  const dt = new Date(b.scheduledAt);
+  const dateStr = dt.toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short" });
+  const timeStr = dt.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
   const st = STATUS_STYLE[b.status] ?? { color: "#6B7280", bg: "#F3F4F6" };
+  const clientName = b.client?.name || b.client?.email?.split("@")[0] || "来访者";
 
   return (
-    <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}
-      className="bg-white rounded-2xl p-4 border border-[#EBE7DF]">
-      <div className="flex items-start justify-between gap-3 mb-3" onClick={() => setOpen(v=>!v)}>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold text-[#2C2420] text-base">{name}</div>
-          <div className="flex items-center gap-2 mt-1 text-sm text-[#7D736A]">
-            <Calendar className="w-3.5 h-3.5 flex-shrink-0" />{dateStr}
+    <motion.div
+      initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }} layout
+      className="rounded-3xl p-5 border border-[var(--color-border)]"
+      style={{ background: "var(--color-card)" }}
+    >
+      {/* 顶部：来访者 + 状态 */}
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold"
+            style={{ background: "var(--color-secondary)", color: "var(--color-text-secondary)" }}>
+            {clientName[0]}
           </div>
-          <div className="flex items-center gap-2 mt-1 text-sm text-[#7D736A]">
-            <Clock className="w-3.5 h-3.5 flex-shrink-0" />{b.durationMinutes}分钟
-            <span className="flex items-center gap-1">{modeIcon(b.sessionMode)}{b.sessionMode}</span>
+          <div>
+            <div className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>{clientName}</div>
+            {b.clientNote && (
+              <div className="text-xs mt-0.5 line-clamp-1" style={{ color: "var(--color-text-muted)" }}>{b.clientNote}</div>
+            )}
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2 flex-shrink-0">
-          <span className="text-xs font-medium px-2.5 py-1 rounded-full"
-            style={{ color: st.color, background: st.bg }}>{STATUS_LABEL[b.status]}</span>
-          <span className="text-sm font-semibold text-[#2C2420]">¥{b.priceAmount}</span>
+        <span className="text-xs font-medium px-2.5 py-1 rounded-full"
+          style={{ color: st.color, background: st.bg }}>
+          {STATUS_LABEL[b.status] ?? b.status}
+        </span>
+      </div>
+
+      {/* 时间 + 方式 */}
+      <div className="flex items-center gap-4 text-sm mb-4" style={{ color: "var(--color-text-secondary)" }}>
+        <span className="flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" />
+          {dateStr}
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5" />
+          {timeStr} · {b.durationMinutes}分钟
+        </span>
+        <span className="flex items-center gap-1.5">
+          {b.sessionMode?.includes("视频") ? <Video className="w-3.5 h-3.5" /> : <Phone className="w-3.5 h-3.5" />}
+          {b.sessionMode}
+        </span>
+      </div>
+
+      {/* 金额 + 操作 */}
+      <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: "var(--color-border)" }}>
+        <span className="text-base font-bold" style={{ color: "var(--color-text-primary)" }}>¥{b.priceAmount}</span>
+        <div className="flex gap-2">
+          {b.status === "pending_confirmation" && (<>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "rejected")}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
+              <X className="w-3.5 h-3.5" />拒绝
+            </motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "confirmed")}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-white"
+              style={{ background: "var(--color-primary)" }}>
+              <Check className="w-3.5 h-3.5" />接受
+            </motion.button>
+          </>)}
+          {(b.status === "confirmed" || b.status === "pending_payment") && (
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "cancelled")}
+              className="px-3 py-1.5 rounded-xl text-xs font-medium border"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
+              取消预约
+            </motion.button>
+          )}
+          {b.status === "paid" && (<>
+            <motion.button whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
+              <MessageCircle className="w-3.5 h-3.5" />私信
+            </motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "completed")}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-white"
+              style={{ background: "var(--color-primary)" }}>
+              <Check className="w-3.5 h-3.5" />标记完成
+            </motion.button>
+          </>)}
         </div>
       </div>
-
-      {/* 操作按钮 */}
-      <div className="flex gap-2">
-        {b.status === "pending_confirmation" && (<>
-          <motion.button whileTap={{ scale:0.95 }} onClick={() => onUpdate(b.id,"confirmed")}
-            className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-[#9CB48A] flex items-center justify-center gap-1.5">
-            <Check className="w-4 h-4" />接受
-          </motion.button>
-          <motion.button whileTap={{ scale:0.95 }} onClick={() => onUpdate(b.id,"rejected")}
-            className="flex-1 py-2 rounded-xl text-sm font-semibold text-[#EF4444] border border-[#FCA5A5] flex items-center justify-center gap-1.5">
-            <X className="w-4 h-4" />拒绝
-          </motion.button>
-        </>)}
-        {(b.status === "confirmed" || b.status === "pending_payment") && (
-          <motion.button whileTap={{ scale:0.95 }} onClick={() => onUpdate(b.id,"cancelled")}
-            className="flex-1 py-2 rounded-xl text-sm text-[#9B8E82] border border-[#EBE7DF]">
-            取消预约
-          </motion.button>
-        )}
-        {b.status === "paid" && (
-          <motion.button whileTap={{ scale:0.95 }} onClick={() => onUpdate(b.id,"completed")}
-            className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-[#9CB48A]">
-            标记已完成
-          </motion.button>
-        )}
-        <motion.button whileTap={{ scale:0.92 }} onClick={() => setOpen(v=>!v)}
-          className="w-9 h-9 rounded-xl border border-[#EBE7DF] flex items-center justify-center flex-shrink-0">
-          <ChevronDown className={`w-4 h-4 text-[#9B8E82] transition-transform ${open?"rotate-180":""}`} />
-        </motion.button>
-      </div>
-
-      {/* 展开详情 */}
-      <AnimatePresence>
-        {open && (
-          <motion.div initial={{ height:0, opacity:0 }} animate={{ height:"auto", opacity:1 }}
-            exit={{ height:0, opacity:0 }} className="overflow-hidden">
-            <div className="pt-3 mt-3 border-t border-[#EBE7DF] space-y-2">
-              {b.clientNote && <div>
-                <div className="text-xs text-[#9B8E82] mb-1">来访备注</div>
-                <div className="text-sm text-[#2C2420]">{b.clientNote}</div>
-              </div>}
-              <div className="text-xs text-[#9B8E82]">预约ID：{b.id.slice(0,12)}…</div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
 
 export function CounselorBookingsScreen() {
   const user = useEazo((s) => s.auth.user);
-  const loading_auth = useEazo((s) => s.auth.loading);
-  const [tab, setTab] = useState("pending_confirmation");
-  const [showDropdown, setShowDropdown] = useState(false);
+  const loadingAuth = useEazo((s) => s.auth.loading);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedKey, setSelectedKey] = useState("pending_confirmation");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -130,87 +144,100 @@ export function CounselorBookingsScreen() {
   }, [user]);
 
   const handleUpdate = async (id: string, status: string) => {
-    await request(`/api/bookings/${id}`, {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
+    const res = await request(`/api/bookings/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
-    setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+    if (res.ok) {
+      setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+    }
   };
 
-  if (!loading_auth && !user) {
+  if (!loadingAuth && !user) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-[#F5F0E8] px-6">
+      <div className="min-h-svh flex items-center justify-center px-6" style={{ background: "var(--color-surface)" }}>
         <div className="text-center">
-          <p className="text-base font-semibold text-[#2C2420] mb-2">请先登录</p>
-          <motion.button whileTap={{ scale:0.96 }} onClick={() => auth.login()}
-            className="px-6 py-2.5 rounded-2xl text-white text-sm font-semibold bg-[#9CB48A]">登录</motion.button>
+          <p className="text-base font-medium mb-4" style={{ color: "var(--color-text-primary)" }}>请先登录</p>
+          <button onClick={() => auth.login()} className="px-6 py-2.5 rounded-2xl text-white text-sm font-medium"
+            style={{ background: "var(--color-primary)" }}>登录</button>
         </div>
       </div>
     );
   }
 
-  const currentTab = TABS.find(t => t.key === tab)!;
-  const displayed = bookings.filter(b => currentTab.statuses.includes(b.status));
-  const counts = Object.fromEntries(TABS.map(t => [t.key, bookings.filter(b => t.statuses.includes(b.status)).length]));
+  const currentOpt = STATUS_OPTIONS.find(o => o.key === selectedKey)!;
+  const displayed = bookings.filter(b => currentOpt.statuses.includes(b.status));
+
+  // 各状态数量
+  const counts: Record<string, number> = {};
+  STATUS_OPTIONS.forEach(o => {
+    counts[o.key] = bookings.filter(b => o.statuses.includes(b.status)).length;
+  });
 
   return (
-    <div className="min-h-svh bg-[#F5F0E8] pb-24">
-      {/* 顶部标题 + 下拉状态选择器 */}
-      <div className="sticky top-0 z-10 bg-[#F5F0E8] px-5 pt-12 md:pt-6 pb-3">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold text-[#2C2420]">预约管理</h1>
-          <span className="text-sm text-[#9B8E82]">{bookings.length} 个预约</span>
-        </div>
+    <div className="min-h-svh pb-28" style={{ background: "var(--color-surface)" }}>
+      {/* 顶部标题 */}
+      <div className="px-5 pt-14 pb-4" style={{ background: "var(--color-surface)" }}>
+        <h1 className="text-xl font-bold" style={{ color: "var(--color-text-primary)" }}>预约管理</h1>
+      </div>
 
-        {/* 下拉选择器 */}
-        <div className="relative">
-          <motion.button whileTap={{ scale:0.98 }}
-            onClick={() => setShowDropdown(v => !v)}
-            className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-2xl border border-[#EBE7DF]">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: currentTab.dot }} />
-              <span className="font-semibold text-[#2C2420]">{currentTab.label}</span>
-              {counts[tab] > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#F0EDE8] text-[#7D736A]">{counts[tab]}</span>
-              )}
-            </div>
-            <ChevronDown className={`w-4 h-4 text-[#9B8E82] transition-transform ${showDropdown?"rotate-180":""}`} />
-          </motion.button>
+      {/* 状态下拉选择器 */}
+      <div className="px-5 mb-4 relative z-20">
+        <button
+          onClick={() => setDropdownOpen(v => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border"
+          style={{ background: "var(--color-card)", borderColor: "var(--color-border)" }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full" style={{ background: currentOpt.dot }} />
+            <span className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>
+              {currentOpt.label}
+            </span>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--color-secondary)", color: "var(--color-text-secondary)" }}>
+              {counts[selectedKey]}
+            </span>
+          </div>
+          <ChevronDown className="w-4 h-4" style={{ color: "var(--color-text-muted)", transform: dropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+        </button>
 
-          <AnimatePresence>
-            {showDropdown && (
-              <motion.div initial={{ opacity:0, y:-4 }} animate={{ opacity:1, y:0 }}
-                exit={{ opacity:0, y:-4 }}
-                className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl border border-[#EBE7DF] shadow-lg z-20 overflow-hidden">
-                {TABS.map(t => (
-                  <motion.button key={t.key} whileTap={{ scale:0.98 }}
-                    onClick={() => { setTab(t.key); setShowDropdown(false); }}
-                    className={`w-full flex items-center justify-between px-4 py-3 transition-colors ${
-                      t.key === tab ? "bg-[#F5F0E8]" : "hover:bg-[#FAFAF8]"
-                    }`}>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full" style={{ background: t.dot }} />
-                      <span className={`text-sm ${t.key === tab ? "font-semibold text-[#2C2420]" : "text-[#7D736A]"}`}>{t.label}</span>
-                    </div>
-                    {counts[t.key] > 0 && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#F0EDE8] text-[#7D736A]">{counts[t.key]}</span>
-                    )}
-                  </motion.button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <AnimatePresence>
+          {dropdownOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              className="absolute left-5 right-5 mt-1 rounded-2xl border overflow-hidden shadow-lg z-30"
+              style={{ background: "var(--color-card)", borderColor: "var(--color-border)" }}
+            >
+              {STATUS_OPTIONS.map(opt => (
+                <button key={opt.key}
+                  onClick={() => { setSelectedKey(opt.key); setDropdownOpen(false); }}
+                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--color-surface)] transition-colors"
+                  style={{ borderBottom: opt.key !== "cancelled" ? `1px solid var(--color-border)` : "none" }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ background: opt.dot }} />
+                    <span className="text-sm" style={{ color: opt.key === selectedKey ? "var(--color-primary)" : "var(--color-text-primary)", fontWeight: opt.key === selectedKey ? 600 : 400 }}>
+                      {opt.label}
+                    </span>
+                  </div>
+                  <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--color-secondary)", color: "var(--color-text-secondary)" }}>
+                    {counts[opt.key]}
+                  </span>
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* 预约列表 */}
       <div className="px-5 space-y-3">
         {loading ? (
-          <>{[1,2,3].map(i => <div key={i} className="h-32 rounded-2xl skeleton" />)}</>
+          <>{[1,2,3].map(i => <div key={i} className="h-40 rounded-3xl skeleton" />)}</>
         ) : displayed.length === 0 ? (
           <div className="text-center py-20">
-            <Calendar className="w-10 h-10 text-[#C2BDB7] mx-auto mb-3" />
-            <p className="text-sm text-[#9B8E82]">暂无{currentTab.label}预约</p>
+            <Calendar className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--color-text-muted)" }} />
+            <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>暂无{currentOpt.label}预约</p>
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
