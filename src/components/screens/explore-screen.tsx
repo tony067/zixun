@@ -382,7 +382,7 @@ export function ExploreScreen() {
 
       {/* ── Banner ── */}
       <div className="mx-4 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(145deg, #A8C498 0%, #B8CEAA 50%, #CCE0BC 100%)", minHeight: 168 }}>
+        style={{ background: "linear-gradient(145deg, #8FB97A 0%, #A3C98C 50%, #BCDAA4 100%)", minHeight: 168 }}>
         <div className="absolute right-0 top-0 w-44 h-44 rounded-full pointer-events-none"
           style={{ background: "rgba(255,255,255,0.18)", transform: "translate(30%,-30%)" }} />
         <div className="absolute right-10 bottom-0 w-28 h-28 rounded-full pointer-events-none"
