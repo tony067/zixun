@@ -297,39 +297,6 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
               </span>
               <span className="text-xs mt-1" style={{ color: "#7D736A" }}>咨询方式</span>
             </div>
-          </div>
-            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#EAE3D0" }}>
-              <div className="flex items-center gap-1 mb-1.5">
-                {(c.sessionModes ?? []).map((m: string, i: number) => {
-                  const isVideo = m.includes("视频");
-                  const isPhone = m.includes("语音") || m.includes("电话");
-                  const isFace  = m.includes("面") || m.includes("线下");
-                  return (
-                    <svg key={i} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
-                      {isVideo && <>
-                        <rect x="2" y="5" width="12" height="10" rx="1.5"/>
-                        <path d="M14 8l4-2v8l-4-2"/>
-                      </>}
-                      {isPhone && <>
-                        <path d="M5 2h4l1.5 4-2.5 1.5A11 11 0 0013 13l1.5-2.5L18 12v4a1 1 0 01-1 1C8 17 3 12 3 3a1 1 0 011-1z"/>
-                      </>}
-                      {isFace && <>
-                        <circle cx="10" cy="7" r="3"/>
-                        <path d="M4 18a6 6 0 0112 0"/>
-                      </>}
-                      {!isVideo && !isPhone && !isFace && <>
-                        <circle cx="10" cy="7" r="3"/>
-                        <path d="M4 18a6 6 0 0112 0"/>
-                      </>}
-                    </svg>
-                  );
-                })}
-              </div>
-              <span className="text-sm font-semibold text-center leading-snug" style={{ color: "#2C2420" }}>
-                {(c.sessionModes ?? []).join(" / ")}
-              </span>
-              <span className="text-xs mt-1" style={{ color: "#7D736A" }}>咨询方式</span>
-            </div>
           {/* 接待语言 */}
           {c.languages?.length > 0 && (
             <p className="text-sm mb-3" style={{ color: "#6B5E52" }}>
