@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, Video, Phone, MessageCircle, Check, X, ChevronDown } from "lucide-react";
+import { Calendar, Clock, Video, Phone, MessageCircle, Check, X } from "lucide-react";
 import { useEazo } from "@eazo/sdk/react";
 import { auth } from "@eazo/sdk";
 import { request } from "@/lib/api/request";
