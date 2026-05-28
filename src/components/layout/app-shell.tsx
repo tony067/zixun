@@ -42,7 +42,7 @@ function detectRole(path: string): Role {
 // 各端口「我的」页面路由
 const MY_ROUTE: Record<Role, string> = {
   client:    "/profile",
-  counselor: "/counselor/profile",
+  counselor: "/counselor/bookings",
   admin:     "/admin/settings",
 };
 
