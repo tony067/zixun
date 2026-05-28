@@ -15,16 +15,16 @@ type Counselor = {
   avatarUrl: string | null;
 };
 
-// 8格分类
+// 8格分类 — 左6彩色 + 右2米色，整体 grid 用 gap，左右分组体现间距
 const CATEGORY_GRID = [
   { id: "心理咨询师", label: "心理\n咨询师", bg: "#EAF5E4", color: "#4A7A36" },
   { id: "ADHD",       label: "ADHD",         bg: "#FEF3E2", color: "#C86800" },
   { id: "ASD",        label: "ASD",          bg: "#EAF1FF", color: "#3060C0" },
-  { id: "2天内",      label: "2天内\n可约",   bg: "#FAF8F2", color: "#888"    },
+  { id: "2天内",      label: "2天内\n可约",   bg: "#F8F6F0", color: "#999"    },
   { id: "ADHD教练",   label: "ADHD\n教练",    bg: "#FDE8F8", color: "#A030A0" },
   { id: "特教老师",   label: "特教\n老师",    bg: "#F0EBF8", color: "#7030B8" },
   { id: "儿童青少年", label: "儿童\n青少年",  bg: "#E5F7F0", color: "#207860" },
-  { id: "本周",       label: "本周\n可约",    bg: "#FAF8F2", color: "#888"    },
+  { id: "本周",       label: "本周\n可约",    bg: "#F8F6F0", color: "#999"    },
 ];
 
 // 省份列表
@@ -48,18 +48,18 @@ const DIRECTION_OPTIONS = [
   "家长支持","性议题","ADHD教练","特教老师",
 ];
 
-// 头像颜色轮转：绿 → 暖米 → 水蓝 → 麦色 → 薰衣草 → 浅杏 → 循环
-const AV_COLORS = [
-  { bg: "#E8DECE", text: "#6B5022" }, // 暖米  → index 0（陈晓雯）
-  { bg: "#C0D8E8", text: "#1A4060" }, // 水蓝  → index 1（林诗涵）
-  { bg: "#E4D8B8", text: "#5A4218" }, // 麦色  → index 2（余晓彤）
-  { bg: "#DDD0E8", text: "#4A1E5A" }, // 薰衣草→ index 3（李明华）
-  { bg: "#F0E0C8", text: "#704020" }, // 浅杏  → index 4（冯子轩）
-  { bg: "#C8DEB8", text: "#2E5020" }, // 绿    → index 5（王思远）
+// 每组颜色：角色标签 + 头像保持一致，按卡片 index 轮转
+const CARD_COLORS = [
+  { tagBg: "#E0F0D8", tagText: "#2E6020", avBg: "#C8DEB8", avText: "#2E5020" }, // 绿
+  { tagBg: "#F2E8D8", tagText: "#6B4820", avBg: "#E8DECE", avText: "#6B5022" }, // 暖米
+  { tagBg: "#D8ECF4", tagText: "#1A4A6A", avBg: "#C0D8E8", avText: "#1A4060" }, // 水蓝
+  { tagBg: "#EEE4CC", tagText: "#5A3A10", avBg: "#E4D8B8", avText: "#5A4218" }, // 麦色
+  { tagBg: "#EAE0F4", tagText: "#4A1E6A", avBg: "#DDD0E8", avText: "#4A1E5A" }, // 薰衣草
+  { tagBg: "#F8ECD8", tagText: "#703010", avBg: "#F0E0C8", avText: "#704020" }, // 浅杏
 ];
 
-function getAv(idx: number) {
-  return AV_COLORS[idx % AV_COLORS.length];
+function getCardColors(idx: number) {
+  return CARD_COLORS[idx % CARD_COLORS.length];
 }
 
 function getRoleTags(c: Counselor): string[] {
@@ -76,9 +76,16 @@ function getRoleTags(c: Counselor): string[] {
 function getAvail(c: Counselor) {
   if (!c.isAccepting) return null;
   const h = c.rating % 3;
+  // 根据 id hash 生成一个未来几天内的"最早可预约"日期
+  const daysOffset = (c.id.charCodeAt(c.id.length - 1) % 20) + 1; // 1~20 天
+  const earliest = new Date();
+  earliest.setDate(earliest.getDate() + daysOffset);
+  const month = earliest.getMonth() + 1;
+  const day = earliest.getDate();
+  const dateLabel = `最早 ${month}月${day}日`;
   if (h === 0) return { label: "2 天内可约", color: "#4CAF50" };
   if (h === 1) return { label: "本周可约",   color: "#FF9800" };
-  return       { label: "接受预约",   color: "#9CB48A" };
+  return       { label: dateLabel,         color: "#9B8E82" };
 }
 
 function getGreeting() {
@@ -208,7 +215,7 @@ const GUIDE_SECTIONS = [
 
 /* ── 咨询师卡片 ── */
 function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
-  const av = getAv(idx);
+  const col = getCardColors(idx);
   const roleTags = getRoleTags(c);
   const avail = getAvail(c);
 
@@ -218,7 +225,7 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
         <div className="py-5" style={{ borderBottom: "1px solid #EBE7DF" }}>
           <div className="flex items-start gap-3 mb-3">
             <div className="w-[88px] h-[88px] rounded-2xl flex-shrink-0 flex items-center justify-center text-3xl font-bold overflow-hidden"
-              style={{ background: av.bg, color: av.text }}>
+              style={{ background: col.avBg, color: col.avText }}>
               {c.avatarUrl
                 ? <img src={c.avatarUrl} alt={c.displayName} className="w-full h-full object-cover" />
                 : c.displayName[0]}
@@ -227,7 +234,7 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <span className="text-[18px] font-semibold" style={{ color: "#2C2420" }}>{c.displayName}</span>
                 {avail && (
-                  <span className="text-[12px] font-medium flex-shrink-0 flex items-center gap-1" style={{ color: avail.color }}>
+                  <span className="text-[11px] font-medium flex-shrink-0 flex items-center gap-1" style={{ color: avail.color }}>
                     <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: avail.color }} />
                     {avail.label}
                   </span>
@@ -235,8 +242,8 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
               </div>
               <div className="flex flex-wrap gap-1.5 mb-1.5">
                 {roleTags.map(t => (
-                  <span key={t} className="text-[13px] px-2.5 py-0.5 rounded-full font-medium"
-                    style={{ background: "#EEF5EA", color: "#4A7A36" }}>{t}</span>
+                  <span key={t} className="text-[11px] px-2 py-0.5 rounded-full font-medium"
+                    style={{ background: col.tagBg, color: col.tagText }}>{t}</span>
                 ))}
               </div>
               <div className="flex items-center gap-1 text-[13px]" style={{ color: "#9B8E82" }}>
@@ -256,11 +263,11 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
           )}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[24px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
-              <span className="text-[14px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
+              <span className="text-[14px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
+              <span className="text-[12px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
-              className="px-5 py-2.5 rounded-2xl text-white font-semibold text-[15px]"
+              className="px-3 py-1 rounded-xl text-white font-semibold text-[12px]"
               style={{ background: "#9CB48A" }} onClick={e => e.preventDefault()}>
               预约咨询
             </motion.button>
@@ -375,7 +382,7 @@ export function ExploreScreen() {
 
       {/* ── Banner ── */}
       <div className="mx-4 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(145deg, #6A9058 0%, #8DB87A 55%, #A8C898 100%)", minHeight: 168 }}>
+        style={{ background: "linear-gradient(145deg, #A8C498 0%, #B8CEAA 50%, #CCE0BC 100%)", minHeight: 168 }}>
         <div className="absolute right-0 top-0 w-44 h-44 rounded-full pointer-events-none"
           style={{ background: "rgba(255,255,255,0.18)", transform: "translate(30%,-30%)" }} />
         <div className="absolute right-10 bottom-0 w-28 h-28 rounded-full pointer-events-none"
@@ -405,8 +412,8 @@ export function ExploreScreen() {
 
       <div className="px-4">
         {/* ── 搜索 + 预约督导 ── */}
-        <div className="flex gap-2 mb-4">
-          <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-2xl"
+        <div className="flex mb-4" style={{ gap: "10px" }}>
+          <div className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-2xl"
             style={{ background: "white", border: "1px solid #E8E4DC" }}>
             <Search className="w-4 h-4 flex-shrink-0" style={{ color: "#C2BDB7" }} />
             <input type="text" placeholder="搜索名字、擅长..."
@@ -414,67 +421,85 @@ export function ExploreScreen() {
               className="flex-1 text-[15px] bg-transparent focus:outline-none" style={{ color: "#2C2420" }} />
           </div>
           {/* 预约督导：和旧版一样紧凑 */}
-          <button className="px-3 py-[5px] rounded-xl text-[12px] font-medium whitespace-nowrap"
+          <button className="px-3 py-1 rounded-full text-[12px] font-medium whitespace-nowrap"
             style={{ background: "#F0EAF8", color: "#7040C0", border: "1px solid #D8C8F0" }}>
             预约督导
           </button>
         </div>
 
-        {/* ── 8格分类 ── */}
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          {CATEGORY_GRID.map(cat => {
-            const active = activeCategory === cat.id;
-            return (
-              <motion.button key={cat.id} whileTap={{ scale: 0.93 }}
-                onClick={() => setActiveCategory(active ? null : cat.id)}
-                className="rounded-2xl flex items-center justify-center text-center font-semibold"
-                style={{
-                  background: active ? cat.color : cat.bg,
-                  color: active ? "white" : cat.color,
-                  minHeight: 72, fontSize: 14, whiteSpace: "pre-line", lineHeight: 1.3,
-                }}>
-                {cat.label}
-              </motion.button>
-            );
-          })}
+        {/* ── 8格分类：左3彩色列 + 右1米色列，间距区分 ── */}
+        <div className="flex mb-4" style={{ gap: 12 }}>
+          {/* 左边：6个彩色格（3列×2行），flex-1 占大部分 */}
+          <div className="grid grid-cols-3 gap-1.5" style={{ flex: "0 0 auto", width: "calc(100% - 100px)" }}>
+            {CATEGORY_GRID.filter(cat => cat.id !== "2天内" && cat.id !== "本周").map(cat => {
+              const active = activeCategory === cat.id;
+              return (
+                <motion.button key={cat.id} whileTap={{ scale: 0.93 }}
+                  onClick={() => setActiveCategory(active ? null : cat.id)}
+                  className="rounded-2xl flex items-center justify-center text-center font-semibold"
+                  style={{
+                    background: active ? cat.color : cat.bg,
+                    color: active ? "white" : cat.color,
+                    minHeight: 66, fontSize: 15, whiteSpace: "pre-line", lineHeight: 1.3,
+                  }}>
+                  {cat.label}
+                </motion.button>
+              );
+            })}
+          </div>
+          {/* 右边：2个米色格（1列×2行），稍窄 */}
+          <div className="flex flex-col gap-1.5" style={{ width: 72 }}>
+            {CATEGORY_GRID.filter(cat => cat.id === "2天内" || cat.id === "本周").map(cat => {
+              const active = activeCategory === cat.id;
+              return (
+                <motion.button key={cat.id} whileTap={{ scale: 0.93 }}
+                  onClick={() => setActiveCategory(active ? null : cat.id)}
+                  className="rounded-2xl flex items-center justify-center text-center font-semibold flex-1"
+                  style={{
+                    background: active ? "#888" : cat.bg,
+                    color: active ? "white" : cat.color,
+                    fontSize: 13, whiteSpace: "pre-line", lineHeight: 1.3,
+                    minHeight: 68,
+                  }}>
+                  {cat.label}
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* ── 筛选行 ── */}
-        <div className="flex items-center gap-1.5 mb-4">
+        {/* ── 筛选行（清除内联在右侧）── */}
+        <div className="flex items-center gap-1.5 mb-3">
           {[
-            { key: "city",      label: filterCity || "城市",      active: !!filterCity },
+            { key: "city",      label: filterCity || "地区",      active: !!filterCity },
             { key: "price",     label: filterPrice || "价格",     active: !!filterPrice },
             { key: "direction", label: filterDir.length ? `方向(${filterDir.length})` : "咨询方向", active: filterDir.length > 0 },
           ].map(f => (
             <motion.button key={f.key} whileTap={{ scale: 0.95 }}
               onClick={() => setOpenModal(f.key as "city"|"price"|"direction")}
-              className="flex items-center gap-0.5 px-2.5 py-1.5 rounded-full text-[13px]"
+              className="flex items-center gap-0.5 px-2 py-1 rounded-full text-[12px]"
               style={{
                 background: f.active ? "#9CB48A" : "white",
                 border: `1px solid ${f.active ? "#9CB48A" : "#E0DAD0"}`,
                 color: f.active ? "white" : "#7D736A",
               }}>
-              {f.label}<ChevronDown className="w-3 h-3 ml-0.5" style={{ color: f.active ? "white" : "#C2BDB7" }} />
+              {f.label}<ChevronDown className="w-2.5 h-2.5 ml-0.5" style={{ color: f.active ? "white" : "#C2BDB7" }} />
             </motion.button>
           ))}
+          {/* 清除按钮：有激活筛选时内联显示 */}
+          {(activeCategory || activeFilterCount > 0 || search) && (
+            <button
+              onClick={() => { setActiveCategory(null); setSearch(""); setFilterCity(""); setFilterPrice(""); setFilterDir([]); }}
+              className="text-[12px]"
+              style={{ color: "#9B8E82" }}>
+              清除
+            </button>
+          )}
           <button className="ml-auto w-8 h-8 rounded-full flex items-center justify-center"
             style={{ background: activeFilterCount > 0 ? "#9CB48A" : "white", border: `1px solid ${activeFilterCount > 0 ? "#9CB48A" : "#E0DAD0"}` }}>
             <FunnelIcon />
           </button>
         </div>
-
-        {/* ── 清除筛选（有激活筛选时显示）── */}
-        {(activeCategory || activeFilterCount > 0 || search) && (
-          <div className="flex justify-end mb-2">
-            <button
-              onClick={() => { setActiveCategory(null); setSearch(""); setFilterCity(""); setFilterPrice(""); setFilterDir([]); }}
-              className="flex items-center gap-1 text-[13px] font-medium px-3 py-1 rounded-full"
-              style={{ color: "#9CB48A", background: "rgba(156,180,138,0.1)" }}>
-              <svg viewBox="0 0 14 14" fill="none" className="w-3 h-3"><path d="M2 2l10 10M12 2L2 12" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round"/></svg>
-              清除筛选
-            </button>
-          </div>
-        )}
 
         {/* ── 列表 ── */}
         <div className="pb-28">
@@ -529,18 +554,10 @@ export function ExploreScreen() {
               {DIRECTION_OPTIONS.map(d => (
                 <OptionPill key={d} label={d}
                   active={filterDir.includes(d)}
-                  onToggle={() => setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])} />
+                  onToggle={() => { const isSelected = filterDir.includes(d); setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); if (!isSelected) setOpenModal(null); }} />
               ))}
             </div>
-            {filterDir.length > 0 && (
-              <div className="pt-2 border-t" style={{ borderColor: "#EBE7DF" }}>
-                <motion.button whileTap={{ scale: 0.97 }} onClick={() => setOpenModal(null)}
-                  className="w-full py-3 rounded-2xl text-white font-semibold"
-                  style={{ background: "#9CB48A" }}>
-                  确认（已选 {filterDir.length} 项）
-                </motion.button>
-              </div>
-            )}
+
           </BottomSheet>
         )}
 
