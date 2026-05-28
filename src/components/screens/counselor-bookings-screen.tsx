@@ -180,52 +180,23 @@ export function CounselorBookingsScreen() {
         <h1 className="text-xl font-bold" style={{ color: "var(--color-text-primary)" }}>预约管理</h1>
       </div>
 
-      {/* 状态下拉选择器 */}
-      <div className="px-5 mb-4 relative z-20">
-        <button
-          onClick={() => setDropdownOpen(v => !v)}
-          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border"
-          style={{ background: "var(--color-card)", borderColor: "var(--color-border)" }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full" style={{ background: currentOpt.dot }} />
-            <span className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>
-              {currentOpt.label}
-            </span>
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--color-secondary)", color: "var(--color-text-secondary)" }}>
-              {counts[selectedKey]}
-            </span>
-          </div>
-          <ChevronDown className="w-4 h-4" style={{ color: "var(--color-text-muted)", transform: dropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
-        </button>
-
-        <AnimatePresence>
-          {dropdownOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-              className="absolute left-5 right-5 mt-1 rounded-2xl border overflow-hidden shadow-lg z-30"
-              style={{ background: "var(--color-card)", borderColor: "var(--color-border)" }}
-            >
-              {STATUS_OPTIONS.map(opt => (
-                <button key={opt.key}
-                  onClick={() => { setSelectedKey(opt.key); setDropdownOpen(false); }}
-                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--color-surface)] transition-colors"
-                  style={{ borderBottom: opt.key !== "cancelled" ? `1px solid var(--color-border)` : "none" }}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ background: opt.dot }} />
-                    <span className="text-sm" style={{ color: opt.key === selectedKey ? "var(--color-primary)" : "var(--color-text-primary)", fontWeight: opt.key === selectedKey ? 600 : 400 }}>
-                      {opt.label}
-                    </span>
-                  </div>
-                  <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--color-secondary)", color: "var(--color-text-secondary)" }}>
-                    {counts[opt.key]}
-                  </span>
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* 4个平铺 Tab */}
+      <div className="flex gap-1.5 px-5 mb-4">
+        {STATUS_OPTIONS.map(opt => (
+          <button key={opt.key} onClick={() => setSelectedKey(opt.key)}
+            className="flex-1 flex flex-col items-center py-2.5 rounded-2xl text-xs font-semibold transition-all relative"
+            style={{
+              background: selectedKey === opt.key ? "var(--color-primary)" : "var(--color-card)",
+              color:      selectedKey === opt.key ? "white" : "var(--color-text-secondary)",
+              border:     selectedKey === opt.key ? "none" : "1px solid var(--color-border)",
+            }}>
+            {opt.label}
+            {counts[opt.key] > 0 && (
+              <span className="absolute -top-1.5 -right-1 text-[10px] w-4 h-4 rounded-full flex items-center justify-center text-white font-bold"
+                style={{ background: opt.dot }}>{counts[opt.key]}</span>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* 预约列表 */}
