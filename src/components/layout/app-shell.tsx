@@ -29,7 +29,7 @@ const ADMIN_TABS = [
   { href: "/messages", icon: MessageCircle,   label: "消息" },
 ];
 
-const HIDE_NAV = ["/booking/", "/chat/", "/counselor/profile"];
+const HIDE_NAV = ["/booking/", "/chat/", "/counselor/profile", "/counselors/"];
 
 type Role = "client" | "counselor" | "admin";
 
