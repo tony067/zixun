@@ -376,7 +376,7 @@ export function CounselorScheduleScreen() {
   const loadRules = useCallback(async () => {
     if (!user) return;
     try {
-      const res = await request("/api/counselor/schedule/rules");
+      const res = await request("/api/counselor/schedule");
       if (res.ok) {
         const data = await res.json();
         setRules(Array.isArray(data) ? data : []);
@@ -390,7 +390,7 @@ export function CounselorScheduleScreen() {
     setSaving(true);
     try {
       const actual = r.durationMinutes === "custom" ? parseInt((r as any).customDuration) || 50 : r.durationMinutes;
-      await request("/api/counselor/schedule/rules", {
+      await request("/api/counselor/schedule", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...r, durationMinutes: actual }),
@@ -400,7 +400,7 @@ export function CounselorScheduleScreen() {
   };
 
   const handleDelete = async (id: string) => {
-    await request(`/api/counselor/schedule/rules/${id}`, { method: "DELETE" });
+    await request("/api/counselor/schedule", { method: "DELETE" });
     await loadRules();
   };
 
