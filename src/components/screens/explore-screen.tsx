@@ -263,8 +263,8 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
           )}
           <div className="flex items-center justify-between mt-1">
             <div>
-              <span className="text-[16px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
-              <span className="text-[13px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
+              <span className="text-[19px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
+              <span className="text-[14px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
               className="px-5 py-2.5 rounded-2xl text-white font-semibold text-[14px]"
@@ -382,7 +382,7 @@ export function ExploreScreen() {
 
       {/* ── Banner ── */}
       <div className="mx-4 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(145deg, #7A9E78 0%, #8CAF89 45%, #A3C49F 100%)", minHeight: 168 }}>
+        style={{ background: "linear-gradient(160deg, #6B9070 0%, #7DA082 40%, #96B89A 100%)", minHeight: 168 }}>
         <div className="absolute right-0 top-0 w-44 h-44 rounded-full pointer-events-none"
           style={{ background: "rgba(255,255,255,0.18)", transform: "translate(30%,-30%)" }} />
         <div className="absolute right-10 bottom-0 w-28 h-28 rounded-full pointer-events-none"
