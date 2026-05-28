@@ -131,7 +131,6 @@ export function CounselorBookingsScreen() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKey, setSelectedKey] = useState("pending_confirmation");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
