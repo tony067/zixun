@@ -267,7 +267,7 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
               <span className="text-[13px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
-              className="px-4 py-1.5 rounded-xl text-white font-semibold text-[13px]"
+              className="px-5 py-2 rounded-xl text-white font-semibold text-[14px]"
               style={{ background: "#9CB48A" }} onClick={e => e.preventDefault()}>
               预约咨询
             </motion.button>
@@ -382,7 +382,7 @@ export function ExploreScreen() {
 
       {/* ── Banner ── */}
       <div className="mx-4 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(145deg, #7DAD68 0%, #94C07C 50%, #AACF94 100%)", minHeight: 168 }}>
+        style={{ background: "linear-gradient(145deg, #5D9268 0%, #6FA87A 40%, #88BE96 100%)", minHeight: 168 }}>
         <div className="absolute right-0 top-0 w-44 h-44 rounded-full pointer-events-none"
           style={{ background: "rgba(255,255,255,0.18)", transform: "translate(30%,-30%)" }} />
         <div className="absolute right-10 bottom-0 w-28 h-28 rounded-full pointer-events-none"
