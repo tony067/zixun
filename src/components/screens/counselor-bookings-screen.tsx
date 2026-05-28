@@ -12,13 +12,12 @@ type Booking = {
   client: { id: string; name: string | null; email: string | null } | null;
 };
 
-// 下拉选项，不再横向滚动
+// 4个平铺Tab，去掉「已取消」
 const STATUS_OPTIONS = [
   { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation"], dot: "#D97706" },
   { key: "pending_payment",      label: "待支付", statuses: ["confirmed","pending_payment"], dot: "#2563EB" },
   { key: "upcoming",             label: "待咨询", statuses: ["paid"], dot: "#059669" },
   { key: "completed",            label: "已咨询", statuses: ["completed"], dot: "#6B7280" },
-  { key: "cancelled",            label: "已取消", statuses: ["cancelled","rejected"], dot: "#9CA3AF" },
 ];
 
 const STATUS_LABEL: Record<string, string> = {
