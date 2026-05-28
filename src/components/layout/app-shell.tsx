@@ -170,6 +170,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   );
                 })}
               </div>
+              <div className="pb-8 px-5 pt-2">
+                <button
+                  onClick={() => setShowRolePicker(false)}
+                  className="w-full py-2.5 rounded-2xl text-sm font-medium"
+                  style={{ background: "#F0EDE8", color: "#7D736A" }}
+                >
+                  取消
+                </button>
+              </div>
             </motion.div>
           </>
         )}
