@@ -174,9 +174,9 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
 
         {/* 角色标签 */}
         {roleTags.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-3">
+          <div className="flex flex-wrap justify-center gap-1.5 mb-3">
             {roleTags.map((tag) => (
-              <span key={tag} className="px-3.5 py-1 rounded-full text-sm font-semibold"
+              <span key={tag} className="px-2.5 py-0.5 rounded-full text-xs font-medium"
                 style={{ background: "#E4F0DC", color: "#3A6228", border: "1px solid #C8DFC0" }}>
                 {tag}
               </span>
@@ -188,15 +188,15 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
         {(c.totalHours > 0 || c.location) && (
           <div className="flex flex-col items-center gap-1.5">
             {c.totalHours > 0 && (
-              <div className="flex items-center gap-1.5" style={{ color: "#6B5E52" }}>
-                <Clock className="w-4 h-4" />
-                <span className="text-base">累计咨询 <strong>{c.totalHours}+</strong> 小时</span>
+              <div className="flex items-center gap-1.5">
+                <Clock className="w-4 h-4" style={{ color: "#9CB48A" }} />
+                <span className="text-sm" style={{ color: "#6B5E52" }}>累计咨询 <strong className="text-base" style={{ color: "#2C2420" }}>{c.totalHours}+</strong> 小时</span>
               </div>
             )}
             {c.location && (
-              <div className="flex items-center gap-1.5" style={{ color: "#9B8E82" }}>
-                <MapPin className="w-3.5 h-3.5" />
-                <span className="text-sm">{c.location}</span>
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" style={{ color: "#9CB48A" }} />
+                <span className="text-sm" style={{ color: "#9B8E82" }}>{c.location}</span>
               </div>
             )}
           </div>
