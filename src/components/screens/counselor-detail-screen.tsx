@@ -206,10 +206,9 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
       {/* 咨询师寄语 */}
       {c.tagline && (
         <div className="mx-4 mb-5 px-5 py-5 rounded-2xl relative"
-          style={{ background: "#E6E0D2" }}>
+          style={{ background: "#EAE3D0" }}>
           <div className="absolute top-4 left-4 text-4xl font-serif leading-none" style={{ color: "#9CB48A", opacity: 0.6 }}>"</div>
           <p className="mt-4 text-base italic leading-relaxed" style={{ color: "#2C2420" }}>{c.tagline}</p>
-          <p className="mt-3 text-right text-sm" style={{ color: "#7D736A" }}>—— {c.displayName}</p>
         </div>
       )}
 
