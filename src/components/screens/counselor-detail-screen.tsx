@@ -252,14 +252,54 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           <SectionTitle>咨询设置</SectionTitle>
           {/* 三格卡片 */}
           <div className="grid grid-cols-3 gap-2.5 mb-4">
-            {[
-              { label: "分钟 / 次", value: String(c.sessionDuration), sub: "时长" },
-              { label: "每次费用", value: String(c.pricePerSession), sub: "¥" },
-              { label: "咨询方式", value: c.sessionModes?.[0] ?? "—", sub: "" },
-            ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl"
-                style={{ background: "#E6E0D2" }}>
-                <span className="text-xs mb-0.5" style={{ color: "#9B8E82" }}>{item.sub}</span>
+            {/* 时长 */}
+            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#EAE3D0" }}>
+              <svg viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mb-1.5">
+                <circle cx="10" cy="10" r="7.5"/><path d="M10 6v4l2.5 1.5"/>
+              </svg>
+              <span className="text-2xl font-bold leading-none" style={{ color: "#2C2420" }}>{c.sessionDuration}</span>
+              <span className="text-xs mt-1" style={{ color: "#7D736A" }}>分钟 / 次</span>
+            </div>
+            {/* 费用 */}
+            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#EAE3D0" }}>
+              <span className="text-base font-medium mb-1" style={{ color: "#9CB48A" }}>¥</span>
+              <span className="text-2xl font-bold leading-none" style={{ color: "#2C2420" }}>{c.pricePerSession}</span>
+              <span className="text-xs mt-1" style={{ color: "#7D736A" }}>每次费用</span>
+            </div>
+            {/* 咨询方式 — 支持多模式 */}
+            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#EAE3D0" }}>
+              <div className="flex items-center gap-1 mb-1.5">
+                {(c.sessionModes ?? []).map((m: string, i: number) => {
+                  const isVideo = m.includes("视频");
+                  const isPhone = m.includes("语音") || m.includes("电话");
+                  const isFace  = m.includes("面") || m.includes("线下");
+                  return (
+                    <svg key={i} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
+                      {isVideo && <>
+                        <rect x="2" y="5" width="12" height="10" rx="1.5"/>
+                        <path d="M14 8l4-2v8l-4-2"/>
+                      </>}
+                      {isPhone && <>
+                        <path d="M5 2h4l1.5 4-2.5 1.5A11 11 0 0013 13l1.5-2.5L18 12v4a1 1 0 01-1 1C8 17 3 12 3 3a1 1 0 011-1z"/>
+                      </>}
+                      {isFace && <>
+                        <circle cx="10" cy="7" r="3"/>
+                        <path d="M4 18a6 6 0 0112 0"/>
+                      </>}
+                      {!isVideo && !isPhone && !isFace && <>
+                        <circle cx="10" cy="7" r="3"/>
+                        <path d="M4 18a6 6 0 0112 0"/>
+                      </>}
+                    </svg>
+                  );
+                })}
+              </div>
+              <span className="text-sm font-semibold text-center leading-snug" style={{ color: "#2C2420" }}>
+                {(c.sessionModes ?? []).join(" / ")}
+              </span>
+              <span className="text-xs mt-1" style={{ color: "#7D736A" }}>咨询方式</span>
+            </div>
+          </div> style={{ color: "#9B8E82" }}>{item.sub}</span>
                 <span className="text-2xl font-bold" style={{ color: "#2C2420" }}>{item.value}</span>
                 <span className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{item.label}</span>
               </div>
