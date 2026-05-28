@@ -388,7 +388,7 @@ export function ExploreScreen() {
 
       {/* ── Banner ── */}
       <div className="mx-4 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(160deg, #6B9070 0%, #7DA082 40%, #96B89A 100%)", minHeight: 168 }}>
+        style={{ background: "linear-gradient(160deg, #8BAE80 0%, #9BBC90 35%, #B8D0AA 65%, #C9DAB8 100%)", minHeight: 168 }}>
         {/* 右上大圆 */}
         <div className="absolute right-0 top-0 w-52 h-52 rounded-full pointer-events-none"
           style={{ background: "rgba(255,255,255,0.22)", transform: "translate(32%,-32%)" }} />
