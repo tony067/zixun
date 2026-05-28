@@ -14,8 +14,9 @@ export function AvatarUploader({
     if (!file) return;
     setUploading(true);
     try {
-      const result = await storage.upload(file, { path: `avatars/${Date.now()}_${file.name}` });
-      onChange(result.url);
+      // @eazo/sdk storage.upload expects (filename: string, options: { path, data })
+      const result = await storage.upload(file.name, { path: `avatars/${Date.now()}_${file.name}`, data: file } as Parameters<typeof storage.upload>[1]);
+      onChange((result as { url: string }).url);
     } catch { /* silent */ } finally {
       setUploading(false);
       e.target.value = "";
