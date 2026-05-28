@@ -234,7 +234,7 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <span className="text-[18px] font-semibold" style={{ color: "#2C2420" }}>{c.displayName}</span>
                 {avail && (
-                  <span className="text-[11px] font-medium flex-shrink-0 flex items-center gap-1" style={{ color: avail.color }}>
+                  <span className="text-[12px] font-medium flex-shrink-0 flex items-center gap-1" style={{ color: avail.color }}>
                     <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: avail.color }} />
                     {avail.label}
                   </span>
@@ -263,11 +263,11 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
           )}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[14px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
-              <span className="text-[12px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
+              <span className="text-[16px] font-bold" style={{ color: "#2C2420" }}>¥{c.pricePerSession}</span>
+              <span className="text-[13px] ml-1" style={{ color: "#9B8E82" }}>/ 次</span>
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
-              className="px-3 py-1 rounded-xl text-white font-semibold text-[12px]"
+              className="px-4 py-1.5 rounded-xl text-white font-semibold text-[13px]"
               style={{ background: "#9CB48A" }} onClick={e => e.preventDefault()}>
               预约咨询
             </motion.button>
@@ -382,7 +382,7 @@ export function ExploreScreen() {
 
       {/* ── Banner ── */}
       <div className="mx-4 mb-4 rounded-3xl overflow-hidden relative"
-        style={{ background: "linear-gradient(145deg, #8FB97A 0%, #A3C98C 50%, #BCDAA4 100%)", minHeight: 168 }}>
+        style={{ background: "linear-gradient(145deg, #7DAD68 0%, #94C07C 50%, #AACF94 100%)", minHeight: 168 }}>
         <div className="absolute right-0 top-0 w-44 h-44 rounded-full pointer-events-none"
           style={{ background: "rgba(255,255,255,0.18)", transform: "translate(30%,-30%)" }} />
         <div className="absolute right-10 bottom-0 w-28 h-28 rounded-full pointer-events-none"
