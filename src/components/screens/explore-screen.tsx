@@ -357,7 +357,13 @@ export function ExploreScreen() {
     <div className="min-h-svh" style={{ background: "#F5F1E8" }}>
       {/* ── 顶栏 ── */}
       <div className="flex items-center justify-between px-4 pt-12 pb-3">
-        <span className="text-[15px]" style={{ color: "#9B8E82" }}>{getGreeting()}</span>
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[13px]" style={{ color: "#C2BDB7" }}>{getGreeting()}</span>
+            {user && <span className="text-[13px] font-medium" style={{ color: "#7D736A" }}>{user.name ?? user.email?.split("@")[0] ?? ""}</span>}
+          </div>
+          <div className="text-[17px] font-semibold leading-tight mt-0.5" style={{ color: "#2C2420" }}>MindPace</div>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setOpenModal("guide")}
