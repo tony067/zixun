@@ -448,6 +448,8 @@ export function ExploreScreen() {
               );
             })}
           </div>
+          {/* 分割线 */}
+          <div style={{ width: 1, background: "#EBE7DF", borderRadius: 1, alignSelf: "stretch" }} />
           {/* 右：2个米色格，1列2行 */}
           <div className="flex flex-col gap-1.5" style={{ width: 76 }}>
             {CATEGORY_GRID.filter(c => c.id === "2天内" || c.id === "本周").map(cat => {
