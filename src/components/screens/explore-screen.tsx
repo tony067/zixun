@@ -270,7 +270,8 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
               className="px-5 py-2.5 rounded-2xl text-white font-semibold text-[14px]"
-              style={{ background: "#9CB48A" }} onClick={e => e.preventDefault()}>
+              style={{ background: "#9CB48A" }}
+              onClick={e => { e.preventDefault(); router.push(`/booking/${c.id}`); }}>
               预约咨询
             </motion.button>
           </div>
