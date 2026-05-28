@@ -253,7 +253,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           {/* 三格卡片 */}
           <div className="grid grid-cols-3 gap-2.5 mb-4">
             {/* 时长 */}
-            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#EAE3D0" }}>
+            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
               <svg viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mb-1.5">
                 <circle cx="10" cy="10" r="7.5"/><path d="M10 6v4l2.5 1.5"/>
               </svg>
@@ -261,12 +261,43 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
               <span className="text-xs mt-1" style={{ color: "#7D736A" }}>分钟 / 次</span>
             </div>
             {/* 费用 */}
-            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#EAE3D0" }}>
-              <span className="text-base font-medium mb-1" style={{ color: "#9CB48A" }}>¥</span>
+            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
+              <svg viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mb-1.5">
+                <text x="10" y="14" textAnchor="middle" fontSize="13" fontWeight="600" stroke="none" fill="#9CB48A">¥</text>
+              </svg>
               <span className="text-2xl font-bold leading-none" style={{ color: "#2C2420" }}>{c.pricePerSession}</span>
               <span className="text-xs mt-1" style={{ color: "#7D736A" }}>每次费用</span>
             </div>
-            {/* 咨询方式 — 支持多模式 */}
+            {/* 咨询方式 — 多模式图标 */}
+            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
+              {/* 图标行：视频/电话/面对面 */}
+              <div className="flex items-center gap-1 mb-1.5">
+                {(c.sessionModes ?? []).map((mode: string) => {
+                  const m = mode.replace("咨询", "").trim();
+                  if (m === "视频" || mode === "视频咨询") return (
+                    <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
+                      <rect x="1" y="5" width="12" height="10" rx="2"/><path d="M13 8l6-3v10l-6-3"/>
+                    </svg>
+                  );
+                  if (m === "语音" || m === "电话" || mode === "语音咨询") return (
+                    <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
+                      <path d="M5 2a2 2 0 011.5.7l2 2.5a2 2 0 010 2.5l-.7.7a8 8 0 004.8 4.8l.7-.7a2 2 0 012.5 0l2.5 2a2 2 0 01.7 1.5c0 3-2.5 4-5 4C8 20 0 12 0 7c0-2.5 1-5 4-5h1z"/>
+                    </svg>
+                  );
+                  if (m === "面对面" || m === "面谈" || mode === "面对面咨询") return (
+                    <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
+                      <circle cx="10" cy="6" r="4"/><path d="M2 18c0-4 3.6-7 8-7s8 3 8 7"/>
+                    </svg>
+                  );
+                  return null;
+                })}
+              </div>
+              <span className="text-xs font-semibold text-center leading-snug" style={{ color: "#2C2420" }}>
+                {(c.sessionModes ?? []).map((m: string) => m.replace("咨询", "")).join(" /\n")}
+              </span>
+              <span className="text-xs mt-1" style={{ color: "#7D736A" }}>咨询方式</span>
+            </div>
+          </div>
             <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#EAE3D0" }}>
               <div className="flex items-center gap-1 mb-1.5">
                 {(c.sessionModes ?? []).map((m: string, i: number) => {
