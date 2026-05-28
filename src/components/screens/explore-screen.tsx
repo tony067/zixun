@@ -383,10 +383,15 @@ export function ExploreScreen() {
       {/* ── Banner ── */}
       <div className="mx-4 mb-4 rounded-3xl overflow-hidden relative"
         style={{ background: "linear-gradient(160deg, #6B9070 0%, #7DA082 40%, #96B89A 100%)", minHeight: 168 }}>
-        <div className="absolute right-0 top-0 w-44 h-44 rounded-full pointer-events-none"
-          style={{ background: "rgba(255,255,255,0.18)", transform: "translate(30%,-30%)" }} />
-        <div className="absolute right-10 bottom-0 w-28 h-28 rounded-full pointer-events-none"
-          style={{ background: "rgba(255,255,255,0.10)", transform: "translateY(45%)" }} />
+        {/* 右上大圆 */}
+        <div className="absolute right-0 top-0 w-52 h-52 rounded-full pointer-events-none"
+          style={{ background: "rgba(255,255,255,0.22)", transform: "translate(32%,-32%)" }} />
+        {/* 右中小圆 */}
+        <div className="absolute right-8 top-12 w-24 h-24 rounded-full pointer-events-none"
+          style={{ background: "rgba(255,255,255,0.12)", transform: "translate(20%,0)" }} />
+        {/* 左下装饰圆 */}
+        <div className="absolute left-0 bottom-0 w-32 h-32 rounded-full pointer-events-none"
+          style={{ background: "rgba(255,255,255,0.10)", transform: "translate(-35%,35%)" }} />
         <div className="relative z-10 px-5 pt-5 pb-6">
           <div className="inline-flex items-center gap-1.5 mb-3 px-3 py-1 rounded-full text-[12px] font-medium"
             style={{ background: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.96)" }}>
