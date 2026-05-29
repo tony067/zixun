@@ -425,6 +425,8 @@ export function CounselorScheduleScreen() {
   const TABS = [
     { id: "rules",    label: "档期规则", icon: <AlignLeft className="w-4 h-4" /> },
     { id: "calendar", label: "日历预览", icon: <CalendarDays className="w-4 h-4" /> },
+    { id: "stats",    label: "统计",     icon: <BarChart2 className="w-4 h-4" /> },
+    { id: "clients",  label: "来访档案", icon: <Users className="w-4 h-4" /> },
   ] as const;
 
   return (
@@ -448,7 +450,11 @@ export function CounselorScheduleScreen() {
           transition={{ duration: 0.18 }}>
           {tab === "rules"
             ? <RulesPanel rules={rules} onAdd={handleAdd} onDelete={handleDelete} saving={saving} />
-            : <MonthCalendar rules={rules} />}
+            : tab === "calendar"
+            ? <MonthCalendar rules={rules} />
+            : tab === "stats"
+            ? <StatsPanel />
+            : <ClientsPanel />}
         </motion.div>
       </AnimatePresence>
     </div>
