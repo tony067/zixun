@@ -460,3 +460,62 @@ export function CounselorScheduleScreen() {
     </div>
   );
 }
+
+function StatsPanel() {
+  const STATS = [
+    { label: "本月接单", value: "8", icon: TrendingUp, color: "#9CB48A" },
+    { label: "已完成咨询", value: "6", icon: Check, color: "#059669" },
+    { label: "接待来访", value: "5", icon: Users, color: "#6366F1" },
+    { label: "本月完成", value: "6", icon: CalendarDays, color: "#F59E0B" },
+    { label: "累计接单", value: "42", icon: TrendingUp, color: "#9CB48A" },
+    { label: "累计时长", value: "2100h", icon: Clock, color: "#EC4899" },
+  ];
+  return (
+    <div className="px-5 py-4">
+      <div className="grid grid-cols-2 gap-3">
+        {STATS.map(s => (
+          <div key={s.label} className="rounded-2xl p-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+            <div className="flex items-center gap-2 mb-2">
+              <s.icon className="w-4 h-4" style={{ color: s.color }} />
+              <span className="text-xs text-[#9B8E82]">{s.label}</span>
+            </div>
+            <p className="text-2xl font-bold text-[#2C2420]">{s.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ClientsPanel() {
+  const MOCK = [
+    { name: "来访者A", sessions: 8, next: "周二 14:00", status: "active" },
+    { name: "来访者B", sessions: 3, next: "周四 10:00", status: "active" },
+    { name: "来访者C", sessions: 12, next: "—",         status: "paused" },
+  ];
+  return (
+    <div className="px-5 py-4 space-y-3">
+      {MOCK.map(c => (
+        <div key={c.name} className="rounded-2xl p-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base"
+                style={{ background: "#E8DFCC", color: "#7A6248" }}>{c.name[3]}</div>
+              <div>
+                <p className="text-sm font-semibold text-[#2C2420]">{c.name}</p>
+                <p className="text-xs text-[#9B8E82]">共 {c.sessions} 次咨询</p>
+              </div>
+            </div>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c.status === "active" ? "text-green-700 bg-green-50" : "text-gray-500 bg-gray-100"}`}>
+              {c.status === "active" ? "进行中" : "暂停"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-[#9B8E82]">
+            <CalendarDays className="w-3.5 h-3.5" />
+            <span>下次: {c.next}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
