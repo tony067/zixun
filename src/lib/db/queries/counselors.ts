@@ -135,3 +135,22 @@ export async function seedCounselors() {
     await db.insert(counselors).values(c as any).onConflictDoNothing();
   }
 }
+
+/** 获取用户绑定的咨询师档案；如果没有则自动创建一条空白档案 */
+export async function getOrCreateCounselorForUser(userId: string, displayName: string) {
+  const existing = await getCounselorByUserId(userId);
+  if (existing) return existing;
+  // 自动创建空白档案
+  const id = `c_${userId.slice(-8)}_${Date.now().toString(36)}`;
+  const [created] = await db.insert(counselors).values({
+    id, userId, displayName,
+    title: "", bio: "", tagline: "",
+    specialties: [], workingGroups: [], orientations: [],
+    counselorTypes: [], isSupervisor: false,
+    pricePerSession: 0, sessionDuration: 50,
+    consultationModes: [], languages: ["普通话"],
+    reviewStatus: "draft", isAccepting: false,
+    totalHours: 0, totalSessions: 0, rating: 0,
+  } as any).returning();
+  return created ?? null;
+}
