@@ -57,10 +57,10 @@ export default function ProfilePage() {
   ];
 
   const SETTINGS = [
-    { icon: User,       label: "个人资料", sub: "修改昵称和头像" },
-    { icon: Bell,       label: "通知设置", sub: "预约提醒和消息通知" },
-    { icon: Shield,     label: "隐私与安全", sub: "密码和授权管理" },
-    { icon: HelpCircle, label: "帮助与反馈", sub: "常见问题和联系客服" },
+    { icon: User,       label: "个人资料",  sub: "修改昵称和头像",     href: "/settings/profile" },
+    { icon: Bell,       label: "通知设置",  sub: "预约提醒和消息通知", href: "/settings/notifications" },
+    { icon: Shield,     label: "隐私与安全", sub: "密码和授权管理",    href: "/settings/privacy" },
+    { icon: HelpCircle, label: "帮助与反馈", sub: "常见问题和联系客服", href: "/settings/help" },
   ];
 
   return (
@@ -132,7 +132,7 @@ export default function ProfilePage() {
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
               <div className="rounded-2xl overflow-hidden" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
                 {SETTINGS.map((item, i) => (
-                  <button key={item.label} className={`w-full flex items-center gap-4 px-4 py-3.5 active:bg-gray-50 ${i < SETTINGS.length - 1 ? "border-b border-[#F0EBE3]" : ""}`}>
+                  <button key={item.label} onClick={() => router.push(item.href)} className={`w-full flex items-center gap-4 px-4 py-3.5 active:bg-gray-50 ${i < SETTINGS.length - 1 ? "border-b border-[#F0EBE3]" : ""}`}>
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#F0F7EC" }}>
                       <item.icon className="w-4 h-4" style={{ color: "#9CB48A" }} />
                     </div>
