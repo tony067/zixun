@@ -9,7 +9,7 @@ import { request } from "@/lib/api/request";
 type Rule = {
   id: string; type: "available" | "blocked" | "fixed";
   mode: "recurring" | "single";
-  weekdays?: number[]; date?: string;
+  weekdays?: number[] | string; date?: string; isSingle?: boolean;
   startTime: string; durationMinutes: number;
   validFrom?: string; validUntil?: string;
   fixedClientId?: string; blockNote?: string;
