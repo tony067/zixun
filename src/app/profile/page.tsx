@@ -32,7 +32,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!user) return;
-    request("/api/bookings/my").then(r => r.json()).then(d => {
+    request("/api/bookings").then(r => r.json()).then(d => {
       setBookings(Array.isArray(d) ? d.filter((b: Booking) => !["completed","cancelled","rejected"].includes(b.status)) : []);
     }).catch(() => {});
   }, [user]);
