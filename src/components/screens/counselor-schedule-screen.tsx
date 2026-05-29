@@ -43,8 +43,8 @@ function MonthCalendar({ rules }: { rules: Rule[] }) {
         : typeof r.weekdays === "string" && r.weekdays
           ? r.weekdays.split(",").map(Number)
           : [];
-      if (r.mode === "single" || r.isSingle) return r.date === dateStr;
-      if (r.mode === "recurring" || !r.isSingle) {
+      if (r.isSingle) return (r as any).singleDate === dateStr;
+      // recurring: 按 weekdays 判断
         const from = r.validFrom ? new Date(r.validFrom) : null;
         const until = r.validUntil ? new Date(r.validUntil) : null;
         if (from && date < from) return false;
