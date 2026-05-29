@@ -37,13 +37,19 @@ function MonthCalendar({ rules }: { rules: Rule[] }) {
     const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
     const matched = rules.filter(r => {
       if (!r.isActive) return false;
-      if (r.mode === "single") return r.date === dateStr;
-      if (r.mode === "recurring") {
+      // weekdays 可能是 "0,2,4" 字符串或数字数组，统一解析
+      const wdArr: number[] = Array.isArray(r.weekdays)
+        ? r.weekdays
+        : typeof r.weekdays === "string" && r.weekdays
+          ? r.weekdays.split(",").map(Number)
+          : [];
+      if (r.mode === "single" || r.isSingle) return r.date === dateStr;
+      if (r.mode === "recurring" || !r.isSingle) {
         const from = r.validFrom ? new Date(r.validFrom) : null;
         const until = r.validUntil ? new Date(r.validUntil) : null;
         if (from && date < from) return false;
         if (until && date > until) return false;
-        return r.weekdays?.includes(weekday) ?? false;
+        return wdArr.includes(weekday);
       }
       return false;
     });
