@@ -128,8 +128,13 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
     fixed:     { bg: "#FEF3C7", text: "#92400E", icon: <Repeat className="w-3 h-3" /> },
   };
   const c = typeColors[rule.type];
-  const dayStr = rule.mode === "recurring"
-    ? (rule.weekdays?.map(d => `周${WEEKDAY_LABELS[d]}`).join("、") ?? "")
+  const wdArr: number[] = Array.isArray(rule.weekdays)
+    ? rule.weekdays
+    : typeof rule.weekdays === "string" && rule.weekdays
+      ? rule.weekdays.split(",").map(Number)
+      : [];
+  const dayStr = (rule.mode === "recurring" || !rule.isSingle)
+    ? (wdArr.map(d => `周${WEEKDAY_LABELS[d]}`).join("、") || "")
     : (rule.date ?? "");
   return (
     <div className="rounded-2xl p-4 flex items-start justify-between gap-3"
