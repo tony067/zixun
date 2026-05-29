@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     counselorId: c.id,
     mode: body.mode || "recurring",
     type: body.type || "available",
-    weekdays,
+    weekdays: weekdays.join(","),   // 存为逗号分隔字符串
     startTime: body.startTime,
     durationMinutes: body.durationMinutes || 50,
     validFrom: body.validFrom || null,
