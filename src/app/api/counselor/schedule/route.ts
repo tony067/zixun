@@ -22,20 +22,20 @@ export async function POST(req: NextRequest) {
   const weekdays = Array.isArray(body.weekdays) ? body.weekdays
     : typeof body.weekdays === "string" ? body.weekdays.split(",").map(Number).filter((n: number) => !isNaN(n))
     : [];
+  const isSingle = body.mode === "single" || body.isSingle === true;
   const rule = await createRule({
     id: `rule_${Date.now()}_${Math.random().toString(36).slice(2)}`,
     counselorId: c.id,
-    mode: body.mode || "recurring",
     type: body.type || "available",
-    weekdays: weekdays.join(","),   // 存为逗号分隔字符串
+    weekdays: isSingle ? "" : weekdays.join(","),
     startTime: body.startTime,
     durationMinutes: body.durationMinutes || 50,
     validFrom: body.validFrom || null,
     validUntil: body.validUntil || null,
     fixedClientId: body.fixedClientId || null,
     blockNote: body.blockNote || null,
-    isSingle: body.isSingle || false,
-    date: body.date || null,
+    isSingle,
+    singleDate: isSingle ? (body.date || null) : null,
     isActive: true,
   });
   return NextResponse.json(rule, { status: 201 });
