@@ -44,14 +44,12 @@ function MonthCalendar({ rules }: { rules: Rule[] }) {
           ? r.weekdays.split(",").map(Number)
           : [];
       if (r.isSingle) return (r as any).singleDate === dateStr;
-      // recurring: 按 weekdays 判断
-        const from = r.validFrom ? new Date(r.validFrom) : null;
-        const until = r.validUntil ? new Date(r.validUntil) : null;
-        if (from && date < from) return false;
-        if (until && date > until) return false;
-        return wdArr.includes(weekday);
-      }
-      return false;
+      // recurring
+      const from = r.validFrom ? new Date(r.validFrom) : null;
+      const until = r.validUntil ? new Date(r.validUntil) : null;
+      if (from && date < from) return false;
+      if (until && date > until) return false;
+      return wdArr.includes(weekday);
     });
     if (matched.length === 0) return null;
     const types = [...new Set(matched.map(r => r.type))];
