@@ -57,10 +57,10 @@ export default function ProfilePage() {
   ];
 
   const SETTINGS = [
-    { icon: User,       label: "个人资料",  sub: "修改昵称和头像",     href: "/settings/profile" },
-    { icon: Bell,       label: "通知设置",  sub: "预约提醒和消息通知", href: "/settings/notifications" },
-    { icon: Shield,     label: "隐私与安全", sub: "密码和授权管理",    href: "/settings/privacy" },
-    { icon: HelpCircle, label: "帮助与反馈", sub: "常见问题和联系客服", href: "/settings/help" },
+    { icon: User,       label: "个人资料",  sub: "修改昵称和头像",     href: "/settings" },
+    { icon: Bell,       label: "通知设置",  sub: "预约提醒和消息通知", href: "/settings" },
+    { icon: Shield,     label: "隐私与安全", sub: "密码和授权管理",    href: "/settings" },
+    { icon: HelpCircle, label: "帮助与反馈", sub: "常见问题和联系客服", href: "/settings" },
   ];
 
   return (
