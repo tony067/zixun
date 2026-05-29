@@ -131,7 +131,7 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
     : typeof rule.weekdays === "string" && rule.weekdays
       ? rule.weekdays.split(",").map(Number)
       : [];
-  const dayStr = (rule.mode === "recurring" || !rule.isSingle)
+  const dayStr = (!rule.isSingle || !rule.isSingle)
     ? (wdArr.map(d => `周${WEEKDAY_LABELS[d]}`).join("、") || "")
     : (rule.date ?? "");
   return (
@@ -144,12 +144,12 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
             {c.icon}
             {rule.type === "available" ? "可预约" : rule.type === "blocked" ? "已屏蔽" : "固定档期"}
           </span>
-          {rule.mode === "single" && (
+          {rule.isSingle && (
             <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "#EBE7DF", color: "#7D736A" }}>单次</span>
           )}
         </div>
         <p className="text-sm font-medium text-[#2C2420]">{dayStr} · {rule.startTime}（{rule.durationMinutes} 分钟）</p>
-        {rule.mode === "recurring" && rule.validFrom && (
+        {!rule.isSingle && rule.validFrom && (
           <p className="text-xs text-[#9B8E82] mt-0.5">{rule.validFrom} 起{rule.validUntil ? ` 至 ${rule.validUntil}` : "（长期）"}</p>
         )}
         {rule.fixedClientId && <p className="text-xs text-amber-600 mt-0.5">绑定来访：{rule.fixedClientId}</p>}
