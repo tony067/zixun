@@ -22,6 +22,7 @@ export async function createRule(data: {
   isSingle?: boolean;
   singleDate?: string;
   singleTime?: string;
+  isActive?: boolean;
 }) {
   const [r] = await db.insert(scheduleRules).values(data).returning();
   return r;
