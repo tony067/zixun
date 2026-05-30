@@ -37,17 +37,18 @@ function BookingMiniCard({b}:{b:Booking}){
   const badge = STATUS_BADGE[b.status]??{label:b.status,color:"#9B8E82",bg:"#F5F0E8"};
   return(
     <motion.div layout initial={{opacity:0,y:6}} animate={{opacity:1,y:0}}
-      className="rounded-2xl mb-3 overflow-hidden" style={{background:"white",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
-      <button className="w-full px-4 pt-4 pb-2 flex items-center justify-between"
-        onClick={()=>router.push(`/my-bookings/${b.id}`)}>
+      className="rounded-2xl mb-3 overflow-hidden cursor-pointer" 
+      style={{background:"white",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}
+      onClick={()=>router.push(`/my-bookings/${b.id}`)}>
+      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
         <span className="text-sm font-bold text-[#2C2420]">
           第{b.sessionNumber??1}次 {b.sessionMode??"视频"}咨询 ›
         </span>
         <span className="text-xs font-medium px-2.5 py-1 rounded-full"
           style={{color:badge.color,background:badge.bg}}>{badge.label}</span>
-      </button>
+      </div>
       {dateStr && <p className="px-4 text-xs text-[#9B8E82] pb-3">{dateStr}</p>}
-      <div className="border-t border-[#F0EBE3] px-4 py-3 flex items-center gap-3">
+      <div className="px-4 py-3 flex items-center gap-3">
         <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0"
           style={{background:"#E8DFCC",color:"#7A6248"}}>
           {b.counselor?.displayName[0]??"?"}
