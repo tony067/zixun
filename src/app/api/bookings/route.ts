@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const r = requireAuth(req);
   if (!r.ok) return r.response;
   const body = await req.json();
-  const { counselorId, scheduledAt, sessionMode, clientNote } = body;
+  const { counselorId, scheduledAt, sessionMode, clientNote, applicationForm, agreementSigned, sessionNumber } = body;
   if (!counselorId || !scheduledAt) return NextResponse.json({ error: "missing fields" }, { status: 400 });
 
   const counselor = await getCounselorById(counselorId);
@@ -26,9 +26,12 @@ export async function POST(req: NextRequest) {
     counselorId,
     scheduledAt: new Date(scheduledAt),
     durationMinutes: counselor.sessionDuration ?? 50,
-    sessionMode: sessionMode ?? "视频",
+    sessionMode: sessionMode ?? "视频咨询",
     priceAmount: counselor.pricePerSession ?? 300,
     clientNote,
+    applicationForm: applicationForm ?? null,
+    agreementSigned: agreementSigned ?? false,
+    sessionNumber: sessionNumber ?? 1,
   });
   return NextResponse.json(booking, { status: 201 });
 }
