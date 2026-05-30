@@ -16,7 +16,7 @@ const BOOKING_TABS = [
   { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation"] },
   { key: "pending_payment",      label: "待支付", statuses: ["pending_payment"] },
   { key: "upcoming",             label: "待咨询", statuses: ["paid"] },
-  { key: "past",                 label: "历史",   statuses: ["completed","cancelled","rejected"] },
+  { key: "past",                 label: "已完成",   statuses: ["completed","cancelled","rejected"] },
 ];
 const STATUS_BADGE: Record<string,{label:string;color:string;bg:string}> = {
   pending_confirmation:{label:"待确认",color:"#D97706",bg:"#FEF3C7"},
