@@ -1,4 +1,4 @@
-import { pgTable, text, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
 
 // 循环档期规则
 export const scheduleRules = pgTable("schedule_rules", {
