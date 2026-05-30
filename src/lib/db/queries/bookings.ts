@@ -13,6 +13,9 @@ export async function createBooking(data: {
   sessionMode?: string;
   priceAmount?: number;
   clientNote?: string;
+  applicationForm?: Record<string, unknown> | null;
+  agreementSigned?: boolean;
+  sessionNumber?: number;
 }) {
   const [b] = await db.insert(bookings).values(data).returning();
   return b;
