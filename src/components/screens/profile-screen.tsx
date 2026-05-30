@@ -58,10 +58,12 @@ function BookingMiniCard({b}:{b:Booking}){
           <p className="text-sm font-semibold text-[#2C2420]">{b.counselor?.displayName??"咨询师"}</p>
         </div>
       </div>
-      <div className="border-t border-[#F0EBE3] px-4 py-3 flex gap-2">
+      {/* 按钮区：stopPropagation 阻止冒泡，按钮各自带功能 */}
+      <div className="border-t border-[#F0EBE3] px-4 py-3 flex gap-2" onClick={e=>e.stopPropagation()}>
         {b.status==="pending_confirmation"&&(
           <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border"
-            style={{borderColor:"#E0D8CE",color:"#9B8E82"}}>取消预约</button>
+            style={{borderColor:"#E0D8CE",color:"#9B8E82"}}
+            onClick={async()=>{if(!confirm("确认取消本次预约？"))return;await request(`/api/bookings/${b.id}`,"PATCH",{status:"cancelled"});onRefresh?.();}}>取消预约</button>
         )}
         {b.status==="pending_payment"&&(<>
           <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
