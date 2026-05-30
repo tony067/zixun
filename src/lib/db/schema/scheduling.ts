@@ -35,6 +35,9 @@ export const bookings = pgTable("bookings", {
   // pending_confirmation | confirmed | pending_payment | paid | completed | cancelled | rejected
   clientNote: text("client_note"),
   counselorNote: text("counselor_note"),
+  sessionNumber: integer("session_number").default(1),
+  applicationForm: json("application_form"),
+  agreementSigned: boolean("agreement_signed").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
