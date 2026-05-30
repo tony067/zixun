@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Copy, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy, Check, X } from "lucide-react";
 import { request } from "@/lib/api/request";
 
 type BookingDetail = {
@@ -9,6 +9,7 @@ type BookingDetail = {
   sessionMode: string; priceAmount: number; sessionNumber?: number;
   applicationForm?: Record<string,string> | null;
   agreementSigned?: boolean;
+  createdAt?: string; paidAt?: string; paymentMethod?: string;
   counselor: { id: string; displayName: string; counselorTypes?: string[] } | null;
 };
 
@@ -16,7 +17,7 @@ const STATUS_CONFIG: Record<string,{label:string;desc:string;color:string}> = {
   pending_confirmation: { label:"等待咨询师确认", desc:"请耐心等候，咨询师确认后将通知您。", color:"#D97706" },
   pending_payment:      { label:"待支付",         desc:"请在24小时内完成支付，逾期将自动取消。", color:"#2563EB" },
   paid:                 { label:"即将咨询",        desc:"咨询即将开始，请提前准备好设备。", color:"#059669" },
-  completed:            { label:"咨询完成",        desc:"本次咨询已完成，如与咨询师已约定下次咨询时间，请及时续约。", color:"#059669" },
+  completed:            { label:"咨询完成",        desc:"本次咨询已完成，期待下次相遇。", color:"#059669" },
   cancelled:            { label:"已取消",          desc:"本次预约已取消。", color:"#9CA3AF" },
   rejected:             { label:"已拒绝",          desc:"咨询师无法接受本次预约，建议重新选择时间。", color:"#DC2626" },
 };
@@ -44,6 +45,25 @@ const AGREEMENT_TEXT = `MindPace 咨询服务协议
 
 本协议由来访者在首次预约时确认签署，签署后视为同意以上条款。`;
 
+function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(0,0,0,0.4)" }}
+      onClick={onClose}>
+      <div className="w-full rounded-t-3xl max-h-[80vh] overflow-y-auto"
+        style={{ background: "white" }} onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 sticky top-0 bg-white border-b border-[#F0EBE3]">
+          <h3 className="text-base font-bold text-[#2C2420]">{title}</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: "#F5F0EA" }}>
+            <X className="w-4 h-4 text-[#9B8E82]" />
+          </button>
+        </div>
+        <div className="px-5 py-4">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 export default function BookingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -63,6 +83,13 @@ export default function BookingDetailPage() {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const fmtDt = (s?: string) => {
+    if (!s) return "—";
+    const d = new Date(s);
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   };
 
   if (loading) return (
@@ -105,8 +132,9 @@ export default function BookingDetailPage() {
           <p className="text-xs text-[#9B8E82] leading-relaxed">{status.desc}</p>
         </div>
 
-        {/* 咨询师信息 */}
+        {/* 咨询师 + 咨询信息 + 申请单/协议 */}
         <div className="rounded-2xl overflow-hidden" style={{ background: "white" }}>
+          {/* 咨询师信息 */}
           <button className="w-full flex items-center gap-4 px-4 py-4"
             onClick={() => bk.counselor && router.push(`/counselors/${bk.counselor.id}`)}>
             <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0"
@@ -120,73 +148,37 @@ export default function BookingDetailPage() {
             <ChevronRight className="w-5 h-5 text-[#C4BDB5]" />
           </button>
 
+          {/* 咨询详情 */}
           <div className="border-t border-[#F0EBE3] px-4 py-4 space-y-4">
-            <div>
-              <p className="text-xs text-[#9B8E82] mb-1">咨询时间（北京时间）</p>
-              <p className="text-base font-bold text-[#2C2420]">{dateStr}</p>
-            </div>
-            <div>
-              <p className="text-xs text-[#9B8E82] mb-1">咨询次数及方式</p>
-              <p className="text-base font-bold text-[#2C2420]">第{bk.sessionNumber ?? 1}次 {bk.sessionMode ?? "视频"}咨询</p>
-            </div>
+            <InfoRow label="咨询时间（北京时间）" value={dateStr} />
+            <InfoRow label="咨询次数及方式" value={`第${bk.sessionNumber ?? 1}次 ${bk.sessionMode ?? "视频"}咨询`} />
             {bk.sessionMode?.includes("视频") && (
-              <div>
-                <p className="text-xs text-[#9B8E82] mb-1">视频账号</p>
-                <p className="text-base font-bold text-[#2C2420]">
-                  {bk.status === "paid" || bk.status === "completed" ? "将在咨询前发送至消息" : "预约成功后可见"}
-                </p>
-              </div>
+              <InfoRow label="视频账号" value={bk.status === "paid" || bk.status === "completed" ? "将在咨询前发送至消息" : "预约成功后可见"} />
             )}
           </div>
 
           {/* 我的申请单 */}
           <button className="w-full border-t border-[#F0EBE3] px-4 py-4 flex items-center justify-between"
-            onClick={() => setShowForm(!showForm)}>
+            onClick={() => setShowForm(true)}>
             <span className="text-sm text-[#2C2420]">我的申请单</span>
-            <ChevronRight className={`w-5 h-5 text-[#C4BDB5] transition-transform ${showForm ? "rotate-90" : ""}`} />
+            <ChevronRight className="w-5 h-5 text-[#C4BDB5]" />
           </button>
-          {showForm && bk.applicationForm && (
-            <div className="px-4 pb-4 space-y-3 bg-[#FAFAF8]">
-              {Object.entries(bk.applicationForm).map(([k, v]) => (
-                <div key={k}>
-                  <p className="text-xs text-[#9B8E82]">{k}</p>
-                  <p className="text-sm text-[#2C2420] mt-0.5">{String(v)}</p>
-                </div>
-              ))}
-            </div>
-          )}
 
           {/* 我的咨询协议 */}
           <button className="w-full border-t border-[#F0EBE3] px-4 py-4 flex items-center justify-between"
-            onClick={() => setShowAgreement(!showAgreement)}>
+            onClick={() => setShowAgreement(true)}>
             <span className="text-sm text-[#2C2420]">我的咨询协议</span>
-            <ChevronRight className={`w-5 h-5 text-[#C4BDB5] transition-transform ${showAgreement ? "rotate-90" : ""}`} />
+            <ChevronRight className="w-5 h-5 text-[#C4BDB5]" />
           </button>
-          {showAgreement && (
-            <div className="px-4 pb-4 bg-[#FAFAF8]">
-              <pre className="text-xs text-[#9B8E82] whitespace-pre-wrap leading-relaxed font-sans">{AGREEMENT_TEXT}</pre>
-              <p className="text-xs text-[#9CB48A] mt-3">
-                {bk.agreementSigned ? "✓ 已于预约时签署同意" : "未签署"}
-              </p>
-            </div>
-          )}
         </div>
 
-        {/* 费用与编号 */}
-        <div className="rounded-2xl px-4 py-4 space-y-3" style={{ background: "white" }}>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-[#9B8E82]">咨询费用</span>
-            <span className="text-sm font-bold text-[#2C2420]">¥{bk.priceAmount}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-[#9B8E82]">订单编号</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-[#2C2420]">{bk.id.toUpperCase()}</span>
-              <button onClick={() => copy(bk.id.toUpperCase())}>
-                {copied ? <Check className="w-4 h-4 text-[#9CB48A]" /> : <Copy className="w-4 h-4 text-[#C4BDB5]" />}
-              </button>
-            </div>
-          </div>
+        {/* 订单信息 */}
+        <div className="rounded-2xl px-4 py-4 space-y-4" style={{ background: "white" }}>
+          <InfoRow label="咨询费用" value={`¥${bk.priceAmount}`} />
+          <InfoRowCopy label="订单编号" value={bk.id.toUpperCase()} copied={copied} onCopy={() => copy(bk.id.toUpperCase())} />
+          <InfoRow label="创建时间" value={fmtDt(bk.createdAt)} />
+          <InfoRow label="付款时间" value={fmtDt(bk.paidAt)} />
+          <InfoRow label="支付方式" value={bk.paymentMethod ?? (bk.status === "paid" || bk.status === "completed" ? "微信支付" : "—")} />
         </div>
       </div>
 
@@ -201,6 +193,54 @@ export default function BookingDetailPage() {
             {bk.status === "pending_payment" ? `立即支付 ¥${bk.priceAmount}` : "续约"}
           </button>
         </div>
+      </div>
+
+      {/* 申请单弹窗 */}
+      {showForm && (
+        <Modal title="我的申请单" onClose={() => setShowForm(false)}>
+          {bk.applicationForm && Object.keys(bk.applicationForm).length > 0
+            ? Object.entries(bk.applicationForm).map(([k, v]) => (
+                <div key={k} className="mb-4">
+                  <p className="text-xs text-[#9B8E82] mb-1">{k}</p>
+                  <p className="text-sm text-[#2C2420] leading-relaxed">{String(v)}</p>
+                </div>
+              ))
+            : <p className="text-sm text-[#9B8E82]">申请单内容暂未填写</p>
+          }
+        </Modal>
+      )}
+
+      {/* 协议弹窗 */}
+      {showAgreement && (
+        <Modal title="我的咨询协议" onClose={() => setShowAgreement(false)}>
+          <pre className="text-xs text-[#5A4E44] whitespace-pre-wrap leading-relaxed font-sans">{AGREEMENT_TEXT}</pre>
+          <p className="text-xs mt-4 font-medium" style={{ color: "#9CB48A" }}>
+            {bk.agreementSigned ? "✓ 已于预约时确认签署" : "未签署"}
+          </p>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <span className="text-sm text-[#9B8E82] flex-shrink-0">{label}</span>
+      <span className="text-sm text-[#2C2420] text-right">{value}</span>
+    </div>
+  );
+}
+
+function InfoRowCopy({ label, value, copied, onCopy }: { label: string; value: string; copied: boolean; onCopy: () => void }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-[#9B8E82]">{label}</span>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-[#2C2420]">{value}</span>
+        <button onClick={onCopy}>
+          {copied ? <Check className="w-4 h-4 text-[#9CB48A]" /> : <Copy className="w-4 h-4 text-[#C4BDB5]" />}
+        </button>
       </div>
     </div>
   );
