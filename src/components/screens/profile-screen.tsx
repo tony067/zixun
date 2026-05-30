@@ -60,11 +60,15 @@ function BookingMiniCard({b}:{b:Booking}){
       </div>
       {/* 按钮区：stopPropagation 阻止冒泡，按钮各自带功能 */}
       <div className="border-t border-[#F0EBE3] px-4 py-3 flex gap-2" onClick={e=>e.stopPropagation()}>
-        {b.status==="pending_confirmation"&&(
+        {b.status==="pending_confirmation"&&(<>
+          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
+            style={{borderColor:"#9CB48A",color:"#9CB48A"}}
+            onClick={()=>router.push(`/messages?counselorId=${b.counselor?.id ?? ""}`)}>
+            <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
           <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border"
             style={{borderColor:"#E0D8CE",color:"#9B8E82"}}
             onClick={async()=>{if(!confirm("确认取消本次预约？"))return;const r=await request(`/api/bookings/${b.id}`);if(r.ok)window.location.reload();}}>取消预约</button>
-        )}
+        </>)}
         {b.status==="pending_payment"&&(<>
           <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
             style={{borderColor:"#9CB48A",color:"#9CB48A"}}
