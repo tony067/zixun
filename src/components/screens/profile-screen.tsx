@@ -9,7 +9,7 @@ import { request } from "@/lib/api/request";
 
 type Booking = {
   id: string; status: string; scheduledAt: string; durationMinutes: number;
-  sessionMode: string; priceAmount: number;
+  sessionMode: string; priceAmount: number; sessionNumber?: number;
   counselor: { id: string; displayName: string } | null;
 };
 const BOOKING_TABS = [
@@ -27,59 +27,63 @@ const STATUS_BADGE: Record<string,{label:string;color:string;bg:string}> = {
   rejected:{label:"已拒绝",color:"#DC2626",bg:"#FEF2F2"},
 };
 function BookingMiniCard({b}:{b:Booking}){
-  const badge=STATUS_BADGE[b.status]??{label:b.status,color:"#9B8E82",bg:"#F5F0E8"};
-  const dt=b.scheduledAt?new Date(b.scheduledAt):null;
+  const router = useRouter();
+  const dt = b.scheduledAt ? new Date(b.scheduledAt) : null;
+  const WD = ["周日","周一","周二","周三","周四","周五","周六"];
+  const endDt = dt ? new Date(dt.getTime() + b.durationMinutes*60000) : null;
+  const pad = (n:number) => n.toString().padStart(2,"0");
+  const timeRange = dt && endDt ? `${pad(dt.getHours())}:${pad(dt.getMinutes())}-${pad(endDt.getHours())}:${pad(endDt.getMinutes())}` : "";
+  const dateStr = dt ? `${dt.getFullYear()}.${pad(dt.getMonth()+1)}.${pad(dt.getDate())} ${WD[dt.getDay()]} ${timeRange}` : "";
+  const badge = STATUS_BADGE[b.status]??{label:b.status,color:"#9B8E82",bg:"#F5F0E8"};
   return(
     <motion.div layout initial={{opacity:0,y:6}} animate={{opacity:1,y:0}}
-      className="rounded-2xl p-4 mb-3" style={{background:"white",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base flex-shrink-0"
+      className="rounded-2xl mb-3 overflow-hidden" style={{background:"white",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
+      <button className="w-full px-4 pt-4 pb-2 flex items-center justify-between"
+        onClick={()=>router.push(`/my-bookings/${b.id}`)}>
+        <span className="text-sm font-bold text-[#2C2420]">
+          第{b.sessionNumber??1}次 {b.sessionMode??"视频"}咨询 ›
+        </span>
+        <span className="text-xs font-medium px-2.5 py-1 rounded-full"
+          style={{color:badge.color,background:badge.bg}}>{badge.label}</span>
+      </button>
+      {dateStr && <p className="px-4 text-xs text-[#9B8E82] pb-3">{dateStr}</p>}
+      <div className="border-t border-[#F0EBE3] px-4 py-3 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0"
           style={{background:"#E8DFCC",color:"#7A6248"}}>
           {b.counselor?.displayName[0]??"?"}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-bold text-[#2C2420]">{b.counselor?.displayName??"咨询师"}</p>
-            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0"
-              style={{color:badge.color,background:badge.bg}}>{badge.label}</span>
-          </div>
-          {dt&&(
-            <div className="flex items-center gap-2 text-xs text-[#9B8E82] mt-1">
-              <span className="flex items-center gap-1"><Calendar className="w-3 h-3"/>
-                {dt.toLocaleDateString("zh-CN",{month:"long",day:"numeric"})}</span>
-              <span className="flex items-center gap-1"><Clock className="w-3 h-3"/>
-                {dt.toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})}</span>
-              <span className="flex items-center gap-1"><Video className="w-3 h-3"/>{b.durationMinutes}分钟</span>
-            </div>
-          )}
+        <div>
+          <p className="text-[11px] text-[#9B8E82]">咨询师</p>
+          <p className="text-sm font-semibold text-[#2C2420]">{b.counselor?.displayName??"咨询师"}</p>
         </div>
       </div>
-      {b.status==="pending_confirmation"&&(
-        <button className="w-full mt-2.5 py-2 rounded-xl text-xs font-semibold border"
-          style={{borderColor:"#E0D8CE",color:"#9B8E82"}}>取消预约</button>
-      )}
-      {b.status==="pending_payment"&&(
-        <div className="flex gap-2 mt-2.5">
-          <button className="flex-1 py-2 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
+      <div className="border-t border-[#F0EBE3] px-4 py-3 flex gap-2">
+        {b.status==="pending_confirmation"&&(
+          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border"
+            style={{borderColor:"#E0D8CE",color:"#9B8E82"}}>取消预约</button>
+        )}
+        {b.status==="pending_payment"&&(<>
+          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
             style={{borderColor:"#9CB48A",color:"#9CB48A"}}>
-            <MessageCircle className="w-3.5 h-3.5"/>私信</button>
-          <button className="flex-[2] py-2 rounded-xl text-white text-xs font-semibold"
+            <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
+          <button className="flex-[2] py-2.5 rounded-xl text-white text-xs font-semibold"
             style={{background:"#9CB48A"}}>立即支付 ¥{b.priceAmount}</button>
-        </div>
-      )}
-      {b.status==="paid"&&(
-        <div className="flex gap-2 mt-2.5">
-          <button className="flex-1 py-2 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
+        </>)}
+        {b.status==="paid"&&(<>
+          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
             style={{borderColor:"#9CB48A",color:"#9CB48A"}}>
-            <MessageCircle className="w-3.5 h-3.5"/>私信</button>
-          <button className="flex-1 py-2 rounded-xl text-xs font-semibold border"
+            <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
+          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border"
             style={{borderColor:"#E0D8CE",color:"#9B8E82"}}>申请改期</button>
-        </div>
-      )}
-      {b.status==="completed"&&(
-        <button className="w-full mt-2.5 py-2 rounded-xl text-xs font-semibold border"
-          style={{borderColor:"#E0D8CE",color:"#9B8E82"}}>写咨询反馈</button>
-      )}
+        </>)}
+        {(b.status==="completed"||b.status==="cancelled"||b.status==="rejected")&&(<>
+          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
+            style={{borderColor:"#9CB48A",color:"#9CB48A"}}>
+            <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
+          <button className="flex-[2] py-2.5 rounded-xl text-white text-xs font-semibold"
+            style={{background:"#9CB48A"}}>续约</button>
+        </>)}
+      </div>
     </motion.div>
   );
 }
