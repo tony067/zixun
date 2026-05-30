@@ -62,7 +62,7 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
       const [h, m] = step1Data.slot.start.split(":").map(Number);
       scheduledAt.setHours(h, m, 0, 0);
 
-      const res = await request("/api/bookings", "POST", {
+      const res = await request("/api/bookings", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({
         counselorId: counselor.id,
         scheduledAt: scheduledAt.toISOString(),
         sessionMode: step1Data.mode,
@@ -71,7 +71,7 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
         applicationForm: form,
         agreementSigned: agreed,
         sessionNumber: 1,
-      });
+      })});
       const data = await res.json();
       if (data.id) {
         setBookingId(data.id);
@@ -86,7 +86,7 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
   const handlePay = async (method: string) => {
     await new Promise(r => setTimeout(r, 1500)); // 模拟支付
     if (bookingId) {
-      await request(`/api/bookings/${bookingId}`, "PATCH", { status: "paid", paymentMethod: method });
+      await request(`/api/bookings/${bookingId}`, { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ status: "paid", paymentMethod: method }) });
     }
   };
 
