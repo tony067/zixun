@@ -92,6 +92,7 @@ function BookingMiniCard({b}:{b:Booking}){
             style={{background:"#9CB48A"}}
             onClick={()=>router.push(`/booking/${b.counselorId}`)}>续约</button>
         </>)}
+      </div>
     </motion.div>
   );
 }
