@@ -116,7 +116,7 @@ export default function BookingDetailPage() {
   const status = STATUS_CONFIG[bk.status] ?? { label: bk.status, desc: "", color: "#9B8E82" };
 
   return (
-    <div className="min-h-svh pb-[160px]" style={{ background: "#F5F0EA" }}>
+    <div className="min-h-svh pb-[100px]" style={{ background: "#F5F0EA" }}>
       {/* 顶部导航 */}
       <div className="flex items-center px-4 pt-14 pb-4">
         <button onClick={() => router.back()} className="p-2 -ml-2">
