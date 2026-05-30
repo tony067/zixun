@@ -67,26 +67,31 @@ function BookingMiniCard({b}:{b:Booking}){
         )}
         {b.status==="pending_payment"&&(<>
           <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
-            style={{borderColor:"#9CB48A",color:"#9CB48A"}}>
+            style={{borderColor:"#9CB48A",color:"#9CB48A"}}
+            onClick={()=>router.push(`/messages?counselorId=${b.counselorId}`)}>
             <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
           <button className="flex-[2] py-2.5 rounded-xl text-white text-xs font-semibold"
-            style={{background:"#9CB48A"}}>立即支付 ¥{b.priceAmount}</button>
+            style={{background:"#9CB48A"}}
+            onClick={()=>router.push(`/my-bookings/${b.id}?pay=1`)}>立即支付 ¥{b.priceAmount}</button>
         </>)}
         {b.status==="paid"&&(<>
           <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
-            style={{borderColor:"#9CB48A",color:"#9CB48A"}}>
+            style={{borderColor:"#9CB48A",color:"#9CB48A"}}
+            onClick={()=>router.push(`/messages?counselorId=${b.counselorId}`)}>
             <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
-          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border"
-            style={{borderColor:"#E0D8CE",color:"#9B8E82"}}>申请改期</button>
+          <button className="flex-[2] py-2.5 rounded-xl text-xs font-semibold border"
+            style={{borderColor:"#E0D8CE",color:"#9B8E82"}}
+            onClick={()=>router.push(`/my-bookings/${b.id}?reschedule=1`)}>申请改期</button>
         </>)}
         {(b.status==="completed"||b.status==="cancelled"||b.status==="rejected")&&(<>
           <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
-            style={{borderColor:"#9CB48A",color:"#9CB48A"}}>
+            style={{borderColor:"#9CB48A",color:"#9CB48A"}}
+            onClick={()=>router.push(`/messages?counselorId=${b.counselorId}`)}>
             <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
           <button className="flex-[2] py-2.5 rounded-xl text-white text-xs font-semibold"
-            style={{background:"#9CB48A"}}>续约</button>
+            style={{background:"#9CB48A"}}
+            onClick={()=>router.push(`/booking/${b.counselorId}`)}>续约</button>
         </>)}
-      </div>
     </motion.div>
   );
 }
