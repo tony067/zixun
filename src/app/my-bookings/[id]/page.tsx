@@ -211,7 +211,7 @@ export default function BookingDetailPage() {
       </div>
 
       {/* 底部操作栏 */}
-      <div className="fixed bottom-0 left-0 right-0 px-4 pb-[calc(env(safe-area-inset-bottom)+80px)] pt-3"
+      <div className="fixed bottom-0 left-0 right-0 px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3"
         style={{ background: "rgba(245,240,234,0.95)", backdropFilter: "blur(8px)" }}>
         <div className="flex gap-3">
           <button className="flex-1 py-3 rounded-2xl text-sm font-semibold border"
