@@ -2,10 +2,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEazo } from "@eazo/sdk/react";
 import { request } from "@/lib/api/request";
-import { useAuthStore } from "@/stores/useAuthStore";
 
 type Conv = {
   conv: { id: string; lastMessageAt: string };
