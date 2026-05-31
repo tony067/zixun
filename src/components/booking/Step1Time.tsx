@@ -30,7 +30,28 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
 
   const canNext = selectedMode && selectedSlot;
 
-  const modeIcon: Record<string, string> = { "视频咨询": "📹", "语音咨询": "📞", "面对面咨询": "🧑‍🤝‍🧑" };
+  // SVG icons matching counselor detail page style
+  const modeIconSvg: Record<string, React.ReactNode> = {
+    "视频咨询": (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none" strokeWidth="1.6" stroke="currentColor">
+        <rect x="2" y="6" width="14" height="12" rx="2" />
+        <polyline points="16,10 22,7 22,17 16,14" />
+      </svg>
+    ),
+    "语音咨询": (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none" strokeWidth="1.6" stroke="currentColor">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.41 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+      </svg>
+    ),
+    "面对面咨询": (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none" strokeWidth="1.6" stroke="currentColor">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -48,7 +69,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
                   color: selectedMode === m ? "white" : "#5A4E44",
                   border: selectedMode === m ? "none" : "1.5px solid #E8E2D8",
                 }}>
-                <span>{modeIcon[m] ?? "💬"}</span>{m}
+                {modeIconSvg[m] ?? null}{m}
               </button>
             ))}
           </div>
