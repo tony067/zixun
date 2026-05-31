@@ -53,15 +53,44 @@ const AGREE_TEXT = `MindPace 咨询服务协议
 7. 平台责任
 MindPace 平台对入驻咨询师进行资质审核，但不对咨询结果作出任何保证。`;
 
+const CONSENT_TEXT = `知情同意书
+
+尊重来访者的知情权是咨询工作的基础，请在预约前仔细阅读以下内容。
+
+一、咨询的性质与目标
+心理咨询是一个通过专业对话帮助来访者理解自身、解决问题、促进成长的过程。咨询师将提供支持和引导，但无法代替来访者做出决定或解决生活问题。
+
+二、保密原则
+咨询内容受严格保密保护。以下情况除外：
+• 来访者明确表示同意披露
+• 来访者或他人面临紧迫生命危险
+• 法律法规强制要求
+
+三、录音录像
+未经双方事先书面同意，任何一方不得录音或录像。
+
+四、紧急情况处理
+如您在咨询期间或之后出现危机状态，请立即联系：
+• 北京心理危机研究与干预中心：010-82951332
+• 全国心理援助热线：400-161-9995
+• 紧急情况请拨打 120 或前往最近医院急诊
+
+五、取消与改期
+请至少提前24小时通知咨询师如需取消或改期。未提前通知的取消，平台可能收取全额咨询费。
+
+六、知情同意声明
+我已阅读并理解上述内容，同意在知情的基础上开始咨询关系，并理解咨询并非危机干预服务。`;
+
 export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, counselorName, onNext, onBack }: Props) {
   const [form, setForm] = useState<ApplicationForm>(EMPTY_FORM);
   const [agreed, setAgreed] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
+  const [showConsent, setShowConsent] = useState(false);
 
   const set = <K extends keyof ApplicationForm>(k: K, v: ApplicationForm[K]) =>
     setForm(prev => ({ ...prev, [k]: v }));
 
-  const canSubmit = form.name.trim() && form.contact.trim() && form.purpose && agreed;
+  const canSubmit = form.name.trim() && form.contact.trim() && form.purpose && agreed && form.consentSigned;
 
   const WEEKDAY = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
   const dateStr = `${date.getMonth() + 1}月${date.getDate()}日 ${WEEKDAY[date.getDay()]} ${slot.start}–${slot.end}`;
@@ -77,9 +106,8 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
           <p className="text-sm text-[#5A4E44]">{dateStr}</p>
         </div>
 
-        {/* 表单 */}
-        <div className="mx-5 rounded-2xl overflow-hidden" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-          {/* 姓名 */}
+        {/* 基本信息 */}
+        <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <div className="px-4 py-3.5 border-b" style={{ borderColor: "#F5F0EA" }}>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#5A4E44] w-24 flex-none">姓名 / 昵称</span>
@@ -89,7 +117,6 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
                 style={{ color: "#2C2420" }} />
             </div>
           </div>
-          {/* 联系方式 */}
           <div className="px-4 py-3.5 border-b" style={{ borderColor: "#F5F0EA" }}>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#5A4E44] w-24 flex-none">联系方式</span>
@@ -99,8 +126,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
                 style={{ color: "#2C2420" }} />
             </div>
           </div>
-          {/* 咨询目的 */}
-          <div className="px-4 py-3.5 border-b" style={{ borderColor: "#F5F0EA" }}>
+          <div className="px-4 py-3.5">
             <p className="text-sm text-[#5A4E44] mb-2">咨询目的</p>
             <div className="flex flex-wrap gap-2">
               {PURPOSE_OPTIONS.map(opt => (
@@ -117,8 +143,33 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
           </div>
         </div>
 
+        {/* 紧急联系人 */}
+        <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+          <div className="px-4 pt-3 pb-1">
+            <p className="text-xs text-[#9B8E82]">紧急联系人</p>
+          </div>
+          <div className="px-4 py-3.5 border-t" style={{ borderColor: "#F5F0EA" }}>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-[#5A4E44] w-24 flex-none">联系人姓名</span>
+              <input value={form.emergencyName} onChange={e => set("emergencyName", e.target.value)}
+                placeholder="请填写"
+                className="flex-1 text-right text-sm bg-transparent outline-none placeholder-[#C4BDB5]"
+                style={{ color: "#2C2420" }} />
+            </div>
+          </div>
+          <div className="px-4 py-3.5 border-t" style={{ borderColor: "#F5F0EA" }}>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-[#5A4E44] w-24 flex-none">联系人电话</span>
+              <input type="tel" value={form.emergencyPhone} onChange={e => set("emergencyPhone", e.target.value)}
+                placeholder="手机号码"
+                className="flex-1 text-right text-sm bg-transparent outline-none placeholder-[#C4BDB5]"
+                style={{ color: "#2C2420" }} />
+            </div>
+          </div>
+        </div>
+
         {/* 安全评估 */}
-        <div className="mx-5 mt-4 rounded-2xl overflow-hidden" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <div className="px-4 pt-3.5 pb-1">
             <p className="text-xs text-[#9B8E82]">安全评估（帮助咨询师提前了解您的状况）</p>
           </div>
@@ -137,7 +188,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
         </div>
 
         {/* 补充说明 */}
-        <div className="mx-5 mt-4 rounded-2xl p-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div className="mx-5 rounded-2xl p-4 mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <p className="text-sm text-[#5A4E44] mb-2">补充说明 <span className="text-[#C4BDB5]">（选填）</span></p>
           <textarea value={form.additionalNote} onChange={e => set("additionalNote", e.target.value)}
             placeholder="可简单描述您目前的困扰或对本次咨询的期望…"
@@ -146,11 +197,33 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             style={{ color: "#2C2420" }} />
         </div>
 
-        {/* 协议 */}
-        <div className="mx-5 mt-4 flex items-start gap-2.5">
+        {/* 知情同意书 */}
+        <div className="mx-5 mb-3 flex items-start gap-2.5">
+          <button onClick={() => set("consentSigned", !form.consentSigned)}
+            className="w-5 h-5 rounded flex items-center justify-center flex-none mt-0.5 transition-colors"
+            style={{
+              background: form.consentSigned ? "var(--color-primary)" : "white",
+              border: `2px solid ${form.consentSigned ? "var(--color-primary)" : "#C4BDB5"}`
+            }}>
+            {form.consentSigned && <svg viewBox="0 0 12 10" className="w-3 h-3 fill-none stroke-white stroke-2"><polyline points="1,5 4.5,8.5 11,1" /></svg>}
+          </button>
+          <p className="text-sm text-[#5A4E44]">
+            已阅读并签署{" "}
+            <button onClick={() => setShowConsent(true)} className="font-semibold underline"
+              style={{ color: "var(--color-primary)" }}>
+              《知情同意书》
+            </button>
+          </p>
+        </div>
+
+        {/* 服务协议 */}
+        <div className="mx-5 flex items-start gap-2.5">
           <button onClick={() => setAgreed(!agreed)}
             className="w-5 h-5 rounded flex items-center justify-center flex-none mt-0.5 transition-colors"
-            style={{ background: agreed ? "var(--color-primary)" : "white", border: `2px solid ${agreed ? "var(--color-primary)" : "#C4BDB5"}` }}>
+            style={{
+              background: agreed ? "var(--color-primary)" : "white",
+              border: `2px solid ${agreed ? "var(--color-primary)" : "#C4BDB5"}`
+            }}>
             {agreed && <svg viewBox="0 0 12 10" className="w-3 h-3 fill-none stroke-white stroke-2"><polyline points="1,5 4.5,8.5 11,1" /></svg>}
           </button>
           <p className="text-sm text-[#5A4E44]">
@@ -165,20 +238,44 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
 
       {/* 底部 */}
       <div className="px-5 pb-8 pt-3 border-t" style={{ borderColor: "#EBE7DF", background: "var(--color-bg)" }}>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
           <button onClick={onBack} className="text-sm font-semibold px-5 py-3 rounded-2xl border"
             style={{ borderColor: "#E8E2D8", color: "#9B8E82" }}>
             上一步
           </button>
           <button disabled={!canSubmit} onClick={() => canSubmit && onNext(form, agreed)}
-            className="flex-1 ml-3 py-3 rounded-2xl text-white font-bold text-base transition-opacity"
+            className="flex-1 py-3 rounded-2xl text-white font-bold text-base transition-opacity"
             style={{ background: canSubmit ? "var(--color-primary)" : "#C4BDB5" }}>
             提交预约 · ¥{priceAmount}
           </button>
         </div>
       </div>
 
-      {/* 协议弹窗 */}
+      {/* 知情同意书弹窗 */}
+      {showConsent && (
+        <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "rgba(0,0,0,0.5)" }}
+          onClick={() => setShowConsent(false)}>
+          <div className="mt-auto rounded-t-3xl overflow-hidden flex flex-col max-h-[80vh]"
+            style={{ background: "white" }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "#F0EBE3" }}>
+              <h3 className="text-base font-bold text-[#2C2420]">知情同意书</h3>
+              <button onClick={() => setShowConsent(false)} className="text-[#9B8E82] text-xl">✕</button>
+            </div>
+            <div className="overflow-y-auto px-5 py-4 flex-1">
+              <pre className="text-sm text-[#5A4E44] whitespace-pre-wrap leading-relaxed font-sans">{CONSENT_TEXT}</pre>
+            </div>
+            <div className="px-5 pb-8 pt-3 border-t" style={{ borderColor: "#F0EBE3" }}>
+              <button onClick={() => { set("consentSigned", true); setShowConsent(false); }}
+                className="w-full py-3.5 rounded-2xl text-white font-bold"
+                style={{ background: "var(--color-primary)" }}>
+                已阅读，签署同意
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 服务协议弹窗 */}
       {showAgreement && (
         <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "rgba(0,0,0,0.5)" }}
           onClick={() => setShowAgreement(false)}>
