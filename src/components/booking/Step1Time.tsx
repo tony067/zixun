@@ -231,10 +231,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
               <div className="mb-3">
                 <p className="text-xs font-medium mb-1.5" style={{ color: "#5A4E44" }}>你方便的时间（请尽量具体）</p>
                 <textarea value={coordMsg} onChange={e => setCoordMsg(e.target.value)}
-                  placeholder={"例如：
-周一至周三 下午 14:00–18:00
-周六全天均可
-请尽量提供 2-3 个备选时间"}
+                  placeholder={"例如：\n周一至周三 下午 14:00–18:00\n周六全天均可\n请尽量提供 2-3 个备选时间"}
                   rows={5}
                   className="w-full rounded-2xl px-4 py-3 text-sm resize-none outline-none"
                   style={{ background: "white", border: "1.5px solid var(--color-border)", color: "#2C2420" }} />
