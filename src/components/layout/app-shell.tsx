@@ -20,7 +20,7 @@ const CLIENT_TABS = [
 const COUNSELOR_TABS = [
   { href: "/counselor/bookings",  icon: ClipboardList, label: "预约" },
   { href: "/counselor/schedule",  icon: CalendarDays,  label: "档期" },
-  { href: "/messages",            icon: MessageCircle, label: "消息" },
+  { href: "/counselor/messages",  icon: MessageCircle, label: "消息" },
   { href: "/counselor/profile",   icon: User,          label: "档案" },
 ];
 
