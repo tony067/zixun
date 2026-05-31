@@ -197,26 +197,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             style={{ color: "#2C2420" }} />
         </div>
 
-        {/* 知情同意书 */}
-        <div className="mx-5 mb-3 flex items-start gap-2.5">
-          <button onClick={() => set("consentSigned", !form.consentSigned)}
-            className="w-5 h-5 rounded flex items-center justify-center flex-none mt-0.5 transition-colors"
-            style={{
-              background: form.consentSigned ? "var(--color-primary)" : "white",
-              border: `2px solid ${form.consentSigned ? "var(--color-primary)" : "#C4BDB5"}`
-            }}>
-            {form.consentSigned && <svg viewBox="0 0 12 10" className="w-3 h-3 fill-none stroke-white stroke-2"><polyline points="1,5 4.5,8.5 11,1" /></svg>}
-          </button>
-          <p className="text-sm text-[#5A4E44]">
-            已阅读并签署{" "}
-            <button onClick={() => setShowConsent(true)} className="font-semibold underline"
-              style={{ color: "var(--color-primary)" }}>
-              《知情同意书》
-            </button>
-          </p>
-        </div>
-
-        {/* 服务协议 */}
+                {/* 服务协议 */}
         <div className="mx-5 flex items-start gap-2.5">
           <button onClick={() => setAgreed(!agreed)}
             className="w-5 h-5 rounded flex items-center justify-center flex-none mt-0.5 transition-colors"
@@ -252,29 +233,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
       </div>
 
       {/* 知情同意书弹窗 */}
-      {showConsent && (
-        <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "rgba(0,0,0,0.5)" }}
-          onClick={() => setShowConsent(false)}>
-          <div className="mt-auto rounded-t-3xl overflow-hidden flex flex-col max-h-[80vh]"
-            style={{ background: "white" }} onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "#F0EBE3" }}>
-              <h3 className="text-base font-bold text-[#2C2420]">知情同意书</h3>
-              <button onClick={() => setShowConsent(false)} className="text-[#9B8E82] text-xl">✕</button>
-            </div>
-            <div className="overflow-y-auto px-5 py-4 flex-1">
-              <pre className="text-sm text-[#5A4E44] whitespace-pre-wrap leading-relaxed font-sans">{CONSENT_TEXT}</pre>
-            </div>
-            <div className="px-5 pb-8 pt-3 border-t" style={{ borderColor: "#F0EBE3" }}>
-              <button onClick={() => { set("consentSigned", true); setShowConsent(false); }}
-                className="w-full py-3.5 rounded-2xl text-white font-bold"
-                style={{ background: "var(--color-primary)" }}>
-                已阅读，签署同意
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      
       {/* 服务协议弹窗 */}
       {showAgreement && (
         <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "rgba(0,0,0,0.5)" }}
