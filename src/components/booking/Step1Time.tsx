@@ -20,6 +20,9 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
   );
   const [selectedDay, setSelectedDay] = useState<Date>(days[0]);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+  const [showCoordinate, setShowCoordinate] = useState(false);
+  const [coordMsg, setCoordMsg] = useState("");
+  const [coordNote, setCoordNote] = useState("");
 
   const dayKey = selectedDay.toISOString().slice(0, 10);
   const daySlots = slots[dayKey] ?? [];
@@ -197,6 +200,13 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
             已选：{selectedMode} · {selectedDay.getMonth() + 1}/{selectedDay.getDate()} {selectedSlot.start}–{selectedSlot.end}
           </p>
         )}
+        {/* 协调时间入口 */}
+        <button onClick={() => setShowCoordinate(true)}
+          className="w-full py-3 rounded-2xl text-sm font-medium border mb-2"
+          style={{ borderColor: "var(--color-border)", color: "#5A4E44", background: "white" }}>
+          15天内没有合适的时间？与咨询师协调
+        </button>
+
         <button
           disabled={!canNext}
           onClick={() => canNext && onNext({ mode: selectedMode!, date: selectedDay, slot: selectedSlot! })}
@@ -204,6 +214,48 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
           style={{ background: canNext ? "var(--color-primary)" : "#C4BDB5" }}>
           下一步：填写预约信息
         </button>
+
+        {/* 协调时间弹窗 */}
+        {showCoordinate && (
+          <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(0,0,0,0.4)" }}
+            onClick={() => setShowCoordinate(false)}>
+            <div className="w-full rounded-t-3xl px-5 pt-6 pb-10"
+              style={{ background: "var(--color-bg)" }} onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-base font-bold" style={{ color: "#2C2420" }}>与咨询师协调时间</h3>
+                <button onClick={() => setShowCoordinate(false)} className="text-xl font-light" style={{ color: "#9B8E82" }}>×</button>
+              </div>
+              <p className="text-sm mb-4" style={{ color: "#9B8E82" }}>
+                你可以告诉咨询师你方便的时间段，由咨询师确认后为你预留档期。
+              </p>
+              <div className="mb-3">
+                <p className="text-xs font-medium mb-1.5" style={{ color: "#5A4E44" }}>你方便的时间（请尽量具体）</p>
+                <textarea value={coordMsg} onChange={e => setCoordMsg(e.target.value)}
+                  placeholder={"例如：
+周一至周三 下午 14:00–18:00
+周六全天均可
+请尽量提供 2-3 个备选时间"}
+                  rows={5}
+                  className="w-full rounded-2xl px-4 py-3 text-sm resize-none outline-none"
+                  style={{ background: "white", border: "1.5px solid var(--color-border)", color: "#2C2420" }} />
+              </div>
+              <div className="mb-4">
+                <p className="text-xs font-medium mb-1.5" style={{ color: "#5A4E44" }}>补充说明（可选）</p>
+                <input type="text" value={coordNote} onChange={e => setCoordNote(e.target.value)}
+                  placeholder="如特殊要求、偏好咨询方式等"
+                  className="w-full rounded-2xl px-4 py-2.5 text-sm outline-none"
+                  style={{ background: "white", border: "1.5px solid var(--color-border)", color: "#2C2420" }} />
+              </div>
+              <button
+                disabled={!coordMsg.trim()}
+                onClick={() => { alert("已发送给咨询师，请等待对方回复确认。"); setShowCoordinate(false); setCoordMsg(""); setCoordNote(""); }}
+                className="w-full py-3.5 rounded-2xl text-white font-bold"
+                style={{ background: coordMsg.trim() ? "var(--color-primary)" : "#C4BDB5" }}>
+                发送给咨询师
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
