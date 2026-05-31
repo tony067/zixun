@@ -30,7 +30,7 @@ export function Step4Payment({ counselorName, dateStr, durationMinutes, priceAmo
 
   if (done) {
     return (
-      <div className="flex flex-col items-center justify-center flex-1 px-8 text-center">
+      <div className="flex flex-col items-center px-8 text-center pt-16">
         <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6"
           style={{ background: "#E8F4E4" }}>
           <svg viewBox="0 0 48 48" className="w-12 h-12 fill-none" stroke="#9CB48A" strokeWidth="3">
@@ -39,7 +39,7 @@ export function Step4Payment({ counselorName, dateStr, durationMinutes, priceAmo
           </svg>
         </div>
         <h2 className="text-xl font-bold text-[#2C2420] mb-2">支付成功！</h2>
-        <p className="text-sm text-[#9B8E82] mb-2">预约已确认，期待与你的相遇 🌿</p>
+        <p className="text-sm text-[#9B8E82] mb-2">预约已确认，期待与你的相遇</p>
         <p className="text-sm font-semibold text-[#5A4E44]">{counselorName} · {dateStr}</p>
       </div>
     );

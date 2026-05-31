@@ -24,7 +24,7 @@ export function Step3Waiting({ counselorName, dateStr, bookingId, onGoPayment }:
       <h2 className="text-xl font-bold text-[#2C2420] mb-2">预约申请已提交</h2>
       <p className="text-sm text-[#9B8E82] mb-6 leading-relaxed">
         已向 <span className="font-semibold text-[#5A4E44]">{counselorName}</span> 发送预约申请。
-        咨询师通常在 12 小时内确认，确认后你将收到通知并可支付。
+        咨询师通常在 24 小时内确认，确认后你将收到通知并可支付。
       </p>
 
       {/* 摘要卡 */}
