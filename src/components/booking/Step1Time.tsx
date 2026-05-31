@@ -28,6 +28,11 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
   const afternoon = daySlots.filter(s => s.period === "afternoon");
   const evening = daySlots.filter(s => s.period === "evening");
 
+  const allBooked = days.every(d => {
+    const k = d.toISOString().slice(0,10);
+    const sl = slots[k] ?? [];
+    return sl.length === 0 || sl.every(s => s.booked);
+  });
   const canNext = selectedMode && selectedSlot;
 
   // SVG icons matching counselor detail page style
@@ -46,12 +51,18 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
     ),
     "语音": (
       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none" strokeWidth="1.6" stroke="currentColor">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.41 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
     "语音咨询": (
       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none" strokeWidth="1.6" stroke="currentColor">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.41 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
     "面谈": (
@@ -96,7 +107,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
                   color: selectedMode === m ? "white" : "#5A4E44",
                   border: selectedMode === m ? "none" : "1.5px solid #E8E2D8",
                 }}>
-                {modeIconSvg[m] ?? null}{{ "视频": "视频咨询", "语音": "语音咨询", "面谈": "面对面咨询", "视频咨询": "视频咨询", "语音咨询": "语音咨询", "面对面咨询": "面对面咨询" }[m] ?? m}
+                {modeIconSvg[m] ?? null}{{ "视频": "视频咨询", "语音": "面对面咨询", "面谈": "面对面咨询", "视频咨询": "视频咨询", "语音咨询": "面对面咨询", "面对面咨询": "面对面咨询" }[m] ?? m}
               </button>
             ))}
           </div>
@@ -191,7 +202,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
           onClick={() => canNext && onNext({ mode: selectedMode!, date: selectedDay, slot: selectedSlot! })}
           className="w-full py-3.5 rounded-2xl text-white font-bold text-base transition-opacity"
           style={{ background: canNext ? "var(--color-primary)" : "#C4BDB5" }}>
-          下一步：填写申请信息
+          下一步：填写预约信息
         </button>
       </div>
     </div>
