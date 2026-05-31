@@ -11,9 +11,9 @@ interface Props {
 }
 
 const PAY_METHODS = [
-  { id: "wechat", label: "微信支付", icon: "💚" },
-  { id: "alipay", label: "支付宝", icon: "💙" },
-  { id: "card",   label: "银行卡", icon: "💳" },
+  { id: "wechat", label: "微信支付", color: "#07C160" },
+  { id: "alipay", label: "支付宝",   color: "#1677FF" },
+  { id: "card",   label: "银行卡",   color: "#9B8E82" },
 ];
 
 export function Step4Payment({ counselorName, dateStr, durationMinutes, priceAmount, onPay, onBack }: Props) {
@@ -30,7 +30,7 @@ export function Step4Payment({ counselorName, dateStr, durationMinutes, priceAmo
 
   if (done) {
     return (
-      <div className="flex flex-col items-center px-8 text-center pt-16">
+      <div className="flex flex-col items-center px-8 text-center pt-6">
         <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6"
           style={{ background: "#E8F4E4" }}>
           <svg viewBox="0 0 48 48" className="w-12 h-12 fill-none" stroke="#9CB48A" strokeWidth="3">
@@ -73,7 +73,7 @@ export function Step4Payment({ counselorName, dateStr, durationMinutes, priceAmo
               className="w-full flex items-center justify-between px-4 py-4 transition-colors"
               style={{ borderTop: i > 0 ? "1px solid #F5F0EA" : "none", background: "transparent" }}>
               <div className="flex items-center gap-3">
-                <span className="text-xl">{m.icon}</span>
+                
                 <span className="text-sm font-medium text-[#2C2420]">{m.label}</span>
               </div>
               <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
