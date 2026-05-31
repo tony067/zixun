@@ -41,6 +41,18 @@ export function Step4Payment({ counselorName, dateStr, durationMinutes, priceAmo
         <h2 className="text-xl font-bold text-[#2C2420] mb-2">支付成功！</h2>
         <p className="text-sm text-[#9B8E82] mb-2">预约已确认，期待与你的相遇</p>
         <p className="text-sm font-semibold text-[#5A4E44]">{counselorName} · {dateStr}</p>
+        <div className="flex gap-3 mt-8 w-full">
+          <button onClick={onBack}
+            className="flex-1 py-3 rounded-2xl border text-sm font-semibold"
+            style={{ borderColor: "#E8E2D8", color: "#9B8E82" }}>
+            返回首页
+          </button>
+          <a href="/profile"
+            className="flex-1 py-3 rounded-2xl text-white font-bold text-sm text-center"
+            style={{ background: "var(--color-primary)" }}>
+            查看我的预约
+          </a>
+        </div>
       </div>
     );
   }
