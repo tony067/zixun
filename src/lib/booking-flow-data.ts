@@ -13,13 +13,16 @@ export interface TimeSlot {
 export interface ApplicationForm {
   name: string;
   contact: string;
-  purpose: string;          // 咨询目的
+  purpose: string;
   hasMentalDisease: boolean;
   onMedication: boolean;
   hasSelfHarm: boolean;
   hasSuicidalThought: boolean;
   hasSuicidalBehavior: boolean;
   additionalNote: string;
+  emergencyName: string;
+  emergencyPhone: string;
+  consentSigned: boolean;
 }
 
 export const EMPTY_FORM: ApplicationForm = {
@@ -32,6 +35,9 @@ export const EMPTY_FORM: ApplicationForm = {
   hasSuicidalThought: false,
   hasSuicidalBehavior: false,
   additionalNote: "",
+  emergencyName: "",
+  emergencyPhone: "",
+  consentSigned: false,
 };
 
 export const PURPOSE_OPTIONS = [
