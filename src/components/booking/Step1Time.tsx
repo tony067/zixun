@@ -34,7 +34,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
   const allBooked = days.every(d => {
     const k = d.toISOString().slice(0,10);
     const sl = slots[k] ?? [];
-    return sl.length === 0 || sl.every(s => s.booked);
+    return sl.length === 0 || sl.every(s => !s.available);
   });
   const canNext = selectedMode && selectedSlot;
 
