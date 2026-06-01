@@ -1,11 +1,72 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { ArrowLeft, Clock, MapPin, Share2, MessageCircle, Bookmark } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Clock, MapPin, Share2, MessageCircle, Bookmark, CalendarDays } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEazo } from "@eazo/sdk/react";
 import { auth } from "@eazo/sdk";
+
+// ── 可预约时间弹窗组件 ──
+function AvailableTimesButton({ counselorId }: { counselorId: string }) {
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  // mock 时段数据（实际可从 /api/counselor/schedule 拉取）
+  const MOCK_DAYS = [
+    { label: "周二 6.3", slots: ["09:00–09:50", "14:00–14:50", "16:00–16:50"] },
+    { label: "周四 6.5", slots: ["10:00–10:50", "15:00–15:50"] },
+    { label: "周六 6.7", slots: ["09:00–09:50", "11:00–11:50", "14:00–14:50"] },
+  ];
+  return (
+    <>
+      <button onClick={() => setOpen(true)}
+        className="flex items-center gap-2 mt-3 px-4 py-2.5 rounded-2xl w-full justify-center text-sm font-medium"
+        style={{ background: "#E8DFCC", color: "#5A4E44", border: "1px solid #D4C8B0" }}>
+        <CalendarDays className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+        查看可预约时间
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div className="fixed inset-0 z-50 flex items-end"
+            style={{ background: "rgba(0,0,0,0.45)" }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setOpen(false)}>
+            <motion.div className="w-full rounded-t-3xl px-5 pt-6 pb-10"
+              style={{ background: "var(--color-bg)" }}
+              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 280 }}
+              onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold" style={{ color: "#2C2420" }}>近期可预约时间</h3>
+                <button onClick={() => setOpen(false)} className="text-xl" style={{ color: "#9B8E82" }}>×</button>
+              </div>
+              <div className="space-y-4 mb-5">
+                {MOCK_DAYS.map(d => (
+                  <div key={d.label}>
+                    <p className="text-xs font-semibold mb-2" style={{ color: "#5A4E44" }}>{d.label}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {d.slots.map(s => (
+                        <span key={s} className="px-3 py-1.5 rounded-full text-xs font-medium"
+                          style={{ background: "#E8DFCC", color: "#5A4E44", border: "1px solid #D4C8B0" }}>
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => { setOpen(false); router.push(`/booking/${counselorId}`); }}
+                className="w-full py-3.5 rounded-2xl text-white font-bold"
+                style={{ background: "var(--color-primary)" }}>
+                立即预约
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
 
 type ListItem = { id: string; value: string };
 
