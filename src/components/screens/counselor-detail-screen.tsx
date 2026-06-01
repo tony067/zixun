@@ -34,12 +34,8 @@ function AvailableTimesButton({ counselorId }: { counselorId: string }) {
       {/* 弹窗：直接在组件内渲染，不用 portal */}
       {open && (
         <div
-          onClick={() => setOpen(false)}
-          style={{
-            position:"fixed", top:0, left:0, right:0, bottom:0, zIndex:9999,
-            backgroundColor:"rgba(0,0,0,0.6)",
-            WebkitBackfaceVisibility:"hidden",
-          }}>
+          className="modal-overlay"
+          onClick={() => setOpen(false)}>
           <div
             onClick={e => e.stopPropagation()}
             style={{
