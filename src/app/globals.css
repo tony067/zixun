@@ -87,3 +87,12 @@ body { min-height: 100svh; margin: 0; }
   body { @apply bg-background text-foreground; }
   html { @apply font-sans; }
 }
+
+/* 弹窗遮罩 — 确保在任何 stacking context 下背景色正确 */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+  z-index: 9999 !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  -webkit-backface-visibility: hidden;
+}
