@@ -35,16 +35,18 @@ function AvailableTimesButton({ counselorId }: { counselorId: string }) {
         查看可预约时间
       </button>
       <AnimatePresence>
-        {open && (
+        {open && typeof window !== "undefined" && createPortal(
           <>
-            {/* 独立遮罩层 */}
-            <motion.div key="avail-overlay" className="fixed inset-0 z-40"
-              style={{ background: "rgba(0,0,0,0.5)" }}
+            {/* 遮罩层 — portal 到 body，不受父容器 transform 影响 */}
+            <motion.div key="avail-overlay"
+              className="fixed inset-0"
+              style={{ background: "rgba(0,0,0,0.55)", zIndex: 9998 }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setOpen(false)} />
             {/* 内容层 */}
-            <motion.div key="avail-panel" className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl px-5 pt-6 pb-10 overflow-y-auto"
-              style={{ background: "var(--color-bg)", maxHeight: "80vh" }}
+            <motion.div key="avail-panel"
+              className="fixed bottom-0 left-0 right-0 rounded-t-3xl px-5 pt-6 pb-10 overflow-y-auto"
+              style={{ background: "var(--color-bg)", maxHeight: "80vh", zIndex: 9999 }}
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
               onClick={e => e.stopPropagation()}>
