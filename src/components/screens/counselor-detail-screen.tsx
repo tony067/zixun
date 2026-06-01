@@ -81,7 +81,8 @@ function AvailableTimesButton({ counselorId }: { counselorId: string }) {
                 立即预约
               </button>
             </motion.div>
-          </>
+          </>,
+          document.body
         )}
       </AnimatePresence>
     </>
