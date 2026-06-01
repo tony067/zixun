@@ -488,19 +488,46 @@ function StatsPanel() {
 }
 
 function ClientsPanel() {
+  const router = useRouter();
   const MOCK = [
-    { name: "来访者A", sessions: 8, next: "周二 14:00", status: "active" },
-    { name: "来访者B", sessions: 3, next: "周四 10:00", status: "active" },
-    { name: "来访者C", sessions: 12, next: "—",         status: "paused" },
+    { id: "client_a", name: "张小明", sessions: 8, completed: 6, next: "周二 14:00", status: "active" },
+    { id: "client_b", name: "李晓芸", sessions: 3, completed: 3, next: "周四 10:00", status: "active" },
+    { id: "client_c", name: "王浩然", sessions: 12, completed: 12, next: "—",         status: "paused" },
   ];
+  const COLORS = ["#9CB48A","#C4A882","#89B4C8"];
   return (
     <div className="px-5 py-4 space-y-3">
-      {MOCK.map(c => (
-        <div key={c.name} className="rounded-2xl p-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+      {MOCK.map((c, i) => (
+        <motion.button key={c.id} whileTap={{ scale: 0.98 }}
+          onClick={() => router.push(`/counselor/clients/${c.id}`)}
+          className="w-full rounded-2xl p-4 text-left"
+          style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base"
-                style={{ background: "#E8DFCC", color: "#7A6248" }}>{c.name[3]}</div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base text-white flex-none"
+                style={{ background: COLORS[i % COLORS.length] }}>
+                {c.name.slice(0,1)}
+              </div>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>{c.name}</p>
+                <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>
+                  共 {c.sessions} 次 · 已完成 {c.completed} 次
+                </p>
+              </div>
+            </div>
+            <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${c.status === "active" ? "text-green-700 bg-green-50" : "text-gray-500 bg-gray-100"}`}>
+              {c.status === "active" ? "进行中" : "暂停"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 text-xs" style={{ color: "#9B8E82" }}>
+            <CalendarDays className="w-3.5 h-3.5" />
+            <span>下次咨询: {c.next}</span>
+          </div>
+        </motion.button>
+      ))}
+    </div>
+  );
+}E8DFCC", color: "#7A6248" }}>{c.name[3]}</div>
               <div>
                 <p className="text-sm font-semibold text-[#2C2420]">{c.name}</p>
                 <p className="text-xs text-[#9B8E82]">共 {c.sessions} 次咨询</p>
