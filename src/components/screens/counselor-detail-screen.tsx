@@ -36,13 +36,13 @@ function AvailableTimesButton({ counselorId }: { counselorId: string }) {
       <AnimatePresence>
         {open && (
           <>
-            {/* 独立遮罩层，z-40 */}
-            <motion.div className="fixed inset-0 z-40"
+            {/* 独立遮罩层 */}
+            <motion.div key="avail-overlay" className="fixed inset-0 z-40"
               style={{ background: "rgba(0,0,0,0.5)" }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setOpen(false)} />
-            {/* 内容层，z-50 */}
-            <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl px-5 pt-6 pb-10 overflow-y-auto"
+            {/* 内容层 */}
+            <motion.div key="avail-panel" className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl px-5 pt-6 pb-10 overflow-y-auto"
               style={{ background: "var(--color-bg)", maxHeight: "80vh" }}
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
