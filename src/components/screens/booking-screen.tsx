@@ -161,7 +161,7 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
             durationMinutes={counselor.sessionDuration ?? 50}
             priceAmount={counselor.pricePerSession ?? 300}
             onPay={handlePay}
-            onBack={() => setStep(3)}
+            onBack={() => router.push("/")}
           />
         )}
       </div>
