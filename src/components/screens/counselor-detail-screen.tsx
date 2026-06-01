@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Clock, MapPin, Share2, MessageCircle, Bookmark, CalendarDays } from "lucide-react";
 import { useRouter } from "next/navigation";
