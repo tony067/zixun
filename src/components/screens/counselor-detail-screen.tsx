@@ -25,57 +25,6 @@ function AvailableTimesButton({ counselorId }: { counselorId: string }) {
     return { label, slots };
   }).filter(d => d.slots.length > 0);
 
-  const portal = (
-    <>
-      <div onClick={() => setOpen(false)} style={{
-        position:"fixed",inset:0,zIndex:9998,background:"rgba(0,0,0,0.55)",
-        opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none",
-        transition:"opacity 0.25s",
-      }} />
-      <div onClick={e => e.stopPropagation()} style={{
-        position:"fixed",bottom:0,left:0,right:0,zIndex:9999,
-        background:"var(--color-bg)",borderRadius:"24px 24px 0 0",
-        maxHeight:"80vh",overflowY:"auto",padding:"24px 20px 40px",
-        transform: open ? "translateY(0)" : "translateY(100%)",
-        transition:"transform 0.3s cubic-bezier(0.32,0.72,0,1)",
-        pointerEvents: open ? "auto" : "none",
-      }}>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold" style={{color:"#2C2420"}}>近期可预约时间</h3>
-          <button onClick={() => setOpen(false)}
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{background:"#EBE7DF",color:"#5A4E44",fontSize:16}}>×</button>
-        </div>
-        {days7.length === 0 ? (
-          <p className="text-sm text-center py-8" style={{color:"#9B8E82"}}>暂无可预约时段，可与咨询师协调时间</p>
-        ) : (
-          <div className="space-y-4">
-            {days7.map(day => (
-              <div key={day.label}>
-                <p className="text-xs font-semibold mb-2" style={{color:"#9B8E82"}}>{day.label}</p>
-                <div className="flex flex-wrap gap-2">
-                  {day.slots.map(slot => (
-                    <button key={slot}
-                      onClick={() => { setOpen(false); router.push(`/booking/${counselorId}`); }}
-                      className="px-3.5 py-1.5 rounded-full text-sm font-medium border"
-                      style={{background:"#E4F0DC",color:"#3A6228",borderColor:"#CCE0C0"}}>
-                      {slot}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        <button onClick={() => { setOpen(false); router.push(`/booking/${counselorId}`); }}
-          className="w-full py-3.5 rounded-2xl text-white font-bold mt-6"
-          style={{background:"var(--color-primary)"}}>
-          立即预约
-        </button>
-      </div>
-    </>
-  );
-
   return (
     <>
       <button onClick={() => setOpen(true)}
@@ -84,7 +33,59 @@ function AvailableTimesButton({ counselorId }: { counselorId: string }) {
         <CalendarDays className="w-4 h-4" style={{color:"var(--color-primary)"}} />
         查看可预约时间
       </button>
-      {mounted && typeof document !== "undefined" && createPortal(portal, document.body)}
+      {mounted && open && createPortal(
+        <div style={{position:"fixed",inset:0,zIndex:99999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
+          {/* 遮罩 */}
+          <div
+            onClick={() => setOpen(false)}
+            style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)"}}
+          />
+          {/* 面板 */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position:"relative",zIndex:1,
+              background:"var(--color-bg)",
+              borderRadius:"24px 24px 0 0",
+              maxHeight:"80vh",overflowY:"auto",
+              padding:"24px 20px 40px",
+            }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold" style={{color:"#2C2420"}}>近期可预约时间</h3>
+              <button onClick={() => setOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-base"
+                style={{background:"#EBE7DF",color:"#5A4E44"}}>×</button>
+            </div>
+            {days7.length === 0 ? (
+              <p className="text-sm text-center py-8" style={{color:"#9B8E82"}}>暂无可预约时段，可与咨询师协调时间</p>
+            ) : (
+              <div className="space-y-4 mb-6">
+                {days7.map(day => (
+                  <div key={day.label}>
+                    <p className="text-xs font-semibold mb-2" style={{color:"#9B8E82"}}>{day.label}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {day.slots.map(slot => (
+                        <button key={slot}
+                          onClick={() => { setOpen(false); router.push(`/booking/${counselorId}`); }}
+                          className="px-3.5 py-1.5 rounded-full text-sm font-medium border"
+                          style={{background:"#E4F0DC",color:"#3A6228",borderColor:"#CCE0C0"}}>
+                          {slot}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => { setOpen(false); router.push(`/booking/${counselorId}`); }}
+              className="w-full py-3.5 rounded-2xl text-white font-bold"
+              style={{background:"var(--color-primary)"}}>
+              立即预约
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }
