@@ -307,6 +307,9 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           )}
           {/* 说明文字 */}
           {c.sessionSettings && <MultiPara text={c.sessionSettings} />}
+
+          {/* 查看可预约时间按钮 */}
+          <AvailableTimesButton counselorId={c.id} />
         </div>
 
         {/* 从业背景 */}
