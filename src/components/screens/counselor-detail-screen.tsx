@@ -11,12 +11,20 @@ import { auth } from "@eazo/sdk";
 function AvailableTimesButton({ counselorId }: { counselorId: string }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  // mock 时段数据（实际可从 /api/counselor/schedule 拉取）
-  const MOCK_DAYS = [
-    { label: "周二 6.3", slots: ["09:00–09:50", "14:00–14:50", "16:00–16:50"] },
-    { label: "周四 6.5", slots: ["10:00–10:50", "15:00–15:50"] },
-    { label: "周六 6.7", slots: ["09:00–09:50", "11:00–11:50", "14:00–14:50"] },
-  ];
+
+  // 生成未来7天的可预约时段（mock）
+  const WEEKDAY = ["日","一","二","三","四","五","六"];
+  const days7 = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() + i + 1);
+    const label = `周${WEEKDAY[d.getDay()]} ${d.getMonth()+1}.${d.getDate()}`;
+    // 偶数天有时段，奇数天空档（模拟）
+    const slots = i % 3 === 2 ? [] :
+      i % 2 === 0
+        ? ["09:00–09:50","14:00–14:50","16:00–16:50"]
+        : ["10:00–10:50","15:00–15:50"];
+    return { label, slots };
+  }).filter(d => d.slots.length > 0);
+
   return (
     <>
       <button onClick={() => setOpen(true)}
@@ -27,41 +35,50 @@ function AvailableTimesButton({ counselorId }: { counselorId: string }) {
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div className="fixed inset-0 z-50 flex items-end"
-            style={{ background: "rgba(0,0,0,0.45)" }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={() => setOpen(false)}>
-            <motion.div className="w-full rounded-t-3xl px-5 pt-6 pb-10"
-              style={{ background: "var(--color-bg)" }}
+          <>
+            {/* 独立遮罩层，z-40 */}
+            <motion.div className="fixed inset-0 z-40"
+              style={{ background: "rgba(0,0,0,0.5)" }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)} />
+            {/* 内容层，z-50 */}
+            <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl px-5 pt-6 pb-10 overflow-y-auto"
+              style={{ background: "var(--color-bg)", maxHeight: "80vh" }}
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold" style={{ color: "#2C2420" }}>近期可预约时间</h3>
-                <button onClick={() => setOpen(false)} className="text-xl" style={{ color: "#9B8E82" }}>×</button>
+                <h3 className="text-base font-bold" style={{ color: "#2C2420" }}>未来7天可预约时间</h3>
+                <button onClick={() => setOpen(false)} className="text-2xl leading-none" style={{ color: "#9B8E82" }}>×</button>
               </div>
-              <div className="space-y-4 mb-5">
-                {MOCK_DAYS.map(d => (
-                  <div key={d.label}>
-                    <p className="text-xs font-semibold mb-2" style={{ color: "#5A4E44" }}>{d.label}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {d.slots.map(s => (
-                        <span key={s} className="px-3 py-1.5 rounded-full text-xs font-medium"
-                          style={{ background: "#E8DFCC", color: "#5A4E44", border: "1px solid #D4C8B0" }}>
-                          {s}
-                        </span>
-                      ))}
+              {days7.length === 0 ? (
+                <p className="text-sm text-center py-8" style={{ color: "#9B8E82" }}>暂无可预约时段</p>
+              ) : (
+                <div className="space-y-4 mb-5">
+                  {days7.map(d => (
+                    <div key={d.label}>
+                      <p className="text-xs font-semibold mb-2" style={{ color: "#5A4E44" }}>{d.label}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {d.slots.map(s => (
+                          <button key={s}
+                            onClick={() => { setOpen(false); router.push(`/booking/${counselorId}`); }}
+                            className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+                            style={{ background: "#E4F0DC", color: "#3A6228", border: "1px solid #CCE0C0" }}>
+                            {s}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               <button onClick={() => { setOpen(false); router.push(`/booking/${counselorId}`); }}
                 className="w-full py-3.5 rounded-2xl text-white font-bold"
                 style={{ background: "var(--color-primary)" }}>
                 立即预约
               </button>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
