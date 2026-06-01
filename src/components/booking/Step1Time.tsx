@@ -193,6 +193,27 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
                     </div>
                   ) : (
                     <>
+                      {/* 是否接受咨询师提供的时间 */}
+                      <p className="text-xs font-medium mb-2" style={{ color: "#5A4E44" }}>
+                        是否接受咨询师提供的时间？
+                      </p>
+                      <div className="flex gap-2 mb-3">
+                        {(["接受，只要咨询师有空就好", "我需要确认再决定"] as const).map(opt => {
+                          const active = (window as any).__coordAccept === opt;
+                          return (
+                            <button key={opt}
+                              onClick={() => { (window as any).__coordAccept = opt; (document.activeElement as HTMLElement)?.blur(); }}
+                              className="flex-1 py-2 rounded-xl text-xs font-medium border transition-colors"
+                              style={{
+                                background: active ? "#E4F0DC" : "white",
+                                color: active ? "#3A6228" : "#5A4E44",
+                                borderColor: active ? "#9CB48A" : "#D8D2C8",
+                              }}>
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
                       <p className="text-xs font-medium mb-1" style={{ color: "#5A4E44" }}>
                         你方便的时间 <span style={{ color: "#E87070" }}>*</span>
                         <span className="ml-1 font-normal" style={{ color: "#9B8E82" }}>（请尽量具体）</span>
