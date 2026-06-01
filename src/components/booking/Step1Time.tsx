@@ -194,11 +194,23 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
                     </div>
                   ) : (
                     <>
-                      {/* 是否接受咨询师提供的时间 */}
+                      <p className="text-xs font-medium mb-1" style={{ color: "#5A4E44" }}>
+                        你方便的时间 <span style={{ color: "#E87070" }}>*</span>
+                        <span className="ml-1 font-normal" style={{ color: "#9B8E82" }}>（请尽量具体）</span>
+                      </p>
+                      <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>
+                        建议申请48小时之后的时间，咨询师更可能接受
+                      </p>
+                      <textarea value={coordMsg} onChange={e=>setCoordMsg(e.target.value)}
+                        placeholder={"例如：\n周一至周三 下午 14:00–18:00\n周六全天均可\n请尽量提供 2-3 个备选时间"}
+                        rows={4}
+                        className="w-full rounded-xl px-3 py-2.5 text-sm resize-none outline-none mb-3"
+                        style={{ background: "#F8F5F0", color: "#2C2420", border: "1.5px solid var(--color-border)" }} />
+                      {/* 是否接受咨询师提供的时间 — 在时间填写下方 */}
                       <p className="text-xs font-medium mb-2" style={{ color: "#5A4E44" }}>
                         是否接受咨询师提供的时间？
                       </p>
-                      <div className="flex gap-2 mb-3">
+                      <div className="flex gap-2 mb-4">
                         {(["接受，只要咨询师有空就好", "我需要确认再决定"] as const).map(opt => {
                           const active = coordAccept === opt;
                           return (
