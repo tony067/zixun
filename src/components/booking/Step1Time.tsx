@@ -208,10 +208,11 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
                         style={{ background: "#F8F5F0", color: "#2C2420", border: "1.5px solid var(--color-border)" }} />
                       {/* 是否接受咨询师提供的时间 — 在时间填写下方 */}
                       <p className="text-xs font-medium mb-2" style={{ color: "#5A4E44" }}>
-                        是否接受咨询师提供的时间？
+                        如果上述时间已满，是否接受咨询师提供的其他时间？
+                        <span style={{ color: "#E87070" }}> *</span>
                       </p>
                       <div className="flex gap-2 mb-4">
-                        {(["接受，只要咨询师有空就好", "我需要确认再决定"] as const).map(opt => {
+                        {(["是", "否"] as const).map(opt => {
                           const active = coordAccept === opt;
                           return (
                             <button key={opt}
