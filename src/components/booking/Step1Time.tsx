@@ -56,6 +56,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
   const [coordMsg, setCoordMsg] = useState("");
   const [coordNote, setCoordNote] = useState("");
   const [coordSent, setCoordSent] = useState(false);
+  const [coordAccept, setCoordAccept] = useState<string | null>(null);
 
   const dayKey = selectedDay.toISOString().slice(0, 10);
   const daySlots = slots[dayKey] ?? [];
@@ -199,10 +200,10 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
                       </p>
                       <div className="flex gap-2 mb-3">
                         {(["接受，只要咨询师有空就好", "我需要确认再决定"] as const).map(opt => {
-                          const active = (window as any).__coordAccept === opt;
+                          const active = coordAccept === opt;
                           return (
                             <button key={opt}
-                              onClick={() => { (window as any).__coordAccept = opt; (document.activeElement as HTMLElement)?.blur(); }}
+                              onClick={() => setCoordAccept(opt)}
                               className="flex-1 py-2 rounded-xl text-xs font-medium border transition-colors"
                               style={{
                                 background: active ? "#E4F0DC" : "white",
