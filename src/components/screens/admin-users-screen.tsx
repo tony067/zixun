@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Search } from "lucide-react";
 
@@ -19,6 +20,8 @@ export default function AdminUsersScreen() {
   const [tab, setTab] = useState<"client" | "counselor">("client");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<User | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const [users, setUsers] = useState(MOCK_USERS);
 
   const filtered = users
@@ -92,10 +95,10 @@ export default function AdminUsersScreen() {
       </div>
 
       {/* 用户详情弹窗 → 改为底部完整面板 */}
-      {selected && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end"
+      {mounted && selected && createPortal(
+        <div style={{ position:"fixed", inset:0, zIndex:99999, display:"flex", flexDirection:"column", justifyContent:"flex-end" }}
           onClick={() => setSelected(null)}>
-          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.5)" }} />
+          <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.55)" }} />
           <div className="relative rounded-t-3xl px-5 pt-5 pb-10"
             style={{ background: "var(--color-bg)", zIndex: 1, maxHeight: "80vh", overflowY: "auto" }}
             onClick={e => e.stopPropagation()}>
@@ -159,7 +162,7 @@ export default function AdminUsersScreen() {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }
