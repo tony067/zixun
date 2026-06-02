@@ -6,9 +6,9 @@ const STATS = [
   { label: "平台用户", value: "1,284", sub: "本月新增 +38", icon: Users, color: "#9CB48A", href: "/admin/users" },
   { label: "本月订单", value: "216", sub: "较上月 +12%", icon: ClipboardList, color: "#B8A99A", href: "/admin/orders" },
   { label: "咨询师已上线", value: "48", sub: "入驻审核通过", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
-  { label: "本月应收", value: "¥64,800", sub: "较上月 +8%", icon: TrendingUp, color: "#8BB5C8", href: "/admin/orders" },
+  { label: "本月应收", value: "¥64,800", sub: "较上月 +8%", icon: TrendingUp, color: "#8BB5C8", href: "/admin/billing?type=monthly" },
   { label: "累计订单", value: "3,421", sub: "历史总计", icon: BarChart2, color: "#C4A0C0", href: "/admin/orders" },
-  { label: "累计应收", value: "¥892,400", sub: "历史总计", icon: DollarSign, color: "#E8A87C", href: "/admin/orders" },
+  { label: "累计应收", value: "¥892,400", sub: "历史总计", icon: DollarSign, color: "#E8A87C", href: "/admin/billing?type=total" },
 ];
 
 const SHORTCUTS = [
