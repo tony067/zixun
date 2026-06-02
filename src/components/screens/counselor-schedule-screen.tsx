@@ -463,25 +463,27 @@ export function CounselorScheduleScreen() {
 }
 
 function StatsPanel() {
+  const router = useRouter();
   const STATS = [
-    { label: "本月接单", value: "8", icon: TrendingUp, color: "#9CB48A" },
-    { label: "已完成咨询", value: "6", icon: Check, color: "#059669" },
-    { label: "接待来访", value: "5", icon: Users, color: "#6366F1" },
-    { label: "本月完成", value: "6", icon: CalendarDays, color: "#F59E0B" },
-    { label: "累计接单", value: "42", icon: TrendingUp, color: "#9CB48A" },
-    { label: "累计时长", value: "2100h", icon: Clock, color: "#EC4899" },
+    { label: "本月接单", value: "8", unit: "个", desc: "本月新增预约订单", href: "/counselor/bookings" },
+    { label: "本月完成咨询", value: "6", unit: "小时", desc: "本月已完成咨询时长", href: "/counselor/bookings" },
+    { label: "接待来访", value: "5", unit: "个", desc: "累计接待来访人数", href: "/counselor/schedule?tab=clients" },
+    { label: "累计完成时长", value: "300", unit: "小时", desc: "累计完成咨询时长", href: "/counselor/bookings" },
   ];
   return (
     <div className="px-5 py-4">
       <div className="grid grid-cols-2 gap-3">
         {STATS.map(s => (
-          <div key={s.label} className="rounded-2xl p-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
-            <div className="flex items-center gap-2 mb-2">
-              <s.icon className="w-4 h-4" style={{ color: s.color }} />
-              <span className="text-xs text-[#9B8E82]">{s.label}</span>
+          <button key={s.label} onClick={() => router.push(s.href)}
+            className="rounded-2xl p-4 text-left"
+            style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid #EBE7DF" }}>
+            <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>{s.label}</p>
+            <div className="flex items-baseline gap-1">
+              <p className="text-2xl font-bold" style={{ color: "#2C2420" }}>{s.value}</p>
+              <p className="text-sm" style={{ color: "#9B8E82" }}>{s.unit}</p>
             </div>
-            <p className="text-2xl font-bold text-[#2C2420]">{s.value}</p>
-          </div>
+            <p className="text-xs mt-1.5" style={{ color: "#C4BDB5" }}>{s.desc} →</p>
+          </button>
         ))}
       </div>
     </div>
