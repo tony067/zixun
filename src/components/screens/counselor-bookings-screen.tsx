@@ -37,7 +37,7 @@ const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
   rejected:             { color: "#EF4444", bg: "#FEE2E2" },
 };
 
-function BookingCard({ b, onUpdate, onReschedule }: { b: Booking; onUpdate: (id: string, status: string) => void; onReschedule?: (b: Booking) => void }) {
+function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Booking; onUpdate: (id: string, status: string) => void; onReschedule?: (b: Booking) => void; onDirectReschedule?: (id: string) => void }) {
   const dt = new Date(b.scheduledAt);
   const dateStr = dt.toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short" });
   const timeStr = dt.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
