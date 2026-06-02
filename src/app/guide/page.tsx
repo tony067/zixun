@@ -127,7 +127,7 @@ export default function GuidePage() {
           style={{ background: "var(--color-primary)" }}>
           浏览咨询师
         </button>
-        <plassName="text-xs text-center mt-3" style={{ color: "#9B8E82" }}>
+        <p className="text-xs text-center mt-3" style={{ color: "#9B8E82" }}>
           有更多问题？可以在预约时直接向咨询师提问。
         </p>
       </div>
