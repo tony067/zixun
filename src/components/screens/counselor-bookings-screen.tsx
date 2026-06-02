@@ -116,6 +116,12 @@ function BookingCard({ b, onUpdate, onReschedule }: { b: Booking; onUpdate: (id:
               style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
               <MessageCircle className="w-3.5 h-3.5" />私信
             </motion.button>
+            <motion.button whileTap={{ scale: 0.95 }}
+              onClick={() => onDirectReschedule && onDirectReschedule(b.id)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
+              style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)", background: "white" }}>
+              修改时间
+            </motion.button>
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "completed")}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-white"
               style={{ background: "var(--color-primary)" }}>
