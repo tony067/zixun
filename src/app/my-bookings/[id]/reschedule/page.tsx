@@ -18,7 +18,8 @@ function genDays(n = 14) {
 export default function ReschedulePage() {
   const router = useRouter();
   const { id } = useParams();
-  const [booking, setBooking] = useState(null);
+  type BookingInfo = { counselorName: string; counselorType: string; scheduledAt: string; sessionMode: string; sessionNumber: number };
+  const [booking, setBooking] = useState<BookingInfo | null>(null);
   const [selDay, setSelDay] = useState("");
   const [selTime, setSelTime] = useState("");
   const [reason, setReason] = useState("");
