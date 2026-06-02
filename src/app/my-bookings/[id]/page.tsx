@@ -216,9 +216,20 @@ export default function BookingDetailPage() {
         <div className="flex gap-3">
           <button className="flex-1 py-3 rounded-2xl text-sm font-semibold border"
             style={{ borderColor: "#9CB48A", color: "#9CB48A" }}>联系咨询师</button>
-          <button className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
+          <button
+            onClick={() => {
+              if (bk.status === "pending_payment") {
+                router.push(`/my-bookings/${id}?pay=1`);
+              } else if (bk.status === "upcoming") {
+                setModal("reschedule");
+              } else {
+                router.push(`/booking/${bk.counselorId}`);
+              }
+            }}
+            className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
             style={{ background: "#9CB48A" }}>
-            {bk.status === "pending_payment" ? `立即支付 ¥${bk.priceAmount}` : "续约"}
+            {bk.status === "pending_payment" ? `立即支付 ¥${bk.priceAmount}` :
+             bk.status === "upcoming" ? "修改时间" : "续约"}
           </button>
         </div>
       </div>
