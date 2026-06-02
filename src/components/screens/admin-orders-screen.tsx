@@ -89,7 +89,7 @@ export default function AdminOrdersScreen() {
         ) : bookings.map(b => {
           const s = st(b.status);
           return (
-            <button key={b.id} onClick={() => setSelected(b)} className="w-full text-left rounded-2xl p-4"
+            <button key={b.id} onClick={() => router.push("/admin/orders/"+b.id)} className="w-full text-left rounded-2xl p-4"
               style={{ background: "white", border: "1px solid #EBE7DF" }}>
               <div className="flex items-start justify-between mb-2">
                 <div>
