@@ -74,7 +74,7 @@ export default function ClientDetailScreen() {
         <h1 className="text-base font-bold" style={{color:"#2C2420"}}>来访档案</h1>
       </div>
 
-      <div className="px-5 pt-5">
+      <div className="flex-1 overflow-y-auto px-5 pt-5 pb-10">
         {/* 基本信息 */}
         <div className="rounded-2xl p-4 mb-4" style={{background:"white",border:"1.5px solid var(--color-border)"}}>
           <div className="flex items-center gap-3 mb-4">
