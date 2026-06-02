@@ -141,6 +141,8 @@ export function CounselorBookingsScreen() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKey, setSelectedKey] = useState("pending_confirmation");
+  const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
+  const [rescheduleNote, setRescheduleNote] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -220,10 +222,69 @@ export function CounselorBookingsScreen() {
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
-            {displayed.map(b => <BookingCard key={b.id} b={b} onUpdate={handleUpdate} />)}
+            {displayed.map(b => <BookingCard key={b.id} b={b} onUpdate={handleUpdate} onReschedule={setRescheduleBooking} />)}
           </AnimatePresence>
         )}
       </div>
+
+      {/* 改期确认弹窗 */}
+      {rescheduleBooking && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end" style={{ background: "rgba(0,0,0,0.5)" }}
+          onClick={() => setRescheduleBooking(null)}>
+          <div className="rounded-t-3xl px-5 pt-6 pb-10" style={{ background: "var(--color-bg)" }}
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-bold" style={{ color: "#2C2420" }}>来访改期申请</h2>
+              <button onClick={() => setRescheduleBooking(null)} className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ background: "#EBE7DF", color: "#5A4E44", fontSize: 18 }}>×</button>
+            </div>
+            <div className="rounded-xl p-3 mb-4" style={{ background: "#F8F5F0" }}>
+              <p className="text-xs mb-1" style={{ color: "#9B8E82" }}>申请改到</p>
+              <p className="text-sm font-bold" style={{ color: "#2C2420" }}>
+                {rescheduleBooking.rescheduleNewTime
+                  ? new Date(rescheduleBooking.rescheduleNewTime).toLocaleString("zh-CN", { month: "numeric", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" })
+                  : "未指定"}
+              </p>
+              {rescheduleBooking.rescheduleReason && (
+                <p className="text-xs mt-1" style={{ color: "#9B8E82" }}>原因：{rescheduleBooking.rescheduleReason}</p>
+              )}
+            </div>
+            <p className="text-sm font-medium mb-2" style={{ color: "#2C2420" }}>回复（可选）</p>
+            <textarea value={rescheduleNote} onChange={e => setRescheduleNote(e.target.value)}
+              rows={2} placeholder="可附上确认说明或说明无法接受的原因…"
+              className="w-full rounded-xl px-3 py-2.5 text-sm border mb-4"
+              style={{ background: "#F8F5F0", borderColor: "#DDD8D0", resize: "none", color: "#2C2420" }} />
+            <div className="flex gap-3">
+              <button onClick={async () => {
+                await request(\`/api/bookings/\${rescheduleBooking.id}/reschedule\`, {
+                  method: "PATCH",
+                  body: JSON.stringify({ action: "reject", note: rescheduleNote }),
+                });
+                setBookings(prev => prev.map(b => b.id === rescheduleBooking.id ? { ...b, rescheduleStatus: "rejected" } : b));
+                setRescheduleBooking(null); setRescheduleNote("");
+              }} className="flex-1 py-3 rounded-2xl text-sm font-bold"
+                style={{ background: "#FEE2E2", color: "#DC2626" }}>
+                拒绝改期
+              </button>
+              <button onClick={async () => {
+                await request(\`/api/bookings/\${rescheduleBooking.id}/reschedule\`, {
+                  method: "PATCH",
+                  body: JSON.stringify({ action: "approve", note: rescheduleNote }),
+                });
+                if (rescheduleBooking.rescheduleNewTime) {
+                  setBookings(prev => prev.map(b => b.id === rescheduleBooking.id
+                    ? { ...b, rescheduleStatus: "approved", scheduledAt: rescheduleBooking.rescheduleNewTime! }
+                    : b));
+                }
+                setRescheduleBooking(null); setRescheduleNote("");
+              }} className="flex-1 py-3 rounded-2xl text-sm font-bold text-white"
+                style={{ background: "var(--color-primary)" }}>
+                确认改期
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
