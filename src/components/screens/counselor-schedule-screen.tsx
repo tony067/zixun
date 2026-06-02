@@ -70,10 +70,16 @@ function MonthCalendar({ rules }: { rules: Rule[] }) {
   };
 
   return (
-    <div className="px-4 pt-4 pb-6">
+    <div className="px-4 pt-4 pb-6"
+      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
+      onTouchEnd={e => {
+        const diff = e.changedTouches[0].clientX - touchStartX.current;
+        if (diff > 50) prevMonth();
+        else if (diff < -50) nextMonth();
+      }}>
       <div className="flex items-center justify-between mb-5">
         <motion.button whileTap={{ scale: 0.9 }}
-          onClick={() => { if (month === 0) { setMonth(11); setYear(y => y-1); } else setMonth(m => m-1); }}
+          onClick={prevMonth}
           className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
           <ChevronLeft className="w-4 h-4 text-[#6B5E52]" />
         </motion.button>
