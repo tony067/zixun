@@ -44,7 +44,7 @@ function detectRole(path: string): Role {
 const MY_ROUTE: Record<Role, string> = {
   client:    "/profile",
   counselor: "/counselor/bookings",
-  admin:     "/admin/settings",
+  admin:     "/admin",
 };
 
 const ROLE_ITEMS = [
