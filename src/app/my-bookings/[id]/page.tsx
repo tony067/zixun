@@ -87,6 +87,8 @@ export default function BookingDetailPage() {
   const [selTime, setSelTime] = useState("");
   const [submittingReschedule, setSubmittingReschedule] = useState(false);
   const [rescheduleSuccess, setRescheduleSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     request(`/api/bookings/${id}`).then(r => r.json()).then(d => {
