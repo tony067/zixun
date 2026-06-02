@@ -369,7 +369,7 @@ export function ExploreScreen() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => router.push("/guide")}
+            onClick={() => window.location.href="/guide"}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[13px]"
             style={{ borderColor: "#C8C4BC", color: "#7D736A", background: "white" }}>
             <BookLineIcon />新手必读
