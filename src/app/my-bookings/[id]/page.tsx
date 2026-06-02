@@ -224,7 +224,7 @@ export default function BookingDetailPage() {
             onClick={() => {
               if (bk.status === "pending_payment") {
                 router.push(`/my-bookings/${id}?pay=1`);
-              } else if (bk.status === "upcoming") {
+              } else if (bk.status === "paid" || bk.status === "upcoming") {
                 setModal("reschedule");
               } else {
                 router.push(`/booking/${bk.counselor?.id}`);
