@@ -1,28 +1,36 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Users, ClipboardList, ShieldCheck, TrendingUp, Clock, Star } from "lucide-react";
+import { Users, ClipboardList, Star, TrendingUp, BarChart2, DollarSign } from "lucide-react";
 
 const STATS = [
   { label: "平台用户", value: "1,284", sub: "本月新增 +38", icon: Users, color: "#9CB48A", href: "/admin/users" },
   { label: "本月订单", value: "216", sub: "较上月 +12%", icon: ClipboardList, color: "#B8A99A", href: "/admin/orders" },
-  { label: "待审核", value: "7", sub: "咨询师申请", icon: ShieldCheck, color: "#E8A87C", href: "/admin/counselors" },
-  { label: "本月营收", value: "¥64,800", sub: "较上月 +8%", icon: TrendingUp, color: "#8BB5C8", href: "/admin/orders" },
-  { label: "累计咨询", value: "3,421 h", sub: "总咨询时长", icon: Clock, color: "#C4A0C0", href: "/admin/orders" },
-  { label: "咨询师", value: "48", sub: "已上线", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
-];
-
-const RECENT_ACTIONS = [
-  { time: "10分钟前", text: "咨询师「陈晓雯」申请入驻，待审核", href: "/admin/counselors" },
-  { time: "32分钟前", text: "订单 #bk_089 来访申请退款", href: "/admin/orders" },
-  { time: "1小时前", text: "咨询师「林诗涵」信息变更，待审核", href: "/admin/counselors" },
-  { time: "2小时前", text: "新用户注册 18 位", href: "/admin/users" },
-  { time: "3小时前", text: "订单 #bk_076 咨询已完成", href: "/admin/orders" },
+  { label: "咨询师已上线", value: "48", sub: "入驻审核通过", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
+  { label: "本月应收", value: "¥64,800", sub: "较上月 +8%", icon: TrendingUp, color: "#8BB5C8", href: "/admin/orders" },
+  { label: "累计订单", value: "3,421", sub: "历史总计", icon: BarChart2, color: "#C4A0C0", href: "/admin/orders" },
+  { label: "累计应收", value: "¥892,400", sub: "历史总计", icon: DollarSign, color: "#E8A87C", href: "/admin/orders" },
 ];
 
 const SHORTCUTS = [
-  { label: "咨询师审核", sub: "7 个待审核", href: "/admin/counselors", badge: 7, color: "#E8A87C" },
-  { label: "订单管理", sub: "查看全部订单", href: "/admin/orders", badge: 0, color: "#8BB5C8" },
+  { label: "审核申请", sub: "咨询师入驻审核", href: "/admin/counselors", badge: 7, color: "#E8A87C" },
+  { label: "订单管理", sub: "查看全部订单", href: "/admin/orders", badge: 3, color: "#8BB5C8" },
   { label: "用户管理", sub: "来访与咨询师", href: "/admin/users", badge: 0, color: "#9CB48A" },
+];
+
+type RecentAction = {
+  time: string;
+  text: string;
+  href: string;
+  type: "counselor" | "order" | "user";
+  targetId?: string;
+};
+
+const RECENT_ACTIONS: RecentAction[] = [
+  { time: "10分钟前", text: "咨询师「陈晓雯」申请入驻，待审核", href: "/admin/counselors", type: "counselor", targetId: "c_001" },
+  { time: "32分钟前", text: "订单 #bk_001 来访申请退款", href: "/admin/orders/bk_001", type: "order", targetId: "bk_001" },
+  { time: "1小时前", text: "咨询师「林诗涵」信息变更，待审核", href: "/admin/counselors", type: "counselor", targetId: "c_002" },
+  { time: "2小时前", text: "新用户注册 18 位", href: "/admin/users", type: "user" },
+  { time: "3小时前", text: "订单 #bk_003 咨询已完成", href: "/admin/orders/bk_003", type: "order", targetId: "bk_003" },
 ];
 
 export default function AdminOverviewScreen() {
@@ -41,10 +49,9 @@ export default function AdminOverviewScreen() {
           return (
             <button key={s.label} onClick={() => router.push(s.href)}
               className="rounded-2xl p-4 text-left" style={{ background: "white", border: "1px solid #EBE7DF" }}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: s.color+"22" }}>
-                  <Icon className="w-4 h-4" style={{ color: s.color }} />
-                </div>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2"
+                style={{ background: s.color + "22" }}>
+                <Icon className="w-4 h-4" style={{ color: s.color }} />
               </div>
               <p className="text-xl font-bold" style={{ color: "#2C2420" }}>{s.value}</p>
               <p className="text-xs mt-0.5 font-medium" style={{ color: "#5A4E44" }}>{s.label}</p>
@@ -56,7 +63,7 @@ export default function AdminOverviewScreen() {
 
       {/* 快捷入口 */}
       <div className="px-4 mb-5">
-        <p className="text-xs font-semibold mb-3" style={{ color: "#9B8E82" }}>快捷入口</p>
+        <p className="text-xs font-semibold mb-3" style={{ color: "#9B8E82" }}>快捷操作</p>
         <div className="space-y-2">
           {SHORTCUTS.map(s => (
             <button key={s.label} onClick={() => router.push(s.href)}
