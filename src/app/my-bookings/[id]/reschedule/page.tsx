@@ -1,166 +1,144 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, CalendarDays, Clock } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { request } from "@/lib/api/request";
-import { motion } from "framer-motion";
 
-const WEEKDAY = ["日", "一", "二", "三", "四", "五", "六"];
+const WEEKDAY = ["日","一","二","三","四","五","六"];
+const REASONS = ["临时有事，需要调整","工作安排冲突","身体不适","家庭事务","其他原因"];
+const SLOTS = ["09:00","10:00","11:00","14:00","15:00","16:00","19:00","20:00"];
 
 function genDays(n = 14) {
   return Array.from({ length: n }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() + i + 1);
-    return {
-      date: d,
-      label: `${d.getMonth() + 1}/${d.getDate()}`,
-      weekday: `周${WEEKDAY[d.getDay()]}`,
-      iso: d.toISOString().slice(0, 10),
-    };
+    const d = new Date(); d.setDate(d.getDate() + i + 1);
+    return { label: (d.getMonth()+1)+"/"+d.getDate(), weekday: "周"+WEEKDAY[d.getDay()], iso: d.toISOString().slice(0,10) };
   });
 }
 
-const TIME_SLOTS = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "19:00", "20:00"];
-
 export default function ReschedulePage() {
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
-  const [booking, setBooking] = useState<{ counselorName: string; scheduledAt: string } | null>(null);
-  const [selectedDay, setSelectedDay] = useState<string>("");
-  const [selectedTime, setSelectedTime] = useState<string>("");
+  const { id } = useParams();
+  const [booking, setBooking] = useState(null);
+  const [selDay, setSelDay] = useState("");
+  const [selTime, setSelTime] = useState("");
   const [reason, setReason] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const days = genDays();
 
   useEffect(() => {
-    request(`/api/bookings/${id}`).then(r => r.json()).then(d => {
+    request("/api/bookings/"+id).then(r => r.json()).then(d => {
       if (d.booking) setBooking({
         counselorName: d.booking.counselor?.displayName ?? "咨询师",
-        scheduledAt: d.booking.scheduledAt,
+        counselorType: d.booking.counselor?.counselorTypes?.[0] ?? "心理咨询师",
+        scheduledAt: d.booking.scheduledAt ?? "",
+        sessionMode: d.booking.sessionMode ?? "视频咨询",
+        sessionNumber: d.booking.sessionNumber ?? 1,
       });
-    });
+    }).catch(() => {});
   }, [id]);
 
-  const canSubmit = selectedDay && selectedTime && reason.trim().length > 0;
+  const canSubmit = selDay && selTime && reason;
 
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
-    const newTime = new Date(`${selectedDay}T${selectedTime}:00`).toISOString();
-    await request(`/api/bookings/${id}/reschedule`, {
+    await request("/api/bookings/"+id+"/reschedule", {
       method: "POST",
-      body: JSON.stringify({ newTime, reason }),
+      body: JSON.stringify({ newTime: selDay+"T"+selTime+":00", reason }),
     });
     setSubmitting(false);
     setDone(true);
   };
 
   if (done) return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: "var(--color-bg)" }}>
-      <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-        style={{ background: "#E4F0DC" }}>
-        <CalendarDays className="w-8 h-8" style={{ color: "var(--color-primary)" }} />
+    <div className="min-h-screen flex flex-col items-center px-5 pt-16 pb-10" style={{ background: "var(--color-bg)" }}>
+      <div className="w-14 h-14 rounded-full flex items-center justify-center mb-5" style={{ background: "#E4F0DC" }}>
+        <span className="text-2xl text-green-700">✓</span>
       </div>
-      <h2 className="text-xl font-bold mb-2" style={{ color: "#2C2420" }}>改期申请已发送</h2>
-      <p className="text-sm text-center mb-8" style={{ color: "#9B8E82" }}>
-        咨询师收到后会确认新时间，确认后订单时间将自动更新。
-      </p>
-      <button onClick={() => router.push("/profile")}
-        className="w-full py-3.5 rounded-2xl text-white font-bold"
-        style={{ background: "var(--color-primary)" }}>
-        返回我的预约
-      </button>
+      <h2 className="text-xl font-bold text-center mb-2" style={{ color: "#2C2420" }}>改期申请已提交</h2>
+      <p className="text-sm text-center mb-10" style={{ color: "#9B8E82" }}>咨询师将在 24 小时内确认，请留意消息通知。</p>
+      <button onClick={() => router.push("/profile")} className="w-full py-3.5 rounded-2xl text-white font-bold mb-3" style={{ background: "var(--color-primary)" }}>查看我的预约</button>
+      <button onClick={() => router.push("/")} className="w-full py-3.5 rounded-2xl font-medium text-sm" style={{ background: "#EBE7DF", color: "#5A4E44" }}>返回首页</button>
     </div>
   );
 
   return (
     <div className="min-h-screen pb-10" style={{ background: "var(--color-bg)" }}>
-      {/* 顶栏 */}
-      <div className="flex items-center gap-3 px-4 pt-12 pb-4 sticky top-0 z-10 border-b"
-        style={{ background: "rgba(245,240,232,0.95)", backdropFilter: "blur(8px)", borderColor: "#EBE7DF" }}>
+      <div className="flex items-center gap-3 px-4 pt-12 pb-4 sticky top-0 z-10" style={{ background: "rgba(245,240,232,0.96)", backdropFilter: "blur(8px)" }}>
         <button onClick={() => router.back()} className="p-1.5 rounded-full" style={{ background: "#EBE7DF" }}>
           <ArrowLeft className="w-4 h-4" style={{ color: "#5A4E44" }} />
         </button>
         <h1 className="text-base font-bold" style={{ color: "#2C2420" }}>申请改期</h1>
       </div>
-
-      <div className="px-5 pt-5 space-y-5">
-        {/* 当前预约 */}
+      <div className="px-5 space-y-4 pt-2">
         {booking && (
-          <div className="rounded-2xl p-4" style={{ background: "#E8DFCC" }}>
-            <p className="text-xs mb-1" style={{ color: "#5A4E44" }}>当前预约</p>
-            <p className="text-sm font-bold" style={{ color: "#2C2420" }}>{booking.counselorName}</p>
-            <p className="text-xs mt-0.5" style={{ color: "#5A4E44" }}>
-              {new Date(booking.scheduledAt).toLocaleString("zh-CN", { month: "numeric", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" })}
-            </p>
+          <div className="rounded-2xl p-4" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-11 h-11 rounded-full flex items-center justify-center text-base font-bold text-white flex-none" style={{ background: "var(--color-primary)" }}>{booking.counselorName[0]}</div>
+              <div>
+                <p className="text-xs mb-0.5" style={{ color: "#9B8E82" }}>{booking.counselorType}</p>
+                <p className="text-base font-bold" style={{ color: "#2C2420" }}>{booking.counselorName}</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs mb-0.5" style={{ color: "#9B8E82" }}>当前咨询时间</p>
+              <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>
+                {booking.scheduledAt ? new Date(booking.scheduledAt).toLocaleString("zh-CN", { year:"numeric",month:"2-digit",day:"2-digit",weekday:"short",hour:"2-digit",minute:"2-digit" }) : "—"}
+              </p>
+            </div>
+            <div className="mt-2">
+              <p className="text-xs mb-0.5" style={{ color: "#9B8E82" }}>咨询次数及方式</p>
+              <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>第{booking.sessionNumber}次 {booking.sessionMode}</p>
+            </div>
           </div>
         )}
-
-        {/* 选择新日期 */}
-        <div>
-          <p className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "#2C2420" }}>
-            <CalendarDays className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
-            选择新日期
-          </p>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="rounded-2xl px-4 py-3" style={{ background: "#E4F0DC", border: "1px solid #CCE0C0" }}>
+          <p className="text-sm" style={{ color: "#3A6228" }}>请选择你希望改到的时间，咨询师确认后改期生效。改期期间原时间暂不释放。</p>
+        </div>
+        <div className="rounded-2xl p-4" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+          <p className="text-sm font-semibold mb-3" style={{ color: "#2C2420" }}>希望改到的日期 *</p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
             {days.map(d => (
-              <button key={d.iso} onClick={() => setSelectedDay(d.iso)}
-                className="flex-none flex flex-col items-center py-3 px-4 rounded-2xl"
-                style={{
-                  background: selectedDay === d.iso ? "var(--color-primary)" : "white",
-                  border: `1.5px solid ${selectedDay === d.iso ? "var(--color-primary)" : "#EBE7DF"}`,
-                  color: selectedDay === d.iso ? "white" : "#2C2420",
-                }}>
-                <span className="text-xs mb-1" style={{ opacity: 0.8 }}>{d.weekday}</span>
-                <span className="text-sm font-bold">{d.label}</span>
+              <button key={d.iso} onClick={() => { setSelDay(d.iso); setSelTime(""); }}
+                className="flex flex-col items-center flex-none px-3 py-2.5 rounded-xl min-w-[54px]"
+                style={{ background: selDay===d.iso?"var(--color-primary)":"#F8F5F0", border: "1px solid "+(selDay===d.iso?"var(--color-primary)":"#EBE7DF") }}>
+                <span className="text-[10px] mb-0.5" style={{ color: selDay===d.iso?"rgba(255,255,255,0.8)":"#9B8E82" }}>{d.weekday}</span>
+                <span className="text-sm font-semibold" style={{ color: selDay===d.iso?"white":"#2C2420" }}>{d.label}</span>
               </button>
             ))}
           </div>
         </div>
-
-        {/* 选择新时间 */}
-        {selectedDay && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "#2C2420" }}>
-              <Clock className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
-              选择新时间
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {TIME_SLOTS.map(t => (
-                <button key={t} onClick={() => setSelectedTime(t)}
-                  className="px-4 py-2 rounded-full text-sm font-medium"
-                  style={{
-                    background: selectedTime === t ? "var(--color-primary)" : "white",
-                    border: `1.5px solid ${selectedTime === t ? "var(--color-primary)" : "#EBE7DF"}`,
-                    color: selectedTime === t ? "white" : "#2C2420",
-                  }}>
-                  {t}
-                </button>
+        {selDay && (
+          <div className="rounded-2xl p-4" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+            <p className="text-sm font-semibold mb-3" style={{ color: "#2C2420" }}>希望改到的时间 *</p>
+            <div className="grid grid-cols-4 gap-2">
+              {SLOTS.map(t => (
+                <button key={t} onClick={() => setSelTime(t)} className="py-2 rounded-xl text-sm font-medium"
+                  style={{ background: selTime===t?"var(--color-primary)":"#F8F5F0", color: selTime===t?"white":"#5A4E44", border:"1px solid "+(selTime===t?"var(--color-primary)":"#EBE7DF") }}>{t}</button>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
-
-        {/* 改期原因 */}
-        <div>
-          <p className="text-sm font-semibold mb-2" style={{ color: "#2C2420" }}>改期原因 *</p>
-          <textarea value={reason} onChange={e => setReason(e.target.value)}
-            rows={4} placeholder="请简述需要改期的原因，咨询师收到后会尽快确认…"
-            className="w-full rounded-2xl px-4 py-3 text-sm border"
-            style={{ background: "white", borderColor: "#EBE7DF", color: "#2C2420", resize: "none" }} />
+        <div className="rounded-2xl p-4" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+          <p className="text-sm font-semibold mb-3" style={{ color: "#2C2420" }}>改期原因 *</p>
+          <div className="space-y-2">
+            {REASONS.map(r => (
+              <button key={r} onClick={() => setReason(r)} className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm text-left"
+                style={{ background: reason===r?"#E4F0DC":"#F8F5F0", border:"1px solid "+(reason===r?"#9CB48A":"#EBE7DF"), color: reason===r?"#3A6228":"#2C2420" }}>
+                <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-none" style={{ borderColor: reason===r?"var(--color-primary)":"#C4BDB5" }}>
+                  {reason===r && <div className="w-2 h-2 rounded-full" style={{ background: "var(--color-primary)" }} />}
+                </div>
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
-
-        {/* 提交 */}
-        <button onClick={handleSubmit} disabled={!canSubmit || submitting}
-          className="w-full py-3.5 rounded-2xl text-white font-bold text-sm"
-          style={{ background: canSubmit && !submitting ? "var(--color-primary)" : "#C4BDB5" }}>
+        <button onClick={handleSubmit} disabled={!canSubmit||submitting} className="w-full py-3.5 rounded-2xl text-white font-bold"
+          style={{ background: canSubmit&&!submitting?"var(--color-primary)":"#C4BDB5" }}>
           {submitting ? "发送中…" : "发送改期申请"}
         </button>
-
-        <p className="text-xs text-center" style={{ color: "#9B8E82" }}>
-          咨询师确认后，订单时间将自动更新。若咨询师拒绝，原时间保持不变。
-        </p>
+        <p className="text-xs text-center pb-4" style={{ color: "#9B8E82" }}>咨询师确认后，订单时间将自动更新。若咨询师拒绝，原时间保持不变。</p>
       </div>
     </div>
   );
