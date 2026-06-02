@@ -356,6 +356,8 @@ export function ExploreScreen() {
     + (filterPrice && filterPrice !== "不限" ? 1 : 0)
     + filterDir.length;
 
+  const router = useRouter();
+
   return (
     <div className="min-h-svh" style={{ background: "#F5F1E8" }}>
       {/* ── 顶栏 ── */}
