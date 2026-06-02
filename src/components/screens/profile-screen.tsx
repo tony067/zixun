@@ -108,6 +108,16 @@ export default function ProfileScreen(){
   const [bookings,setBookings]=useState<Booking[]>([]);
   const [loadingBk,setLoadingBk]=useState(true);
   const [showSwitch,setShowSwitch]=useState(false);
+  const [seenTabs,setSeenTabs]=useState<Record<string,number>>(()=>{
+    try{ return JSON.parse(localStorage.getItem("bp_seen")||"{}"); }catch{ return {}; }
+  });
+  const markSeen=(key:string,count:number)=>{
+    setSeenTabs(prev=>{
+      const next={...prev,[key]:count};
+      try{localStorage.setItem("bp_seen",JSON.stringify(next));}catch{}
+      return next;
+    });
+  };
   useEffect(()=>{
     if(!user)return;
     request("/api/bookings/my").then(r=>r.json()).then(d=>{
@@ -149,13 +159,13 @@ export default function ProfileScreen(){
       <div className="sticky top-0 z-10 px-5 pb-3 pt-1" style={{background:"var(--color-surface)"}}>
         <div className="flex gap-1.5">
           {BOOKING_TABS.map(t=>(
-            <button key={t.key} onClick={()=>setTab(t.key)}
+            <button key={t.key} onClick={()=>setTab(t.key);markSeen(t.key,counts[t.key]??0)}
               className="flex-1 py-2 rounded-xl text-xs font-semibold relative transition-all"
               style={{background:tab===t.key?"#9CB48A":"#F0EBE3",color:tab===t.key?"white":"#9B8E82"}}>
               {t.label}
-              {counts[t.key]>0&&tab!==t.key&&(
+              {counts[t.key]>0&&tab!==t.key&&counts[t.key]>(seenTabs[t.key]??0)&&(
                 <span className="absolute -top-1.5 -right-0.5 w-4 h-4 rounded-full text-[10px] flex items-center justify-center text-white"
-                  style={{background:"#E07B54"}}>{counts[t.key]}</span>
+                  style={{background:"#E07B54"}}>{counts[t.key]-(seenTabs[t.key]??0)}</span>
               )}
             </button>
           ))}
