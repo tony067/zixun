@@ -7,7 +7,8 @@ import { request } from "@/lib/api/request";
 type Booking = {
   id: string; status: string; scheduledAt: string | null;
   priceAmount: number | null; sessionMode: string | null;
-  counselorName: string; clientName: string;
+  counselor: { id: string; displayName: string } | null;
+  client: { id: string; name: string | null } | null;
 };
 
 const STATUS_OPTS = [
@@ -74,7 +75,7 @@ export default function AdminOrdersScreen() {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <p className="text-sm font-bold" style={{ color: "#2C2420" }}>
-                    {b.clientName} → {b.counselorName}
+                    {b.client?.name ?? "来访者"} → {b.counselor?.displayName ?? "咨询师"}
                   </p>
                   <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{dt} · {b.sessionMode ?? "视频"}</p>
                 </div>
