@@ -6,7 +6,7 @@ import { request } from "@/lib/api/request";
 
 type Counselor = {
   id: string; displayName: string; counselorTypes: string[] | null;
-  location: string | null; reviewStatus: string | null; createdAt: string;
+  location: string | null; status: string; createdAt: string;
   bio: string | null; qualifications: {id:string;value:string}[] | null;
 };
 
