@@ -64,8 +64,8 @@ export default function ClientDetailScreen() {
   const firstForm = d.bookings[0]?.applicationForm;
 
   return (
-    <div className="min-h-svh pb-10" style={{background:"var(--color-bg)"}}>
-      <div className="sticky top-0 z-10 flex items-center gap-3 px-4 pt-12 pb-4"
+    <div className="h-svh flex flex-col" style={{background:"var(--color-bg)"}}>
+      <div className="flex-none sticky top-0 z-10 flex items-center gap-3 px-4 pt-12 pb-4"
         style={{background:"var(--color-bg)",borderBottom:"1px solid var(--color-border)"}}>
         <button onClick={()=>router.back()} className="w-9 h-9 rounded-full flex items-center justify-center"
           style={{background:"white",border:"1.5px solid var(--color-border)"}}>
