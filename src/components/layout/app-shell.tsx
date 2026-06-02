@@ -6,7 +6,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, CalendarDays, MessageCircle, User,
-  LayoutDashboard, ClipboardList,
+  LayoutDashboard, ClipboardList, ShieldCheck, Users,
   ChevronRight,
 } from "lucide-react";
 import { useEazo } from "@eazo/sdk/react";
