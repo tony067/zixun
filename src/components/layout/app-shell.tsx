@@ -25,8 +25,10 @@ const COUNSELOR_TABS = [
 ];
 
 const ADMIN_TABS = [
-  { href: "/admin",    icon: LayoutDashboard, label: "总览" },
-  { href: "/messages", icon: MessageCircle,   label: "消息" },
+  { href: "/admin",              icon: LayoutDashboard, label: "总览" },
+  { href: "/admin/counselors",   icon: ShieldCheck,     label: "审核" },
+  { href: "/admin/orders",       icon: ClipboardList,   label: "订单" },
+  { href: "/admin/users",        icon: Users,           label: "用户" },
 ];
 
 const HIDE_NAV = ["/booking/", "/chat/", "/counselor/profile", "/counselors/", "/my-bookings/", "/settings"];
