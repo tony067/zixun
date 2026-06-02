@@ -147,6 +147,16 @@ export function CounselorBookingsScreen() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKey, setSelectedKey] = useState("pending_confirmation");
+  const [seenTabs, setSeenTabs] = useState<Record<string,number>>(() => {
+    try { return JSON.parse(localStorage.getItem("cb_seen") || "{}"); } catch { return {}; }
+  });
+  const markSeen = (key: string, count: number) => {
+    setSeenTabs(prev => {
+      const next = { ...prev, [key]: count };
+      try { localStorage.setItem("cb_seen", JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
   const [rescheduleNote, setRescheduleNote] = useState("");
   const [showDirectReschedule, setShowDirectReschedule] = useState<string | null>(null);
@@ -205,7 +215,7 @@ export function CounselorBookingsScreen() {
       {/* 4个平铺 Tab */}
       <div className="flex gap-1.5 px-5 mb-4">
         {STATUS_OPTIONS.map(opt => (
-          <button key={opt.key} onClick={() => setSelectedKey(opt.key)}
+          <button key={opt.key} onClick={() => setSelectedKey(opt.key); markSeen(opt.key, counts[opt.key] ?? 0)}
             className="flex-1 flex flex-col items-center py-2.5 rounded-2xl text-xs font-semibold transition-all relative"
             style={{
               background: selectedKey === opt.key ? "var(--color-primary)" : "var(--color-card)",
@@ -213,7 +223,7 @@ export function CounselorBookingsScreen() {
               border:     selectedKey === opt.key ? "none" : "1px solid var(--color-border)",
             }}>
             {opt.label}
-            {counts[opt.key] > 0 && (
+            {counts[opt.key] > 0 && counts[opt.key] > (seenTabs[opt.key] ?? 0) && (
               <span className="absolute -top-1.5 -right-1 text-[10px] w-4 h-4 rounded-full flex items-center justify-center text-white font-bold"
                 style={{ background: opt.dot }}>{counts[opt.key]}</span>
             )}
