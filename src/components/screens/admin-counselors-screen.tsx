@@ -73,7 +73,7 @@ export default function AdminCounselorsScreen() {
           <p className="text-center text-sm py-10" style={{ color: "#9B8E82" }}>暂无记录</p>
         )}
         {counselors.map(c => {
-          const st = STATUS_COLOR[c.reviewStatus ?? "pending"] ?? STATUS_COLOR.pending;
+          const st = STATUS_COLOR[c.status ?? "pending"] ?? STATUS_COLOR.pending;
           return (
             <div key={c.id} onClick={() => setSelected(c)}
               className="rounded-2xl p-4 flex items-center gap-3 cursor-pointer"
