@@ -43,6 +43,9 @@ export default function ReschedulePage() {
     }).catch(() => {});
   }, [id]);
 
+  const selectedLabel = selDay && selTime
+    ? (() => { const d = days.find(x => x.iso === selDay); return d ? `${d.weekday} ${d.label} ${selTime}` : ""; })()
+    : "";
   const canSubmit = selDay && selTime && reason;
 
   const handleSubmit = async () => {
