@@ -102,7 +102,8 @@ export default function ReschedulePage() {
           </div>
         )}
         <div className="rounded-2xl px-4 py-3" style={{ background: "#E4F0DC", border: "1px solid #CCE0C0" }}>
-          <p className="text-sm" style={{ color: "#3A6228" }}>请选择你希望改到的时间，咨询师确认后改期生效。改期期间原时间暂不释放。</p>
+          <p className="text-sm font-semibold mb-1" style={{ color: "#3A6228" }}>申请改期前，请先和咨询师沟通好时间</p>
+          <p className="text-sm" style={{ color: "#5A7A3A" }}>建议在私信中与咨询师确认好新时间后，再提交申请。改期申请提交后，需等待咨询师确认，原时间暂不释放。</p>
         </div>
         {/* 选择时间 — 抽屉触发 */}
         <div className="rounded-2xl" style={{ background:"white", border:"1px solid #EBE7DF" }}>
