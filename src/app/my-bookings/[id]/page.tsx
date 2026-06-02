@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { request } from "@/lib/api/request";
