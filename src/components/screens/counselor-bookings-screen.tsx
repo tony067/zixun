@@ -143,6 +143,10 @@ export function CounselorBookingsScreen() {
   const [selectedKey, setSelectedKey] = useState("pending_confirmation");
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
   const [rescheduleNote, setRescheduleNote] = useState("");
+  const [showDirectReschedule, setShowDirectReschedule] = useState<string | null>(null);
+  const [dSelDay, setDSelDay] = useState("");
+  const [dSelTime, setDSelTime] = useState("");
+  const [submittingDirect, setSubmittingDirect] = useState(false);
 
   useEffect(() => {
     if (!user) return;
