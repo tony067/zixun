@@ -10,6 +10,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   const { action } = await req.json();
   const newStatus = action === "approve" ? "active" : action === "reject" ? "rejected" : "inactive";
-  await db.update(counselors).set({ status: newStatus }).where(eq(counselors.id, id));
+  await db.update(counselors).set({ reviewStatus: newStatus }).where(eq(counselors.id, id));
   return NextResponse.json({ ok: true });
 }
