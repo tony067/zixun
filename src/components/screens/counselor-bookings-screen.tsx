@@ -295,6 +295,74 @@ export function CounselorBookingsScreen() {
           </div>
         </div>
       )}
+
+      {/* 咨询师直接改期抽屉（直接生效，无需来访确认） */}
+      {showDirectReschedule && (() => {
+        const WEEKDAY = ["日","一","二","三","四","五","六"];
+        const days = Array.from({ length: 14 }, (_, i) => {
+          const d = new Date(); d.setDate(d.getDate() + i + 1);
+          return { iso: d.toISOString().slice(0,10), label: `${d.getMonth()+1}/${d.getDate()}`, weekday: `周${WEEKDAY[d.getDay()]}` };
+        });
+        const TIME_SLOTS = ["09:00","10:00","11:00","14:00","15:00","16:00","19:00","20:00"];
+
+        const handleDirectSubmit = async () => {
+          if (!dSelDay || !dSelTime || submittingDirect) return;
+          setSubmittingDirect(true);
+          try {
+            await request(`/api/bookings/${showDirectReschedule}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ scheduledAt: `${dSelDay}T${dSelTime}:00` }),
+            });
+            setBookings(prev => prev.map(b => b.id === showDirectReschedule
+              ? { ...b, scheduledAt: `${dSelDay}T${dSelTime}:00` } : b));
+            setShowDirectReschedule(null); setDSelDay(""); setDSelTime("");
+          } finally { setSubmittingDirect(false); }
+        };
+
+        return (
+          <div className="fixed inset-0 z-50 flex flex-col justify-end">
+            <div className="absolute inset-0 bg-black/50" onClick={() => setShowDirectReschedule(null)} />
+            <div className="relative bg-[var(--color-bg)] rounded-t-3xl px-5 pt-5 pb-10 z-10 max-h-[80vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-bold text-[#2C2420]">修改咨询时间</h3>
+                <button onClick={() => setShowDirectReschedule(null)} className="w-8 h-8 rounded-full bg-[#EBE7DF] flex items-center justify-center text-[#5A4E44]">×</button>
+              </div>
+              <p className="text-xs text-[#9B8E82] mb-4">选择新时间后直接生效，来访端将显示更新后的时间。</p>
+              <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+                {days.map(d => (
+                  <button key={d.iso} onClick={() => { setDSelDay(d.iso); setDSelTime(""); }}
+                    className="flex-none flex flex-col items-center px-3 py-2 rounded-2xl text-xs font-medium"
+                    style={{ background: dSelDay===d.iso ? "var(--color-primary)" : "white", color: dSelDay===d.iso ? "white" : "#5A4E44", border:`1px solid ${dSelDay===d.iso ? "var(--color-primary)" : "#EBE7DF"}`, minWidth:52 }}>
+                    <span>{d.weekday}</span><span className="mt-0.5">{d.label}</span>
+                  </button>
+                ))}
+              </div>
+              {dSelDay && (
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {TIME_SLOTS.map(t => (
+                    <button key={t} onClick={() => setDSelTime(t)}
+                      className="py-2 rounded-xl text-sm font-medium"
+                      style={{ background: dSelTime===t ? "var(--color-primary)" : "#F5F0EA", color: dSelTime===t ? "white" : "#2C2420" }}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {dSelDay && dSelTime && (
+                <div className="mb-4 px-3 py-2.5 rounded-xl bg-[#E4F0DC]">
+                  <p className="text-sm text-[#3A6228] font-medium">新时间：{days.find(d=>d.iso===dSelDay)?.weekday} {days.find(d=>d.iso===dSelDay)?.label} {dSelTime}</p>
+                </div>
+              )}
+              <button onClick={handleDirectSubmit} disabled={!dSelDay || !dSelTime || submittingDirect}
+                className="w-full py-3.5 rounded-2xl text-white font-bold text-sm disabled:opacity-50"
+                style={{ background: "var(--color-primary)" }}>
+                {submittingDirect ? "更新中…" : "确认修改（直接生效）"}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
