@@ -101,30 +101,18 @@ export default function ReschedulePage() {
         <div className="rounded-2xl px-4 py-3" style={{ background: "#E4F0DC", border: "1px solid #CCE0C0" }}>
           <p className="text-sm" style={{ color: "#3A6228" }}>请选择你希望改到的时间，咨询师确认后改期生效。改期期间原时间暂不释放。</p>
         </div>
-        <div className="rounded-2xl p-4" style={{ background: "white", border: "1px solid #EBE7DF" }}>
-          <p className="text-sm font-semibold mb-3" style={{ color: "#2C2420" }}>希望改到的日期 *</p>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {days.map(d => (
-              <button key={d.iso} onClick={() => { setSelDay(d.iso); setSelTime(""); }}
-                className="flex flex-col items-center flex-none px-3 py-2.5 rounded-xl min-w-[54px]"
-                style={{ background: selDay===d.iso?"var(--color-primary)":"#F8F5F0", border: "1px solid "+(selDay===d.iso?"var(--color-primary)":"#EBE7DF") }}>
-                <span className="text-[10px] mb-0.5" style={{ color: selDay===d.iso?"rgba(255,255,255,0.8)":"#9B8E82" }}>{d.weekday}</span>
-                <span className="text-sm font-semibold" style={{ color: selDay===d.iso?"white":"#2C2420" }}>{d.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-        {selDay && (
-          <div className="rounded-2xl p-4" style={{ background: "white", border: "1px solid #EBE7DF" }}>
-            <p className="text-sm font-semibold mb-3" style={{ color: "#2C2420" }}>希望改到的时间 *</p>
-            <div className="grid grid-cols-4 gap-2">
-              {SLOTS.map(t => (
-                <button key={t} onClick={() => setSelTime(t)} className="py-2 rounded-xl text-sm font-medium"
-                  style={{ background: selTime===t?"var(--color-primary)":"#F8F5F0", color: selTime===t?"white":"#5A4E44", border:"1px solid "+(selTime===t?"var(--color-primary)":"#EBE7DF") }}>{t}</button>
-              ))}
+        {/* 选择时间 — 抽屉触发 */}
+        <div className="rounded-2xl" style={{ background:"white", border:"1px solid #EBE7DF" }}>
+          <button onClick={() => setShowPicker(true)} className="w-full flex items-center justify-between px-4 py-4">
+            <div className="text-left">
+              <p className="text-sm font-semibold" style={{ color:"#2C2420" }}>希望改到的时间 <span style={{color:"#EF4444"}}>*</span></p>
+              {selectedLabel
+                ? <p className="text-sm mt-0.5" style={{ color:"var(--color-primary)" }}>{selectedLabel}</p>
+                : <p className="text-sm mt-0.5" style={{ color:"#C4BDB5" }}>点击选择日期和时段</p>}
             </div>
-          </div>
-        )}
+            <ChevronRight className="w-4 h-4 flex-none" style={{ color:"#C4BDB5" }} />
+          </button>
+        </div>
         <div className="rounded-2xl p-4" style={{ background: "white", border: "1px solid #EBE7DF" }}>
           <p className="text-sm font-semibold mb-3" style={{ color: "#2C2420" }}>改期原因 *</p>
           <div className="space-y-2">
@@ -145,6 +133,59 @@ export default function ReschedulePage() {
         </button>
         <p className="text-xs text-center pb-4" style={{ color: "#9B8E82" }}>咨询师确认后，订单时间将自动更新。若咨询师拒绝，原时间保持不变。</p>
       </div>
+
+      {/* 时间选择抽屉 */}
+      {mounted && showPicker && createPortal(
+        <div style={{ position:"fixed",inset:0,zIndex:99999,display:"flex",flexDirection:"column",justifyContent:"flex-end" }}
+          onClick={() => setShowPicker(false)}>
+          <div style={{ position:"absolute",inset:0,background:"rgba(0,0,0,0.55)" }} />
+          <div style={{ position:"relative",zIndex:1,background:"var(--color-bg)",borderRadius:"24px 24px 0 0",maxHeight:"80vh",overflowY:"auto",paddingBottom:32 }}
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor:"#EBE7DF" }}>
+              <h3 className="text-base font-bold" style={{ color:"#2C2420" }}>选择希望改到的时间</h3>
+              <button onClick={() => setShowPicker(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ background:"#EBE7DF",color:"#5A4E44",fontSize:18 }}>×</button>
+            </div>
+            <div className="px-4 pt-4 space-y-4">
+              <div>
+                <p className="text-xs font-semibold mb-2.5" style={{ color:"#9B8E82" }}>选择日期</p>
+                <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth:"none" }}>
+                  {days.map(d => (
+                    <button key={d.iso} onClick={() => { setSelDay(d.iso); setSelTime(""); }}
+                      className="flex-none flex flex-col items-center rounded-2xl px-3.5 py-2.5"
+                      style={{ background:selDay===d.iso?"var(--color-primary)":"white",border:"1px solid "+(selDay===d.iso?"var(--color-primary)":"#EBE7DF"),color:selDay===d.iso?"white":"#5A4E44",minWidth:60 }}>
+                      <span className="text-xs">{d.weekday}</span>
+                      <span className="text-sm font-bold mt-0.5">{d.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {selDay && (
+                <div>
+                  <p className="text-xs font-semibold mb-2.5" style={{ color:"#9B8E82" }}>选择时段</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {SLOTS.map(t => (
+                      <button key={t} onClick={() => setSelTime(t)}
+                        className="py-2.5 rounded-xl text-sm font-medium"
+                        style={{ background:selTime===t?"var(--color-primary)":"#F8F5F0",color:selTime===t?"white":"#5A4E44",border:"1px solid "+(selTime===t?"var(--color-primary)":"#EBE7DF") }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <button onClick={() => { if(selDay&&selTime) setShowPicker(false); }}
+                disabled={!selDay||!selTime}
+                className="w-full py-3.5 rounded-2xl text-white font-bold"
+                style={{ background:selDay&&selTime?"var(--color-primary)":"#C4BDB5" }}>
+                {selDay&&selTime ? `确认：${selectedLabel}` : "请先选择日期和时段"}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
