@@ -267,6 +267,108 @@ export default function BookingDetailPage() {
           </div>
         </Modal>
       )}
+
+      {/* 修改时间抽屉 */}
+      {modal === "reschedule" && (() => {
+        const WEEKDAY = ["日","一","二","三","四","五","六"];
+        const days = Array.from({ length: 14 }, (_, i) => {
+          const d = new Date(); d.setDate(d.getDate() + i + 1);
+          return {
+            iso: d.toISOString().slice(0,10),
+            label: `${d.getMonth()+1}/${d.getDate()}`,
+            weekday: `周${WEEKDAY[d.getDay()]}`,
+          };
+        });
+        const TIME_SLOTS = ["09:00","10:00","11:00","14:00","15:00","16:00","19:00","20:00"];
+
+        const handleSubmit = async () => {
+          if (!selDay || !selTime || submittingReschedule) return;
+          setSubmittingReschedule(true);
+          try {
+            await fetch(`/api/bookings/${id}/reschedule`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ newTime: `${selDay}T${selTime}:00`, reason: "来访申请修改时间" }),
+            });
+            setRescheduleSuccess(true);
+            setModal(null);
+          } finally {
+            setSubmittingReschedule(false);
+          }
+        };
+
+        return (
+          <div className="fixed inset-0 z-50 flex flex-col justify-end">
+            <div className="absolute inset-0 bg-black/50" onClick={() => setModal(null)} />
+            <div className="relative bg-[var(--color-bg)] rounded-t-3xl px-5 pt-5 pb-10 z-10 max-h-[80vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold text-[#2C2420]">选择新的咨询时间</h3>
+                <button onClick={() => setModal(null)} className="w-8 h-8 rounded-full bg-[#EBE7DF] flex items-center justify-center text-[#5A4E44]">×</button>
+              </div>
+              <p className="text-xs text-[#9B8E82] mb-4">选好时间后提交申请，咨询师确认后新时间生效。</p>
+
+              {/* 日期横滑 */}
+              <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+                {days.map(d => (
+                  <button key={d.iso} onClick={() => { setSelDay(d.iso); setSelTime(""); }}
+                    className="flex-none flex flex-col items-center px-3 py-2 rounded-2xl text-xs font-medium"
+                    style={{
+                      background: selDay === d.iso ? "var(--color-primary)" : "white",
+                      color: selDay === d.iso ? "white" : "#5A4E44",
+                      border: `1px solid ${selDay === d.iso ? "var(--color-primary)" : "#EBE7DF"}`,
+                      minWidth: 52,
+                    }}>
+                    <span>{d.weekday}</span>
+                    <span className="mt-0.5">{d.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* 时段格子 */}
+              {selDay && (
+                <div className="grid grid-cols-4 gap-2 mb-5">
+                  {TIME_SLOTS.map(t => (
+                    <button key={t} onClick={() => setSelTime(t)}
+                      className="py-2 rounded-xl text-sm font-medium"
+                      style={{
+                        background: selTime === t ? "var(--color-primary)" : "#F5F0EA",
+                        color: selTime === t ? "white" : "#2C2420",
+                      }}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {selDay && selTime && (
+                <div className="mb-4 px-3 py-2.5 rounded-xl bg-[#E4F0DC]">
+                  <p className="text-sm text-[#3A6228] font-medium">已选：{days.find(d=>d.iso===selDay)?.weekday} {days.find(d=>d.iso===selDay)?.label} {selTime}</p>
+                </div>
+              )}
+
+              <button onClick={handleSubmit} disabled={!selDay || !selTime || submittingReschedule}
+                className="w-full py-3.5 rounded-2xl text-white font-bold text-sm disabled:opacity-50"
+                style={{ background: "var(--color-primary)" }}>
+                {submittingReschedule ? "提交中…" : "提交修改申请"}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
+      {rescheduleSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setRescheduleSuccess(false)} />
+          <div className="relative bg-white rounded-2xl px-8 py-8 mx-6 text-center shadow-xl">
+            <div className="w-12 h-12 rounded-full bg-[#E4F0DC] flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#3A6228" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <p className="text-base font-bold text-[#2C2420] mb-1">改期申请已提交</p>
+            <p className="text-sm text-[#9B8E82] mb-5">等待咨询师确认，确认后时间自动更新。</p>
+            <button onClick={() => setRescheduleSuccess(false)} className="w-full py-3 rounded-2xl text-white font-bold text-sm" style={{background:"var(--color-primary)"}}>好的</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
