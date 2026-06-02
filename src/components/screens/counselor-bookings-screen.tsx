@@ -256,7 +256,7 @@ export function CounselorBookingsScreen() {
               style={{ background: "#F8F5F0", borderColor: "#DDD8D0", resize: "none", color: "#2C2420" }} />
             <div className="flex gap-3">
               <button onClick={async () => {
-                await request(\`/api/bookings/\${rescheduleBooking.id}/reschedule\`, {
+                await request(`/api/bookings/\${rescheduleBooking.id}/reschedule`, {
                   method: "PATCH",
                   body: JSON.stringify({ action: "reject", note: rescheduleNote }),
                 });
@@ -267,7 +267,7 @@ export function CounselorBookingsScreen() {
                 拒绝改期
               </button>
               <button onClick={async () => {
-                await request(\`/api/bookings/\${rescheduleBooking.id}/reschedule\`, {
+                await request(`/api/bookings/\${rescheduleBooking.id}/reschedule`, {
                   method: "PATCH",
                   body: JSON.stringify({ action: "approve", note: rescheduleNote }),
                 });
