@@ -48,6 +48,12 @@ export const conversations = pgTable("conversations", {
   participantBId: text("participant_b_id").notNull(),
   lastMessageAt: timestamp("last_message_at").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
+  // 改期相关
+  rescheduleStatus: text("reschedule_status"),  // null | pending | approved | rejected
+  rescheduleRequestedAt: timestamp("reschedule_requested_at"),
+  rescheduleNewTime: timestamp("reschedule_new_time"),
+  rescheduleReason: text("reschedule_reason"),
+  rescheduleNote: text("reschedule_note"),  // 咨询师回复
 });
 
 // 消息
