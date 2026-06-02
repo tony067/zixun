@@ -81,7 +81,11 @@ export default function BookingDetailPage() {
   const [bk, setBk] = useState<BookingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [modal, setModal] = useState<"form"|"agreement"|null>(null);
+  const [modal, setModal] = useState<"form"|"agreement"|"reschedule"|null>(null);
+  const [selDay, setSelDay] = useState("");
+  const [selTime, setSelTime] = useState("");
+  const [submittingReschedule, setSubmittingReschedule] = useState(false);
+  const [rescheduleSuccess, setRescheduleSuccess] = useState(false);
 
   useEffect(() => {
     request(`/api/bookings/${id}`).then(r => r.json()).then(d => {
