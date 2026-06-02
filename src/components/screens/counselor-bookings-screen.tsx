@@ -215,7 +215,7 @@ export function CounselorBookingsScreen() {
       {/* 4个平铺 Tab */}
       <div className="flex gap-1.5 px-5 mb-4">
         {STATUS_OPTIONS.map(opt => (
-          <button key={opt.key} onClick={() => setSelectedKey(opt.key); markSeen(opt.key, counts[opt.key] ?? 0)}
+          <button key={opt.key} onClick={() => { setSelectedKey(opt.key); markSeen(opt.key, counts[opt.key] ?? 0); }}
             className="flex-1 flex flex-col items-center py-2.5 rounded-2xl text-xs font-semibold transition-all relative"
             style={{
               background: selectedKey === opt.key ? "var(--color-primary)" : "var(--color-card)",
