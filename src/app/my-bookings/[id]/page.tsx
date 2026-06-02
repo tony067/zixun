@@ -305,7 +305,10 @@ export default function BookingDetailPage() {
                 <h3 className="text-base font-bold text-[#2C2420]">选择新的咨询时间</h3>
                 <button onClick={() => setModal(null)} className="w-8 h-8 rounded-full bg-[#EBE7DF] flex items-center justify-center text-[#5A4E44]">×</button>
               </div>
-              <p className="text-xs text-[#9B8E82] mb-4">选好时间后提交申请，咨询师确认后新时间生效。</p>
+              <div className="mb-4 px-3 py-2.5 rounded-xl" style={{ background: "#FEF9EE", border: "1px solid #F5E6C0" }}>
+                <p className="text-xs font-semibold mb-0.5" style={{ color: "#92600A" }}>建议先与咨询师沟通好时间</p>
+                <p className="text-xs" style={{ color: "#B07D2A" }}>提交申请后需等待咨询师确认，建议在私信中提前确认好新时间再操作。</p>
+              </div>
 
               {/* 日期横滑 */}
               <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
