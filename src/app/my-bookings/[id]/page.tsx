@@ -233,7 +233,7 @@ export default function BookingDetailPage() {
             className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
             style={{ background: "#9CB48A" }}>
             {bk.status === "pending_payment" ? `立即支付 ¥${bk.priceAmount}` :
-             bk.status === "upcoming" ? "修改时间" : "续约"}
+             (bk.status === "upcoming" || bk.status === "paid") ? "修改时间" : "续约"}
           </button>
         </div>
       </div>
