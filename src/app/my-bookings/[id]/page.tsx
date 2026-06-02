@@ -227,7 +227,7 @@ export default function BookingDetailPage() {
               } else if (bk.status === "upcoming") {
                 setModal("reschedule");
               } else {
-                router.push(`/booking/${bk.counselorId}`);
+                router.push(`/booking/${bk.counselor?.id}`);
               }
             }}
             className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
