@@ -10,6 +10,9 @@ type Booking = {
   id: string; status: string; scheduledAt: string; durationMinutes: number;
   sessionMode: string; priceAmount: number; clientNote: string | null;
   client: { id: string; name: string | null; email: string | null } | null;
+  rescheduleStatus: string | null;
+  rescheduleNewTime: string | null;
+  rescheduleReason: string | null;
 };
 
 // 4个平铺Tab，去掉「已取消」
@@ -34,7 +37,7 @@ const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
   rejected:             { color: "#EF4444", bg: "#FEE2E2" },
 };
 
-function BookingCard({ b, onUpdate }: { b: Booking; onUpdate: (id: string, status: string) => void }) {
+function BookingCard({ b, onUpdate, onReschedule }: { b: Booking; onUpdate: (id: string, status: string) => void; onReschedule?: (b: Booking) => void }) {
   const dt = new Date(b.scheduledAt);
   const dateStr = dt.toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short" });
   const timeStr = dt.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
@@ -118,6 +121,13 @@ function BookingCard({ b, onUpdate }: { b: Booking; onUpdate: (id: string, statu
               style={{ background: "var(--color-primary)" }}>
               <Check className="w-3.5 h-3.5" />标记完成
             </motion.button>
+            {b.rescheduleStatus === "pending" && (
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => onReschedule && onReschedule(b)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium"
+                style={{ background: "#FEF3C7", color: "#D97706" }}>
+                改期申请
+              </motion.button>
+            )}
           </>)}
         </div>
       </div>
