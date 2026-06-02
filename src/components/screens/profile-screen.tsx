@@ -159,7 +159,7 @@ export default function ProfileScreen(){
       <div className="sticky top-0 z-10 px-5 pb-3 pt-1" style={{background:"var(--color-surface)"}}>
         <div className="flex gap-1.5">
           {BOOKING_TABS.map(t=>(
-            <button key={t.key} onClick={()=>setTab(t.key);markSeen(t.key,counts[t.key]??0)}
+            <button key={t.key} onClick={()=>{setTab(t.key);markSeen(t.key,counts[t.key]??0);}}
               className="flex-1 py-2 rounded-xl text-xs font-semibold relative transition-all"
               style={{background:tab===t.key?"#9CB48A":"#F0EBE3",color:tab===t.key?"white":"#9B8E82"}}>
               {t.label}
