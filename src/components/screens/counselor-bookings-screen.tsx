@@ -232,7 +232,7 @@ export function CounselorBookingsScreen() {
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
-            {displayed.map(b => <BookingCard key={b.id} b={b} onUpdate={handleUpdate} onReschedule={setRescheduleBooking} />)}
+            {displayed.map(b => <BookingCard key={b.id} b={b} onUpdate={handleUpdate} onReschedule={setRescheduleBooking} onDirectReschedule={setShowDirectReschedule} />)}
           </AnimatePresence>
         )}
       </div>
