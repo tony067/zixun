@@ -60,10 +60,30 @@ export async function PUT(request: NextRequest) {
     const id = `c_${userId.slice(-8)}_${Date.now()}`;
     await db.insert(counselors).values({ id, userId, ...data });
     const rows = await db.select().from(counselors).where(eq(counselors.userId, userId)).limit(1);
+    // 提交审核时通知管理员
+    if (action === "submit") {
+      try {
+        await notifyAdminNewCounselorApplication({
+          adminUserId: "admin",
+          counselorName: fields.displayName || "咨询师",
+          counselorId: id,
+        });
+      } catch (e) { console.error("[notify admin]", e); }
+    }
     return NextResponse.json({ profile: rows[0] }, { status: 201 });
   } else {
     await db.update(counselors).set(data).where(eq(counselors.userId, userId));
     const rows = await db.select().from(counselors).where(eq(counselors.userId, userId)).limit(1);
+    // 提交审核时通知管理员
+    if (action === "submit" && rows[0]) {
+      try {
+        await notifyAdminNewCounselorApplication({
+          adminUserId: "admin",
+          counselorName: fields.displayName || "咨询师",
+          counselorId: rows[0].id,
+        });
+      } catch (e) { console.error("[notify admin]", e); }
+    }
     return NextResponse.json({ profile: rows[0] });
   }
 }
