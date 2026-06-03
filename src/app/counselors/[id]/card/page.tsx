@@ -13,6 +13,7 @@ type CounselorData = {
   location?: string;
   tagline?: string;
   targetGroups?: string[];
+  workingGroups?: string[];
   pricePerSession?: string;
 };
 
