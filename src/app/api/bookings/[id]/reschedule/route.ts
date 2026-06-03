@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { bookings } from "@/lib/db/schema/scheduling";
+import { counselors } from "@/lib/db/schema/counselors";
 import { eq } from "drizzle-orm";
+import { notifyCounselorRescheduleRequest, notifyClientRescheduleResult } from "@/lib/notifications/notify";
 
 // 来访提交改期申请
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -16,6 +18,24 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     rescheduleNewTime: new Date(newTime),
     rescheduleReason: reason ?? "",
   }).where(eq(bookings.id, id));
+
+  // 通知咨询师有改期申请
+  try {
+    const [bk] = await db.select().from(bookings).where(eq(bookings.id, id));
+    const [c] = await db.select().from(counselors).where(eq(counselors.id, bk?.counselorId ?? ""));
+    if (c?.userId) {
+      const requestedLabel = new Date(newTime).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+      await notifyCounselorRescheduleRequest({
+        counselorUserId: c.userId,
+        clientName: auth.user.name || auth.user.email?.split("@")[0] || "来访者",
+        requestedTime: requestedLabel,
+        bookingId: id,
+      });
+    }
+  } catch (e) { console.error("[notify reschedule]", e); }
+
+  return NextResponse.json({ ok: true });
+}.where(eq(bookings.id, id));
   return NextResponse.json({ ok: true });
 }
 
