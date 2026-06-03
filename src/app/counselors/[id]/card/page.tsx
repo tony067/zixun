@@ -132,13 +132,19 @@ export default function CounselorCardPage({ params }: { params: Promise<{ id: st
           className="w-full rounded-3xl overflow-hidden"
           style={{ background: "#FAF8F3", boxShadow: "0 8px 40px rgba(80,60,40,0.12), 0 2px 8px rgba(80,60,40,0.06)" }}
         >
-          {/* 顶部装饰带 */}
-          <div className="h-2 w-full" style={{ background: `linear-gradient(90deg, ${leafColor} 0%, ${leafColor}88 100%)` }} />
+          {/* 顶部渐变 Banner（和首页一致） */}
+          <div className="relative w-full flex items-end justify-center"
+            style={{ background: "linear-gradient(160deg, #8BAE80 0%, #9BBC90 35%, #B8D0AA 65%, #C9DAB8 100%)", height: 110 }}>
+            {/* 装饰圆 */}
+            <div className="absolute" style={{ top: -20, right: -20, width: 100, height: 100, borderRadius: "50%", background: "rgba(255,255,255,0.15)" }} />
+            <div className="absolute" style={{ top: 20, right: 40, width: 50, height: 50, borderRadius: "50%", background: "rgba(255,255,255,0.1)" }} />
+            <div className="absolute" style={{ bottom: -16, left: "50%", transform: "translateX(-50%)" }}>
+              {/* 头像浮在 Banner 底部 */}
+              <LeafAvatar name={counselor.displayName ?? ""} color={leafColor} avatarUrl={counselor.avatarUrl} />
+            </div>
+          </div>
 
-          <div className="px-8 pt-8 pb-8 flex flex-col items-center">
-
-            {/* 叶形头像 */}
-            <LeafAvatar name={counselor.displayName ?? ""} color={leafColor} avatarUrl={counselor.avatarUrl} />
+          <div className="px-8 pb-8 flex flex-col items-center" style={{ paddingTop: 64 }}>
 
             {/* 姓名 + 角色 */}
             <h1 className="mt-4 text-2xl font-bold tracking-wide" style={{ color: "#2C2420" }}>
