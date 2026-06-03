@@ -48,11 +48,7 @@ export async function POST(req: NextRequest) {
   } catch (e) { console.error("[notify new booking]", e); }
 
   return NextResponse.json(booking, { status: 201 });
-}essionMode, clientNote, applicationForm, agreementSigned, sessionNumber } = body;
-  if (!counselorId || !scheduledAt) return NextResponse.json({ error: "missing fields" }, { status: 400 });
-
-  const counselor = await getCounselorById(counselorId);
-  if (!counselor) return NextResponse.json({ error: "counselor not found" }, { status: 404 });
+}
 
   const booking = await createBooking({
     id: `bk_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
