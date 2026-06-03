@@ -1,98 +1,130 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Users, ClipboardList, Star, TrendingUp, BarChart2, DollarSign } from "lucide-react";
+import { request } from "@/lib/api/request";
 
-const STATS = [
-  { label: "平台用户", value: "1,284", sub: "本月新增 +38", icon: Users, color: "#9CB48A", href: "/admin/users" },
-  { label: "本月订单", value: "216", sub: "较上月 +12%", icon: ClipboardList, color: "#B8A99A", href: "/admin/orders" },
-  { label: "咨询师已上线", value: "48", sub: "入驻审核通过", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
-  { label: "本月应收", value: "¥64,800", sub: "较上月 +8%", icon: TrendingUp, color: "#8BB5C8", href: "/admin/billing?type=monthly" },
-  { label: "累计订单", value: "3,421", sub: "历史总计", icon: BarChart2, color: "#C4A0C0", href: "/admin/orders" },
-  { label: "累计应收", value: "¥892,400", sub: "历史总计", icon: DollarSign, color: "#E8A87C", href: "/admin/billing?type=total" },
-];
+type Stats = {
+  totalUsers: number; monthUsers: number; userChange: number;
+  monthOrders: number; orderChange: number; totalOrders: number;
+  activeCounselors: number; pendingCounselors: number;
+  monthRevenue: number; totalRevenue: number;
+};
 
 const SHORTCUTS = [
-  { label: "审核申请", sub: "咨询师入驻审核", href: "/admin/counselors", badge: 7, color: "#E8A87C" },
-  { label: "订单管理", sub: "查看全部订单", href: "/admin/orders", badge: 3, color: "#8BB5C8" },
-  { label: "用户管理", sub: "来访与咨询师", href: "/admin/users", badge: 0, color: "#9CB48A" },
+  { label: "审核申请", sub: "咨询师入驻审核", href: "/admin/counselors", color: "#E8A87C", badgeKey: "pendingCounselors" },
+  { label: "订单管理", sub: "查看全部订单", href: "/admin/orders", color: "#8BB5C8", badgeKey: "monthOrders" },
+  { label: "用户管理", sub: "来访与咨询师", href: "/admin/users", color: "#9CB48A", badgeKey: null },
 ];
 
 type RecentAction = {
-  time: string;
-  text: string;
-  href: string;
-  type: "counselor" | "order" | "user";
-  targetId?: string;
+  time: string; text: string; href: string;
+  type: "counselor" | "order" | "user"; targetId?: string;
 };
 
 const RECENT_ACTIONS: RecentAction[] = [
-  { time: "10分钟前", text: "咨询师「陈晓雯」申请入驻，待审核", href: "/admin/counselors", type: "counselor", targetId: "c_001" },
-  { time: "32分钟前", text: "订单 #bk_001 来访申请退款", href: "/admin/orders/bk_001", type: "order", targetId: "bk_001" },
-  { time: "1小时前", text: "咨询师「林诗涵」信息变更，待审核", href: "/admin/counselors", type: "counselor", targetId: "c_002" },
-  { time: "2小时前", text: "新用户注册 18 位", href: "/admin/users", type: "user" },
+  { time: "10分钟前", text: "新咨询师入驻申请等待审核", href: "/admin/counselors", type: "counselor" },
+  { time: "30分钟前", text: "来访者 #u_221 完成注册", href: "/admin/users", type: "user" },
+  { time: "1小时前", text: "订单 #bk_002 等待来访支付", href: "/admin/orders/bk_002", type: "order", targetId: "bk_002" },
+  { time: "2小时前", text: "咨询师档案审核通过上线", href: "/admin/counselors", type: "counselor" },
   { time: "3小时前", text: "订单 #bk_003 咨询已完成", href: "/admin/orders/bk_003", type: "order", targetId: "bk_003" },
 ];
 
 export default function AdminOverviewScreen() {
   const router = useRouter();
+  const [stats, setStats] = useState<Stats | null>(null);
+
+  useEffect(() => {
+    request("/api/admin/stats")
+      .then(r => r.json())
+      .then(d => { if (!d.error) setStats(d); })
+      .catch(() => {});
+  }, []);
+
+  const fmt = (n: number) => n >= 10000 ? `${(n / 10000).toFixed(1)}万` : n.toLocaleString();
+  const fmtMoney = (n: number) => n >= 10000 ? `¥${(n / 10000).toFixed(1)}万` : `¥${n.toLocaleString()}`;
+
+  const STATS_DATA = stats ? [
+    { label: "平台用户", value: fmt(stats.totalUsers), sub: `本月新增 +${stats.monthUsers}`, icon: Users, color: "#9CB48A", href: "/admin/users" },
+    { label: "本月订单", value: fmt(stats.monthOrders), sub: stats.orderChange >= 0 ? `较上月 +${stats.orderChange}%` : `较上月 ${stats.orderChange}%`, icon: ClipboardList, color: "#B8A99A", href: "/admin/orders" },
+    { label: "咨询师已上线", value: fmt(stats.activeCounselors), sub: "入驻审核通过", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
+    { label: "本月应收", value: fmtMoney(stats.monthRevenue), sub: "已完成订单", icon: TrendingUp, color: "#8BB5C8", href: "/admin/billing?type=monthly" },
+    { label: "累计订单", value: fmt(stats.totalOrders), sub: "历史总计", icon: BarChart2, color: "#C4A0C0", href: "/admin/orders" },
+    { label: "累计应收", value: fmtMoney(stats.totalRevenue), sub: "历史总计", icon: DollarSign, color: "#E8A87C", href: "/admin/billing?type=total" },
+  ] : [
+    { label: "平台用户", value: "—", sub: "加载中…", icon: Users, color: "#9CB48A", href: "/admin/users" },
+    { label: "本月订单", value: "—", sub: "加载中…", icon: ClipboardList, color: "#B8A99A", href: "/admin/orders" },
+    { label: "咨询师已上线", value: "—", sub: "加载中…", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
+    { label: "本月应收", value: "—", sub: "加载中…", icon: TrendingUp, color: "#8BB5C8", href: "/admin/billing?type=monthly" },
+    { label: "累计订单", value: "—", sub: "加载中…", icon: BarChart2, color: "#C4A0C0", href: "/admin/orders" },
+    { label: "累计应收", value: "—", sub: "加载中…", icon: DollarSign, color: "#E8A87C", href: "/admin/billing?type=total" },
+  ];
+
+  const getBadge = (key: string | null) => {
+    if (!key || !stats) return 0;
+    return (stats as unknown as Record<string, number>)[key] ?? 0;
+  };
+
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--color-bg)" }}>
       <div className="px-5 pt-12 pb-4">
-        <p className="text-xs mb-1" style={{ color: "#9B8E82" }}>管理员控制台</p>
-        <h1 className="text-2xl font-bold" style={{ color: "#2C2420" }}>MindPace</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "#1A1512" }}>管理后台</h1>
+        <p className="text-sm mt-0.5" style={{ color: "#9B8E82" }}>MindPace 平台数据总览</p>
       </div>
 
-      {/* 数据格 */}
-      <div className="px-4 grid grid-cols-2 gap-3 mb-5">
-        {STATS.map(s => {
-          const Icon = s.icon;
-          return (
-            <button key={s.label} onClick={() => router.push(s.href)}
-              className="rounded-2xl p-4 text-left" style={{ background: "white", border: "1px solid #EBE7DF" }}>
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2"
-                style={{ background: s.color + "22" }}>
-                <Icon className="w-4 h-4" style={{ color: s.color }} />
+      {/* 统计格 */}
+      <div className="px-5 grid grid-cols-2 gap-3 mb-6">
+        {STATS_DATA.map(s => (
+          <button key={s.label} onClick={() => router.push(s.href)}
+            className="rounded-2xl p-4 text-left border active:scale-95 transition-transform"
+            style={{ background: "white", borderColor: "#EBE7DF" }}>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                style={{ background: `${s.color}22` }}>
+                <s.icon className="w-4 h-4" style={{ color: s.color }} />
               </div>
-              <p className="text-xl font-bold" style={{ color: "#2C2420" }}>{s.value}</p>
-              <p className="text-xs mt-0.5 font-medium" style={{ color: "#5A4E44" }}>{s.label}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{s.sub}</p>
-            </button>
-          );
-        })}
+              <span className="text-xs" style={{ color: "#9B8E82" }}>{s.label}</span>
+            </div>
+            <p className="text-xl font-bold mb-0.5" style={{ color: "#1A1512" }}>{s.value}</p>
+            <p className="text-xs" style={{ color: "#9B8E82" }}>{s.sub}</p>
+          </button>
+        ))}
       </div>
 
-      {/* 快捷入口 */}
-      <div className="px-4 mb-5">
-        <p className="text-xs font-semibold mb-3" style={{ color: "#9B8E82" }}>快捷操作</p>
-        <div className="space-y-2">
-          {SHORTCUTS.map(s => (
-            <button key={s.label} onClick={() => router.push(s.href)}
-              className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-left"
-              style={{ background: "white", border: "1px solid #EBE7DF" }}>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>{s.label}</p>
-                <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{s.sub}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {s.badge > 0 && (
-                  <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ background: "#E8A87C" }}>{s.badge}</span>
+      {/* 快捷操作 */}
+      <div className="px-5 mb-6">
+        <h2 className="text-sm font-semibold mb-3" style={{ color: "#5A4E44" }}>快捷操作</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {SHORTCUTS.map(s => {
+            const badge = getBadge(s.badgeKey);
+            return (
+              <button key={s.label} onClick={() => router.push(s.href)}
+                className="relative rounded-2xl p-3 flex flex-col items-center gap-1.5 border active:scale-95 transition-transform"
+                style={{ background: "white", borderColor: "#EBE7DF" }}>
+                {badge > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-[10px] font-bold text-white flex items-center justify-center"
+                    style={{ background: "#F87171" }}>{badge > 99 ? "99+" : badge}</span>
                 )}
-                <span style={{ color: "#C4BDB5", fontSize: 18 }}>›</span>
-              </div>
-            </button>
-          ))}
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: `${s.color}22` }}>
+                  <div className="w-5 h-5 rounded-full" style={{ background: s.color }} />
+                </div>
+                <span className="text-xs font-semibold" style={{ color: "#2C2420" }}>{s.label}</span>
+                <span className="text-[10px] text-center leading-tight" style={{ color: "#9B8E82" }}>{s.sub}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* 最近动态 */}
-      <div className="px-4">
-        <p className="text-xs font-semibold mb-3" style={{ color: "#9B8E82" }}>最近动态</p>
-        <div className="rounded-2xl overflow-hidden" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+      <div className="px-5">
+        <h2 className="text-sm font-semibold mb-3" style={{ color: "#5A4E44" }}>最近动态</h2>
+        <div className="rounded-2xl overflow-hidden border" style={{ background: "white", borderColor: "#EBE7DF" }}>
           {RECENT_ACTIONS.map((a, i) => (
             <button key={i} onClick={() => router.push(a.href)}
-              className="w-full flex items-start gap-3 px-4 py-3.5 text-left border-b last:border-0"
-              style={{ borderColor: "#F5F0EA" }}>
+              className="w-full flex items-start gap-3 px-4 py-3.5 border-b last:border-0 text-left active:bg-gray-50"
+              style={{ borderColor: "#F0EBE4" }}>
               <div className="w-1.5 h-1.5 rounded-full mt-2 flex-none" style={{ background: "var(--color-primary)" }} />
               <div className="flex-1 min-w-0">
                 <p className="text-sm" style={{ color: "#2C2420" }}>{a.text}</p>
