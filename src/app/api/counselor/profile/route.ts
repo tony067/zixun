@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { counselors } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { notifyAdminNewCounselorApplication } from "@/lib/notifications/notify";
 
 export async function GET(request: NextRequest) {
   const auth = requireAuth(request);
