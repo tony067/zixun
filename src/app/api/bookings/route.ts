@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
-import { createBooking, getClientBookings, updateBookingStatus } from "@/lib/db/queries/bookings";
+import { createBooking, getClientBookings } from "@/lib/db/queries/bookings";
 import { getCounselorById } from "@/lib/db/queries/counselors";
+import { notifyCounselorNewBooking } from "@/lib/notifications/notify";
 
 export async function GET(req: NextRequest) {
   const r = requireAuth(req);
