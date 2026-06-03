@@ -271,8 +271,8 @@ export default function BookingDetailPage() {
         </Modal>
       )}
 
-      {/* 修改时间抽屉 */}
-      {modal === "reschedule" && (() => {
+      {/* 修改时间抽屉 - createPortal 挂到 body，避免父层 stacking context 影响 */}
+      {mounted && modal === "reschedule" && (() => {
         const WEEKDAY = ["日","一","二","三","四","五","六"];
         const days = Array.from({ length: 14 }, (_, i) => {
           const d = new Date(); d.setDate(d.getDate() + i + 1);
