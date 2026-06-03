@@ -1,9 +1,6 @@
 "use client";
-import { use, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { QRCodeSVG } from "qrcode.react";
-import { request } from "@/lib/api/request";
-import { ArrowLeft, Download, Link2 } from "lucide-react";
+import { use } from "react";
+import CounselorCardScreen from "@/components/screens/counselor-card-screen";
 
 type CounselorData = {
   id: string;
