@@ -303,7 +303,7 @@ export default function BookingDetailPage() {
         return createPortal(
           <div style={{ position: "fixed", inset: 0, zIndex: 99999, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
             <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)" }} onClick={() => setModal(null)} />
-            <div style={{ position: "relative", zIndex: 1, background: "var(--color-bg)", borderRadius: "24px 24px 0 0", padding: "20px 20px 40px", maxHeight: "80vh", overflowY: "auto" }}>
+            <div style={{ position: "relative", zIndex: 1, background: "var(--color-bg)", borderRadius: "24px 24px 0 0", padding: "20px 20px 0", maxHeight: "80vh", overflowY: "auto", paddingBottom: "calc(env(safe-area-inset-bottom) + 80px)" }}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-base font-bold text-[#2C2420]">选择新的咨询时间</h3>
                 <button onClick={() => setModal(null)} className="w-8 h-8 rounded-full bg-[#EBE7DF] flex items-center justify-center text-[#5A4E44]">×</button>
