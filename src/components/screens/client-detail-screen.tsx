@@ -67,7 +67,6 @@ export default function ClientDetailScreen() {
     <div className="h-svh flex flex-col" style={{background:"var(--color-bg)"}}>
       <div className="flex-none sticky top-0 z-20 flex items-center gap-3 px-4 pb-4"
         style={{ paddingTop: "max(env(safe-area-inset-top), 16px)", background: "rgba(245,240,232,0.97)", backdropFilter: "blur(10px)", borderBottom: "1px solid #EBE7DF" }}>
-        style={{background:"var(--color-bg)",borderBottom:"1px solid var(--color-border)"}}>
         <button onClick={()=>router.back()} className="w-9 h-9 rounded-full flex items-center justify-center"
           style={{background:"white",border:"1.5px solid var(--color-border)"}}>
           <ArrowLeft className="w-4 h-4" style={{color:"#5A4E44"}}/>
