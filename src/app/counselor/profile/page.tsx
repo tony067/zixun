@@ -104,7 +104,11 @@ export default function CounselorProfilePage() {
             {saving ? "保存中…" : "保存草稿"}
           </button>
           <motion.button whileTap={{ scale: 0.97 }}
-            onClick={() => save(true)} disabled={!canSubmit || submitting}
+            onClick={() => {
+                if (missingPrice) { setToast("请先在「咨询设置」中填写收费金额"); setTimeout(() => setToast(""), 3000); return; }
+                save(true);
+              }}
+            disabled={!canSubmit || submitting}
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-white"
             style={{ background: canSubmit ? "#9CB48A" : "#C0B8B0" }}>
             <Send className="w-4 h-4" />
