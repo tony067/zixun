@@ -55,7 +55,8 @@ export default function CounselorProfilePage() {
     setOpenSection(prev => prev === k ? null : k);
 
   const status = STATUS_LABEL[form.reviewStatus] ?? STATUS_LABEL.draft;
-  const canSubmit = !!(form.displayName && form.counselorTypes.length > 0 && form.pricePerSession);
+  const canSubmit = !!(form.displayName && form.counselorTypes.length > 0);
+  const missingPrice = canSubmit && !form.pricePerSession;
 
   return (
     <div className="min-h-svh pb-36" style={{ background: "#F5F0E8" }}>
