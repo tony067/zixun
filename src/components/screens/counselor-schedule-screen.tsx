@@ -487,7 +487,13 @@ function StatsPanel() {
           <button key={s.label} onClick={() => router.push(s.href)}
             className="rounded-2xl p-4 text-left"
             style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid #EBE7DF" }}>
-            <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>{s.label}</p>
+            <div className="flex items-center gap-2 mb-2">
+              {s.icon === "CalendarDays" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>}
+              {s.icon === "Clock" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+              {s.icon === "Users" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3"/><path d="M20 20c0-2.21-1.79-4-4-4"/><circle cx="9" cy="8" r="3"/><path d="M3 20c0-2.76 2.24-5 6-5h0c3.76 0 6 2.24 6 5"/></svg>}
+              {s.icon === "TrendingUp" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><polyline points="22,7 13.5,15.5 8.5,10.5 2,17"/><polyline points="16,7 22,7 22,13"/></svg>}
+              <p className="text-xs" style={{ color: "#9B8E82" }}>{s.label}</p>
+            </div>
             <div className="flex items-baseline gap-1">
               <p className="text-2xl font-bold" style={{ color: "#2C2420" }}>{s.value}</p>
               <p className="text-sm" style={{ color: "#9B8E82" }}>{s.unit}</p>
