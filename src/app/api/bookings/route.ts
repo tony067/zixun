@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
   if (!counselor) return NextResponse.json({ error: "Counselor not found" }, { status: 404 });
 
   const booking = await createBooking({
+    id: `bk_${Date.now()}`,
     clientId: r.user.id,
     counselorId,
     scheduledAt: new Date(scheduledAt),
