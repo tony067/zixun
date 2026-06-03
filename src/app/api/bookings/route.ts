@@ -35,4 +35,17 @@ export async function POST(req: NextRequest) {
     sessionNumber: sessionNumber ?? 1,
   });
   return NextResponse.json(booking, { status: 201 });
+
+  // 通知咨询师有新预约
+  try {
+    if (counselor.userId) {
+      const scheduledLabel = new Date(scheduledAt).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+      await notifyCounselorNewBooking({
+        counselorUserId: counselor.userId,
+        clientName: r.user.name || r.user.email?.split("@")[0] || "来访者",
+        scheduledAt: scheduledLabel,
+        bookingId: booking.id,
+      });
+    }
+  } catch (e) { console.error("[notify new booking]", e); }
 }
