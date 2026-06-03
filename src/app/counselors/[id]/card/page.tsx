@@ -146,11 +146,14 @@ export default function CounselorCardPage({ params }: { params: Promise<{ id: st
 
           <div className="px-8 pb-8 flex flex-col items-center" style={{ paddingTop: 64 }}>
 
-            {/* 姓名 + 角色 */}
-            <h1 className="mt-4 text-2xl font-bold tracking-wide" style={{ color: "#2C2420" }}>
+            {/* 姓名 + 角色标签（沿用应用内样式） */}
+            <h1 className="mt-2 text-2xl font-bold" style={{ color: "#2C2420", letterSpacing: "0.02em" }}>
               {counselor.displayName}
             </h1>
-            <p className="mt-1 text-sm font-medium" style={{ color: "#9B8E82" }}>{roleLabel}</p>
+            <span className="mt-2 px-3 py-1 rounded-full text-xs font-semibold"
+              style={{ background: "#E8DFCC", color: "#5A7A3A", border: "1px solid #D4C8B0" }}>
+              {roleLabel}
+            </span>
 
             {/* 分隔线 */}
             <div className="w-12 h-px my-5" style={{ background: "rgba(156,180,138,0.35)" }} />
