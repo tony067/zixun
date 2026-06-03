@@ -35,8 +35,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   } catch (e) { console.error("[notify reschedule]", e); }
 
   return NextResponse.json({ ok: true });
-}.where(eq(bookings.id, id));
-  return NextResponse.json({ ok: true });
 }
 
 // 咨询师确认或拒绝改期
