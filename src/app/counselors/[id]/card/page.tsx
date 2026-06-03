@@ -164,9 +164,9 @@ export default function CounselorCardPage({ params }: { params: Promise<{ id: st
             ) : null}
 
             {/* 工作人群标签 */}
-            {counselor.targetGroups && counselor.targetGroups.length > 0 && (
+            {(counselor.workingGroups ?? counselor.targetGroups ?? []).length > 0 && (
               <div className="flex flex-wrap gap-2 justify-center mb-6">
-                {counselor.targetGroups.slice(0, 4).map(g => (
+                {(counselor.workingGroups ?? counselor.targetGroups ?? []).slice(0, 4).map(g => (
                   <TagPill key={g} label={g} />
                 ))}
               </div>
