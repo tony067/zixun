@@ -398,7 +398,8 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           {/* 分享 */}
           <motion.button whileTap={{ scale: 0.92 }}
             className="flex flex-col items-center gap-1 w-12"
-            style={{ color: "#6B5E52" }}>
+            style={{ color: "#6B5E52" }}
+            onClick={() => router.push(`/counselors/${counselor.id}/card`)}>
             <Share2 className="w-5 h-5" />
             <span className="text-[10px]">分享</span>
           </motion.button>
