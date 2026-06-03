@@ -21,7 +21,7 @@ export async function PATCH(req: NextRequest) {
   const newStatus = approved ? "approved" : "rejected";
 
   await db.update(counselors)
-    .set({ reviewStatus: newStatus, updatedAt: new Date().toISOString() })
+    .set({ reviewStatus: newStatus })
     .where(eq(counselors.id, counselorId));
 
   // 通知咨询师审核结果
