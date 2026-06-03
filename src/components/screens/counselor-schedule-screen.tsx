@@ -475,10 +475,10 @@ export function CounselorScheduleScreen() {
 function StatsPanel() {
   const router = useRouter();
   const STATS = [
-    { label: "本月接单", value: "8", unit: "个", desc: "本月新增预约订单", href: "/counselor/bookings" },
-    { label: "本月完成咨询", value: "6", unit: "小时", desc: "本月已完成咨询时长", href: "/counselor/bookings" },
-    { label: "接待来访", value: "5", unit: "个", desc: "累计接待来访人数", href: "/counselor/schedule?tab=clients" },
-    { label: "累计完成时长", value: "300", unit: "小时", desc: "累计完成咨询时长", href: "/counselor/bookings" },
+    { icon: "📋", label: "本月接单", value: "8", unit: "个", desc: "本月新增预约订单", href: "/counselor/bookings" },
+    { icon: "⏱", label: "本月完成咨询", value: "6", unit: "小时", desc: "本月已完成咨询时长", href: "/counselor/bookings" },
+    { icon: "👥", label: "接待来访", value: "5", unit: "个", desc: "累计接待来访人数", href: "/counselor/schedule?tab=clients" },
+    { icon: "📈", label: "累计完成时长", value: "300", unit: "小时", desc: "累计完成咨询时长", href: "/counselor/bookings" },
   ];
   return (
     <div className="px-5 py-4">
