@@ -359,7 +359,7 @@ export default function BookingDetailPage() {
               </button>
             </div>
           </div>
-        );
+        , document.body);
       })()}
 
       {rescheduleSuccess && (
