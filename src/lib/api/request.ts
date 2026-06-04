@@ -11,9 +11,11 @@ export async function request(
 ): Promise<Response> {
   const sessionHeader = await auth.getSessionHeader();
 
+  const hasBody = init.body != null;
   return fetch(input, {
     ...init,
     headers: {
+      ...(hasBody ? { "Content-Type": "application/json" } : {}),
       ...init.headers,
       ...(sessionHeader ? { "x-eazo-session": sessionHeader } : {}),
     },
