@@ -496,8 +496,9 @@ export function ExploreScreen() {
           ].map(f => (
             <motion.button key={f.key} whileTap={{ scale: 0.95 }}
               onClick={() => setOpenModal(f.key as "city"|"price"|"direction")}
-              className="flex items-center gap-0.5 px-2 py-1 rounded-full text-[12px]"
+              className="flex items-center justify-center gap-0.5 px-3 py-1 rounded-full text-[12px]"
               style={{
+                minWidth: 64,
                 background: f.active ? "#9CB48A" : "white",
                 border: `1px solid ${f.active ? "#9CB48A" : "#E0DAD0"}`,
                 color: f.active ? "white" : "#7D736A",
