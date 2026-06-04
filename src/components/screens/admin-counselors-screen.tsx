@@ -75,7 +75,7 @@ export default function AdminCounselorsScreen() {
         {counselors.map(c => {
           const st = STATUS_COLOR[c.status ?? "pending"] ?? STATUS_COLOR.pending;
           return (
-            <div key={c.id} onClick={() => setSelected(c)}
+            <div key={c.id} onClick={() => router.push(`/admin/counselors/${c.id}`)}
               className="rounded-2xl p-4 flex items-center gap-3 cursor-pointer"
               style={{ background: "white", border: "1px solid #EBE7DF" }}>
               <div className="w-11 h-11 rounded-full flex items-center justify-center text-lg font-bold text-white flex-none"
