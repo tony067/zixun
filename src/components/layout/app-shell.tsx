@@ -10,6 +10,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useEazo } from "@eazo/sdk/react";
+import { auth } from "@eazo/sdk";
 import { useEffect } from "react";
 
 const CLIENT_TABS = [
