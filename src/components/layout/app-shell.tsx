@@ -31,7 +31,7 @@ const ADMIN_TABS = [
   { href: "/admin/users",        icon: Users,           label: "用户" },
 ];
 
-const HIDE_NAV = ["/booking/", "/chat/", "/counselor/profile", "/counselors/", "/my-bookings/", "/settings"];
+const HIDE_NAV = ["/booking/", "/chat/", "/counselor/profile", "/counselors/", "/my-bookings/", "/settings", "/support"];
 
 type Role = "client" | "counselor" | "admin";
 
