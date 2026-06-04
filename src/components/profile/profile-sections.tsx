@@ -60,7 +60,7 @@ function TagSelect({ options, selected, onChange, custom, onCustomChange }: {
               className="flex-1 px-3 py-2 rounded-xl text-sm border border-[#DDD8D0] bg-white outline-none" />
             <button onClick={() => { if (customInput.trim()) { onCustomChange([...(custom || []), customInput.trim()]); setCustomInput(""); } }}
               className="px-4 py-2 rounded-xl text-sm font-medium border border-[#DDD8D0] bg-white text-[#6B5E52] flex items-center gap-1">
-              <Plus className="w-3.5 h-3.5" /> 提交
+              <Plus className="w-3.5 h-3.5" /> 添加
             </button>
           </div>
         </div>
