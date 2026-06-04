@@ -7,9 +7,12 @@ export const counselors = pgTable("counselors", {
   title: text("title").default(""),
   bio: text("bio").default(""),
   tagline: text("tagline").default(""),
-  specialties: text("specialties").array().default([]),     // 擅长领域
-  approaches: text("approaches").array().default([]),       // 咨询取向
-  workingGroups: text("working_groups").array().default([]),// 工作人群
+  specialties: text("specialties").array().default([]),              // 擅长领域
+  customSpecialties: text("custom_specialties").array().default([]), // 自定义擅长领域
+  approaches: text("approaches").array().default([]),                // 咨询取向
+  customApproaches: text("custom_approaches").array().default([]),   // 自定义咨询取向
+  workingGroups: text("working_groups").array().default([]),         // 工作人群
+  customWorkingGroups: text("custom_working_groups").array().default([]), // 自定义工作人群
   sessionModes: text("session_modes").array().default([]),  // 视频/语音/面谈
   sessionDuration: integer("session_duration").default(50),
   pricePerSession: integer("price_per_session").default(300),
