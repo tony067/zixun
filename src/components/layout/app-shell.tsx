@@ -10,6 +10,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useEazo } from "@eazo/sdk/react";
+import { useEffect } from "react";
 
 const CLIENT_TABS = [
   { href: "/",            icon: Home,          label: "首页" },
