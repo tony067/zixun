@@ -43,10 +43,13 @@ export default function CounselorProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, action: submit ? "submit" : "save", reviewStatus: submit ? "submitted" : "draft" }),
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        const data = await res.json();
-        setForm(prev => ({ ...prev, reviewStatus: data.reviewStatus ?? prev.reviewStatus }));
-        showToast(submit ? "已提交审核！" : "草稿已保存");
+        setForm(prev => ({ ...prev, reviewStatus: data.profile?.reviewStatus ?? data.reviewStatus ?? prev.reviewStatus }));
+        showToast(submit ? "已提交审核！" : "草稿已保存 ✓");
+      } else {
+        showToast(`保存失败：${data.error ?? res.status}`);
+        console.error("[profile save]", res.status, data);
       }
     } finally { setSaving(false); setSubmitting(false); }
   };
