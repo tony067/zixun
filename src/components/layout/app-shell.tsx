@@ -58,8 +58,7 @@ const ROLE_ITEMS = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
-  const user     = useEazo((s) => s.auth.user);
-  const auth     = useEazo((s) => s.auth);
+  const user = useEazo((s) => s.auth.user);
 
   const role = detectRole(pathname);
   const tabs = role === "counselor" ? COUNSELOR_TABS
