@@ -88,7 +88,7 @@ export default function ProfileScreen() {
   }
 
   const QUICK_ACTIONS = [
-    { icon: Heart,           label:"收藏的咨询师", sub:"管理收藏",   href:"/favorites" },
+    { icon: Heart,           label:"我的收藏", sub:"收藏的咨询师",   href:"/favorites" },
     { icon: BookOpen,        label:"新手必读",     sub:"了解咨询",   href:"/guide"     },
     { icon: HeadphonesIcon,  label:"联系客服",     sub:"在线帮助",   href:"/support"   },
     { icon: Settings,        label:"更多设置",     sub:"账号·通知",  href:"/settings"  },
