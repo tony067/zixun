@@ -96,7 +96,7 @@ export default function ProfileScreen() {
           {initials.toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-lg font-bold truncate" style={{ color:"#2C2420" }}>{user.nickname ?? user.email}</p>
+          <p className="text-lg font-bold truncate" style={{ color:"#2C2420" }}>{(user as any).displayName ?? (user as any).nickname ?? user.email}</p>
           <p className="text-xs truncate" style={{ color:"#9B8E82" }}>{user.email}</p>
         </div>
         <button onClick={() => router.push("/settings")}
