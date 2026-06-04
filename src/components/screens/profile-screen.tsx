@@ -186,8 +186,17 @@ export default function ProfileScreen(){
           </AnimatePresence>
         )}
       </div>
+      {/* 联系客服 */}
+      <div className="px-5 mt-4">
+        <button onClick={()=>router.push("/support")}
+          className="w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2"
+          style={{background:"var(--color-surface)",border:"1px solid #DDD8D0",color:"#5A4E44"}}>
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          联系客服
+        </button>
+      </div>
       {/* 退出登录 */}
-      <div className="px-5 mt-6">
+      <div className="px-5 mt-3">
         <button onClick={handleLogout}
           className="w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 text-red-500"
           style={{background:"#FEF2F2",border:"1px solid #FECACA"}}>
