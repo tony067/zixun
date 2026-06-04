@@ -29,7 +29,7 @@ export default function CounselorProfilePage() {
   useEffect(() => {
     if (!user) return;
     request("/api/counselor/profile").then(r => r.json()).then(data => {
-      if (data && !data.error) setForm({ ...EMPTY_PROFILE, ...data });
+      if (data?.exists && data.profile) setForm({ ...EMPTY_PROFILE, ...data.profile });
     });
   }, [user]);
 
