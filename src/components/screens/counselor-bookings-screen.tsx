@@ -143,7 +143,6 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
 
 export function CounselorBookingsScreen() {
   const user = useEazo((s) => s.auth.user);
-  const auth = useEazo((s) => s.auth);
   const loadingAuth = useEazo((s) => s.auth.loading);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);

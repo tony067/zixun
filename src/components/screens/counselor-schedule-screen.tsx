@@ -389,7 +389,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
   const user = useEazo((s) => s.auth.user);
-  const auth = useEazo((s) => s.auth);
   const [tab, setTab] = useState<"rules" | "calendar" | "stats" | "clients">("rules");
   const [rules, setRules] = useState<Rule[]>([]);
   const [saving, setSaving] = useState(false);
