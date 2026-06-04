@@ -2,9 +2,8 @@
 import { useState, useEffect } from "react";
 import { useEazo } from "@eazo/sdk/react";
 import { auth } from "@eazo/sdk";
-import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Settings, Calendar, Clock, Video, MessageCircle, ChevronRight, LogOut, Stethoscope, ShieldCheck } from "lucide-react";
+import { Settings, Heart, HeadphonesIcon, BookOpen, MessageCircle, LogOut, ChevronRight, Calendar } from "lucide-react";
 import { request } from "@/lib/api/request";
 
 type Booking = {
@@ -12,218 +11,210 @@ type Booking = {
   sessionMode: string; priceAmount: number; sessionNumber?: number;
   counselor: { id: string; displayName: string } | null;
 };
+
 const BOOKING_TABS = [
   { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation"] },
   { key: "pending_payment",      label: "待支付", statuses: ["pending_payment"] },
   { key: "upcoming",             label: "待咨询", statuses: ["paid"] },
-  { key: "past",                 label: "已完成",   statuses: ["completed","cancelled","rejected"] },
+  { key: "past",                 label: "已完成",  statuses: ["completed","cancelled","rejected"] },
 ];
+
 const STATUS_BADGE: Record<string,{label:string;color:string;bg:string}> = {
-  pending_confirmation:{label:"待确认",color:"#D97706",bg:"#FEF3C7"},
-  pending_payment:{label:"待支付",color:"#2563EB",bg:"#DBEAFE"},
-  paid:{label:"即将咨询",color:"#059669",bg:"#D1FAE5"},
-  completed:{label:"已完成",color:"#6B7280",bg:"#F3F4F6"},
-  cancelled:{label:"已取消",color:"#9CA3AF",bg:"#F9FAFB"},
-  rejected:{label:"已拒绝",color:"#DC2626",bg:"#FEF2F2"},
+  pending_confirmation: { label:"待确认",   color:"#D97706", bg:"#FEF3C7" },
+  pending_payment:      { label:"待支付",   color:"#2563EB", bg:"#DBEAFE" },
+  paid:                 { label:"即将咨询", color:"#059669", bg:"#D1FAE5" },
+  completed:            { label:"已完成",   color:"#6B7280", bg:"#F3F4F6" },
+  cancelled:            { label:"已取消",   color:"#9CA3AF", bg:"#F3F4F6" },
+  rejected:             { label:"已拒绝",   color:"#9CA3AF", bg:"#F3F4F6" },
 };
-function BookingMiniCard({b}:{b:Booking}){
+
+const MODE_LABEL: Record<string,string> = { "视频":"视频咨询", "面谈":"面对面咨询", "语音":"语音咨询" };
+
+export default function ProfileScreen() {
   const router = useRouter();
-  const dt = b.scheduledAt ? new Date(b.scheduledAt) : null;
-  const WD = ["周日","周一","周二","周三","周四","周五","周六"];
-  const endDt = dt ? new Date(dt.getTime() + b.durationMinutes*60000) : null;
-  const pad = (n:number) => n.toString().padStart(2,"0");
-  const timeRange = dt && endDt ? `${pad(dt.getHours())}:${pad(dt.getMinutes())}-${pad(endDt.getHours())}:${pad(endDt.getMinutes())}` : "";
-  const dateStr = dt ? `${dt.getFullYear()}.${pad(dt.getMonth()+1)}.${pad(dt.getDate())} ${WD[dt.getDay()]} ${timeRange}` : "";
-  const badge = STATUS_BADGE[b.status]??{label:b.status,color:"#9B8E82",bg:"#F5F0E8"};
-  return(
-    <motion.div layout initial={{opacity:0,y:6}} animate={{opacity:1,y:0}}
-      className="rounded-2xl mb-3 overflow-hidden cursor-pointer" 
-      style={{background:"white",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}
-      onClick={()=>router.push(`/my-bookings/${b.id}`)}>
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-        <span className="text-sm font-bold text-[#2C2420]">
-          第{b.sessionNumber??1}次 {b.sessionMode??"视频"}咨询 ›
-        </span>
-        <span className="text-xs font-medium px-2.5 py-1 rounded-full"
-          style={{color:badge.color,background:badge.bg}}>{badge.label}</span>
-      </div>
-      {dateStr && <p className="px-4 text-xs text-[#9B8E82] pb-3">{dateStr}</p>}
-      <div className="px-4 py-3 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0"
-          style={{background:"#E8DFCC",color:"#7A6248"}}>
-          {b.counselor?.displayName[0]??"?"}
-        </div>
-        <div>
-          <p className="text-[11px] text-[#9B8E82]">咨询师</p>
-          <p className="text-sm font-semibold text-[#2C2420]">{b.counselor?.displayName??"咨询师"}</p>
-        </div>
-      </div>
-      {/* 按钮区：stopPropagation 阻止冒泡，按钮各自带功能 */}
-      <div className="border-t border-[#F0EBE3] px-4 py-3 flex gap-2" onClick={e=>e.stopPropagation()}>
-        {b.status==="pending_confirmation"&&(<>
-          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
-            style={{borderColor:"#9CB48A",color:"#9CB48A"}}
-            onClick={()=>router.push(`/messages?counselorId=${b.counselor?.id ?? ""}`)}>
-            <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
-          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border"
-            style={{borderColor:"#E0D8CE",color:"#9B8E82"}}
-            onClick={async()=>{if(!confirm("确认取消本次预约？"))return;const r=await request(`/api/bookings/${b.id}`);if(r.ok)window.location.reload();}}>取消预约</button>
-        </>)}
-        {b.status==="pending_payment"&&(<>
-          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
-            style={{borderColor:"#9CB48A",color:"#9CB48A"}}
-            onClick={()=>router.push(`/messages?counselorId=${b.counselor?.id ?? ""}`)}>
-            <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
-          <button className="flex-[2] py-2.5 rounded-xl text-white text-xs font-semibold"
-            style={{background:"#9CB48A"}}
-            onClick={()=>router.push(`/my-bookings/${b.id}?pay=1`)}>立即支付 ¥{b.priceAmount}</button>
-        </>)}
-        {b.status==="paid"&&(<>
-          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
-            style={{borderColor:"#9CB48A",color:"#9CB48A"}}
-            onClick={()=>router.push(`/messages?counselorId=${b.counselor?.id ?? ""}`)}>
-            <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
-          <button className="flex-[2] py-2.5 rounded-xl text-xs font-semibold border"
-            style={{borderColor:"#E0D8CE",color:"#9B8E82"}}
-            onClick={()=>router.push(`/my-bookings/${b.id}?reschedule=1`)}>申请改期</button>
-        </>)}
-        {(b.status==="completed"||b.status==="cancelled"||b.status==="rejected")&&(<>
-          <button className="flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1"
-            style={{borderColor:"#9CB48A",color:"#9CB48A"}}
-            onClick={()=>router.push(`/messages?counselorId=${b.counselor?.id ?? ""}`)}>
-            <MessageCircle className="w-3.5 h-3.5"/>联系咨询师</button>
-          <button className="flex-[2] py-2.5 rounded-xl text-white text-xs font-semibold"
-            style={{background:"#9CB48A"}}
-            onClick={()=>router.push(`/booking/${b.counselor?.id ?? ""}`)}>续约</button>
-        </>)}
-      </div>
-    </motion.div>
+  const user = useEazo((s) => s.auth.user);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [activeTab, setActiveTab] = useState("pending_confirmation");
+  const [seenTabs, setSeenTabs] = useState<Record<string,number>>({});
+
+  useEffect(() => {
+    const saved = localStorage.getItem("client_seen_tabs");
+    if (saved) try { setSeenTabs(JSON.parse(saved)); } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    request("/api/bookings/my").then(r => r.json()).then(d => setBookings(d.bookings ?? []));
+  }, [user]);
+
+  function markSeen(tab: string) {
+    const count = bookingsForTab(tab).length;
+    const next = { ...seenTabs, [tab]: count };
+    setSeenTabs(next);
+    localStorage.setItem("client_seen_tabs", JSON.stringify(next));
+  }
+
+  function bookingsForTab(tab: string) {
+    const t = BOOKING_TABS.find(t => t.key === tab);
+    if (!t) return [];
+    return bookings.filter(b => t.statuses.includes(b.status));
+  }
+
+  function getBadge(tab: string) {
+    const count = bookingsForTab(tab).length;
+    const seen = seenTabs[tab] ?? 0;
+    return count > seen ? count : 0;
+  }
+
+  function formatTime(iso: string) {
+    const d = new Date(iso);
+    return `${d.getMonth()+1}月${d.getDate()}日 ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+  }
+
+  const tabBookings = bookingsForTab(activeTab);
+
+  if (!user) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 pb-24" style={{ background:"var(--color-bg)" }}>
+      <div className="w-20 h-20 rounded-full flex items-center justify-center text-3xl" style={{ background:"#EBE7DF" }}>👤</div>
+      <p className="text-base font-semibold" style={{ color:"#2C2420" }}>登录后查看你的预约</p>
+      <button onClick={() => auth.login()} className="px-8 py-3 rounded-2xl text-white font-bold text-sm"
+        style={{ background:"var(--color-primary)" }}>
+        登录 / 注册
+      </button>
+    </div>
   );
-}
-export default function ProfileScreen(){
-  const user=useEazo((s)=>s.auth.user);
-  const loading=useEazo((s)=>s.auth.loading);
-  const router=useRouter();
-  const [tab,setTab]=useState(BOOKING_TABS[0].key);
-  const [bookings,setBookings]=useState<Booking[]>([]);
-  const [loadingBk,setLoadingBk]=useState(true);
-  const [showSwitch,setShowSwitch]=useState(false);
-  const [seenTabs,setSeenTabs]=useState<Record<string,number>>(()=>{
-    try{ return JSON.parse(localStorage.getItem("bp_seen")||"{}"); }catch{ return {}; }
-  });
-  const markSeen=(key:string,count:number)=>{
-    setSeenTabs(prev=>{
-      const next={...prev,[key]:count};
-      try{localStorage.setItem("bp_seen",JSON.stringify(next));}catch{}
-      return next;
-    });
-  };
-  useEffect(()=>{
-    if(!user)return;
-    request("/api/bookings/my").then(r=>r.json()).then(d=>{
-      setBookings(Array.isArray(d)?d:[]);
-    }).finally(()=>setLoadingBk(false));
-  },[user]);
-  const handleLogout=async()=>{await auth.logout();router.push("/");};
-  const currentTab=BOOKING_TABS.find(t=>t.key===tab)!;
-  const displayed=bookings.filter(b=>currentTab.statuses.includes(b.status));
-  const counts=Object.fromEntries(BOOKING_TABS.map(t=>[t.key,bookings.filter(b=>t.statuses.includes(b.status)).length]));
-  const PORTALS=[
-    {icon:Stethoscope,label:"咨询师端",href:"/counselor/bookings"},
-    {icon:ShieldCheck,label:"管理员端",href:"/admin/counselors"},
-  ];
-  if(loading)return<div className="min-h-svh flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-[#9CB48A] border-t-transparent animate-spin"/></div>;
-  return(
-    <div className="min-h-svh pb-28" style={{background:"var(--color-surface)"}}>
-      {/* 个人信息区 */}
-      <div className="px-5 pt-14 pb-5 relative">
-        <button onClick={()=>router.push("/settings")}
-          className="absolute top-14 right-5 w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{background:"#F0EBE3"}}>
-          <Settings className="w-4 h-4 text-[#9B8E82]"/>
-        </button>
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0"
-            style={{background:"#E8DFCC",color:"#7A6248"}}>
-            {(user?.name||user?.email||"我")[0]}
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-[#2C2420]">{user?.name||"未设置昵称"}</h1>
-            <p className="text-xs text-[#9B8E82] mt-0.5">{user?.email??""}</p>
-          </div>
+
+  const initials = user.nickname?.[0] ?? user.email?.[0] ?? "我";
+
+  return (
+    <div className="min-h-screen pb-32" style={{ background:"var(--color-bg)" }}>
+
+      {/* ── 个人信息区 ── */}
+      <div className="px-5 pt-6 pb-4 flex items-center gap-3">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white flex-none"
+          style={{ background:"var(--color-primary)" }}>
+          {initials.toUpperCase()}
         </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-lg font-bold truncate" style={{ color:"#2C2420" }}>{user.nickname ?? user.email}</p>
+          <p className="text-xs truncate" style={{ color:"#9B8E82" }}>{user.email}</p>
+        </div>
+        <button onClick={() => router.push("/settings")}
+          className="w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background:"#EBE7DF" }}>
+          <Settings className="w-4 h-4" style={{ color:"#5A4E44" }} />
+        </button>
       </div>
-      {/* 预约管理标题 */}
-      <div className="px-5 mb-2"><h2 className="text-base font-bold text-[#2C2420]">我的预约</h2></div>
-      {/* 4个Tab */}
-      <div className="sticky top-0 z-10 px-5 pb-3 pt-1" style={{background:"var(--color-surface)"}}>
-        <div className="flex gap-1.5">
-          {BOOKING_TABS.map(t=>(
-            <button key={t.key} onClick={()=>{setTab(t.key);markSeen(t.key,counts[t.key]??0);}}
-              className="flex-1 py-2 rounded-xl text-xs font-semibold relative transition-all"
-              style={{background:tab===t.key?"#9CB48A":"#F0EBE3",color:tab===t.key?"white":"#9B8E82"}}>
-              {t.label}
-              {counts[t.key]>0&&tab!==t.key&&counts[t.key]>(seenTabs[t.key]??0)&&(
-                <span className="absolute -top-1.5 -right-0.5 w-4 h-4 rounded-full text-[10px] flex items-center justify-center text-white"
-                  style={{background:"#E07B54"}}>{counts[t.key]-(seenTabs[t.key]??0)}</span>
+
+      {/* ── 我的预约（重点区域）── */}
+      <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background:"white", border:"1px solid #EBE7DF" }}>
+        {/* 标题行 */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" style={{ color:"var(--color-primary)" }} />
+            <span className="text-sm font-bold" style={{ color:"#2C2420" }}>我的预约</span>
+          </div>
+          <button onClick={() => router.push("/my-bookings")} className="text-xs" style={{ color:"var(--color-primary)" }}>
+            全部 ›
+          </button>
+        </div>
+
+        {/* 4个Tab */}
+        <div className="flex border-b" style={{ borderColor:"#F0EBE3" }}>
+          {BOOKING_TABS.map(tab => (
+            <button key={tab.key}
+              onClick={() => { setActiveTab(tab.key); markSeen(tab.key); }}
+              className="flex-1 flex flex-col items-center py-2 relative text-xs font-medium transition-colors"
+              style={{ color: activeTab === tab.key ? "var(--color-primary)" : "#9B8E82" }}>
+              {tab.label}
+              {getBadge(tab.key) > 0 && (
+                <span className="absolute top-1 right-2 w-4 h-4 rounded-full text-[10px] text-white flex items-center justify-center"
+                  style={{ background:"#EF4444" }}>{getBadge(tab.key)}</span>
+              )}
+              {activeTab === tab.key && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full"
+                  style={{ background:"var(--color-primary)" }} />
               )}
             </button>
           ))}
         </div>
-      </div>
-      {/* 订单列表 */}
-      <div className="px-4">
-        {loadingBk?(
-          <div className="space-y-3">{[1,2].map(i=><div key={i} className="h-24 rounded-2xl skeleton"/>)}</div>
-        ):displayed.length===0?(
-          <div className="text-center py-16">
-            <Calendar className="w-10 h-10 mx-auto mb-3" style={{color:"#C4BDB5"}}/>
-            <p className="text-sm text-[#9B8E82]">暂无记录</p>
+
+        {/* 订单列表 */}
+        {tabBookings.length === 0 ? (
+          <div className="py-8 flex flex-col items-center gap-2">
+            <p className="text-sm" style={{ color:"#C4BDB5" }}>暂无{BOOKING_TABS.find(t=>t.key===activeTab)?.label}订单</p>
           </div>
-        ):(
-          <AnimatePresence mode="popLayout">
-            {displayed.map(b=><BookingMiniCard key={b.id} b={b}/>)}
-          </AnimatePresence>
+        ) : (
+          <div className="divide-y" style={{ borderColor:"#F5F0EA" }}>
+            {tabBookings.slice(0,3).map(bk => {
+              const badge = STATUS_BADGE[bk.status] ?? { label:bk.status, color:"#9B8E82", bg:"#F3F4F6" };
+              return (
+                <div key={bk.id} onClick={() => router.push(`/my-bookings/${bk.id}`)}
+                  className="px-4 py-3 cursor-pointer active:bg-gray-50">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium" style={{ color:"#2C2420" }}>
+                      第{bk.sessionNumber ?? 1}次 {MODE_LABEL[bk.sessionMode] ?? bk.sessionMode}
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ background:badge.bg, color:badge.color }}>{badge.label}</span>
+                  </div>
+                  <p className="text-xs" style={{ color:"#9B8E82" }}>
+                    {bk.counselor?.displayName} · {bk.scheduledAt ? formatTime(bk.scheduledAt) : "时间待定"}
+                  </p>
+                </div>
+              );
+            })}
+            {tabBookings.length > 3 && (
+              <button onClick={() => router.push("/my-bookings")} className="w-full py-2.5 text-xs text-center"
+                style={{ color:"var(--color-primary)" }}>
+                查看全部 {tabBookings.length} 条 ›
+              </button>
+            )}
+          </div>
         )}
       </div>
-      {/* 联系客服 */}
-      <div className="px-5 mt-4">
-        <button onClick={()=>router.push("/support")}
-          className="w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2"
-          style={{background:"var(--color-surface)",border:"1px solid #DDD8D0",color:"#5A4E44"}}>
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          联系客服
+
+      {/* ── 常用功能四宫格 ── */}
+      <div className="mx-5 grid grid-cols-2 gap-3 mb-4">
+        {[
+          { icon: Heart,           label:"收藏的咨询师", sub:"我关注的咨询师", href:"/favorites",  color:"#E8DFCC" },
+          { icon: MessageCircle,   label:"我的消息",     sub:"与咨询师的对话", href:"/messages",   color:"#E4F0DC" },
+          { icon: HeadphonesIcon,  label:"联系客服",     sub:"有问题找我们",   href:"/support",    color:"#E4F0DC" },
+          { icon: BookOpen,        label:"新手必读",     sub:"了解咨询的一切", href:"/guide",      color:"#E8DFCC" },
+        ].map(item => (
+          <button key={item.label} onClick={() => router.push(item.href)}
+            className="flex items-center gap-3 rounded-2xl p-4 text-left"
+            style={{ background:"white", border:"1px solid #EBE7DF" }}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-none"
+              style={{ background:item.color }}>
+              <item.icon className="w-4 h-4" style={{ color:"var(--color-primary)" }} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold truncate" style={{ color:"#2C2420" }}>{item.label}</p>
+              <p className="text-xs truncate" style={{ color:"#9B8E82" }}>{item.sub}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* ── 退出登录 ── */}
+      <div className="mx-5 mb-4">
+        <button onClick={() => auth.logout?.()}
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-medium"
+          style={{ background:"white", border:"1px solid #EBE7DF", color:"#E53E3E" }}>
+          <LogOut className="w-4 h-4" />
+          退出登录
         </button>
       </div>
-      {/* 退出登录 */}
-      <div className="px-5 mt-3">
-        <button onClick={handleLogout}
-          className="w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 text-red-500"
-          style={{background:"#FEF2F2",border:"1px solid #FECACA"}}>
-          <LogOut className="w-4 h-4"/>退出登录
+
+      {/* ── 端口切换（隐藏，三点展开）── */}
+      <div className="mx-5">
+        <button onClick={() => router.push("/settings")}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm"
+          style={{ background:"white", border:"1px solid #EBE7DF", color:"#9B8E82" }}>
+          <span>账号与设置</span>
+          <ChevronRight className="w-4 h-4" />
         </button>
-      </div>
-      {/* 切换端口 */}
-      <div className="px-5 mt-4 pb-4">
-        <button onClick={()=>setShowSwitch(!showSwitch)}
-          className="w-full py-2 text-xs text-[#C4BDB5] flex items-center justify-center gap-1">
-          · · · 切换端口
-        </button>
-        <AnimatePresence>
-          {showSwitch&&(
-            <motion.div initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}
-              className="mt-2 rounded-2xl overflow-hidden" style={{background:"white",boxShadow:"0 2px 12px rgba(0,0,0,0.08)"}}>
-              {PORTALS.map((p,i)=>(
-                <button key={p.label} onClick={()=>{setShowSwitch(false);router.push(p.href);}}
-                  className={`w-full flex items-center gap-3 px-4 py-3 ${i<PORTALS.length-1?"border-b border-[#F0EBE3]":""}`}>
-                  <p.icon className="w-4 h-4 text-[#9B8E82]"/>
-                  <span className="text-sm text-[#2C2420]">{p.label}</span>
-                  <ChevronRight className="w-4 h-4 text-[#C4BDB5] ml-auto"/>
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );
