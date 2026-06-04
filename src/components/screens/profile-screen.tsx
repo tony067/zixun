@@ -84,7 +84,7 @@ export default function ProfileScreen() {
     </div>
   );
 
-  const initials = user.nickname?.[0] ?? user.email?.[0] ?? "我";
+  const initials = (user as any).displayName?.[0] ?? (user as any).nickname?.[0] ?? user.email?.[0] ?? "我";
 
   return (
     <div className="min-h-screen pb-32" style={{ background:"var(--color-bg)" }}>
