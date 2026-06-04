@@ -30,7 +30,7 @@ export async function PUT(request: NextRequest) {
     .from(counselors).where(eq(counselors.userId, userId)).limit(1);
 
   const now = new Date().toISOString();
-  const newStatus = action === "submit" ? "submitted" : (fields.reviewStatus ?? "draft");
+  const newStatus = action === "submit" ? "pending" : (fields.reviewStatus ?? "draft");
 
   const data = {
     displayName:        fields.displayName ?? "",
