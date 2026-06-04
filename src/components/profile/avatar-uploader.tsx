@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { Camera, Loader2 } from "lucide-react";
 import { storage } from "@eazo/sdk";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useEazo } from "@eazo/sdk/react";
 
 export function AvatarUploader({
   url, name, onChange,
@@ -10,7 +10,7 @@ export function AvatarUploader({
   const ref = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
-  const user = useAuthStore((s) => s.user);
+  const { user } = useEazo();
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,7 +44,6 @@ export function AvatarUploader({
             : <span>{name?.[0] ?? "?"}</span>
           }
         </div>
-        {/* 相机图标覆盖 */}
         <button type="button" onClick={() => ref.current?.click()}
           className="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center shadow"
           style={{ background: "var(--color-primary)" }}>
@@ -52,7 +51,6 @@ export function AvatarUploader({
         </button>
       </div>
 
-      {/* 上传按钮 */}
       <button type="button" onClick={() => ref.current?.click()}
         disabled={uploading}
         className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
