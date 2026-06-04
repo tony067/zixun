@@ -39,7 +39,7 @@ export default function CounselorProfilePage() {
     if (submit) setSubmitting(true); else setSaving(true);
     try {
       const res = await request("/api/counselor/profile", {
-        method: "PATCH",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, action: submit ? "submit" : "save" }),
       });
