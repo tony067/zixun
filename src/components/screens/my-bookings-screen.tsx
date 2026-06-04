@@ -121,7 +121,7 @@ export default function MyBookingsScreen() {
 
   return (
     <div className="h-svh flex flex-col" style={{ background: "var(--color-surface)" }}>
-      <div className="flex-none px-5 pb-0 z-20"
+      <div className="flex-none sticky top-0 px-5 pb-0 z-20"
         style={{ background: "rgba(245,240,232,0.97)", backdropFilter: "blur(10px)", borderBottom: "1px solid #EBE7DF", paddingTop: "max(env(safe-area-inset-top,0px) + 12px, 52px)" }}>
         <div className="flex items-center gap-3 mb-3">
           <button onClick={() => window.history.back()}
