@@ -48,7 +48,6 @@ export default function SettingsPage() {
           <motion.div key="main" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="px-5 pt-6 space-y-3">
             {[
-              { id: "profile",       icon: User,       label: "个人资料",  sub: "修改昵称和头像" },
               { id: "notifications", icon: Bell,       label: "通知设置",  sub: "预约提醒和消息通知" },
               { id: "privacy",       icon: Shield,     label: "隐私与安全", sub: "密码和授权管理" },
               { id: "help",          icon: HelpCircle, label: "帮助与反馈", sub: "常见问题和联系客服" },
