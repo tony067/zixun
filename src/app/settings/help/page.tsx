@@ -29,11 +29,11 @@ export default function HelpPage() {
         {/* 联系方式 */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: MessageSquare, label: "在线客服", color: "#9CB48A" },
-            { icon: Phone,         label: "电话支持", color: "#6366F1" },
-            { icon: Book,          label: "使用指南", color: "#F59E0B" },
+            { icon: MessageSquare, label: "在线客服", color: "#9CB48A", action: () => router.push("/support") },
+            { icon: Phone,         label: "电话支持", color: "#6366F1", action: () => window.open("tel:400-000-0000") },
+            { icon: Book,          label: "使用指南", color: "#F59E0B", action: () => router.push("/guide") },
           ].map(item => (
-            <button key={item.label} className="rounded-2xl p-4 flex flex-col items-center gap-2"
+            <button key={item.label} onClick={item.action} className="rounded-2xl p-4 flex flex-col items-center gap-2"
               style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: item.color + "20" }}>
                 <item.icon className="w-5 h-5" style={{ color: item.color }} />
