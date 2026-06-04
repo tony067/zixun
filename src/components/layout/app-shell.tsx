@@ -72,8 +72,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   function switchRole(targetRole: Role) {
     setShowRolePicker(false);
     if (!user) {
-      // 未登录，先触发登录弹窗
-      router.push(`/?requireLogin=1&redirect=${MY_ROUTE[targetRole]}`);
+      auth.login();
       return;
     }
     router.push(MY_ROUTE[targetRole]);
