@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useEazo } from "@eazo/sdk/react";
 import { auth } from "@eazo/sdk";
 import { useRouter } from "next/navigation";
-import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight } from "lucide-react";
+import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight, Camera, Pencil } from "lucide-react";
 import { request } from "@/lib/api/request";
 
 type Booking = {
