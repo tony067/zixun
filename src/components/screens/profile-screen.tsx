@@ -39,9 +39,7 @@ const QUICK_ACTIONS = [
 export default function ProfileScreen() {
   const user   = useEazo((s) => s.auth.user);
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("pending_confirmation");
-  const [bookings,  setBookings]  = useState<Booking[]>([]);
-  const [counts,    setCounts]    = useState<Record<string,number>>({});
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     if (!user) return;
