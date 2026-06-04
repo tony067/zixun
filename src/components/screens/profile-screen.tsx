@@ -67,9 +67,11 @@ export default function ProfileScreen() {
     if (!file || !user) return;
     setUploading(true);
     try {
-      const path = `avatars/${user.id}/${Date.now()}.jpg`;
-      const result = await storage.upload(path, file);
-      const url = result?.url ?? result as unknown as string;
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await request("/api/upload/avatar", { method: "POST", body: fd });
+      if (!res.ok) throw new Error("upload failed");
+      const { url } = await res.json();
       setAvatarUrl(url);
       await request("/api/user/profile", { method: "PATCH", body: JSON.stringify({ avatarUrl: url }) });
     } catch (err) {
