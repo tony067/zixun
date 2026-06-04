@@ -9,8 +9,8 @@ export async function PATCH(req: NextRequest) {
   if (!r.ok) return r.response;
   const { displayName, avatarUrl } = await req.json();
   const update: Record<string, string> = {};
-  if (displayName) update.displayName = displayName;
-  if (avatarUrl)   update.avatarUrl   = avatarUrl;
+  if (displayName) update.name = displayName;   // users表用name字段
+  if (avatarUrl)   update.avatarUrl = avatarUrl;
   if (Object.keys(update).length === 0)
     return NextResponse.json({ error: "nothing to update" }, { status: 400 });
   await db.update(users).set(update).where(eq(users.id, r.user.id));
