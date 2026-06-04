@@ -113,7 +113,6 @@ export default function ProfileScreen() {
               <Camera className="w-3 h-3" style={{ color:"#5A4E44" }} />
             </div>
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-          </div>tar-input" type="file" accept="image/*" className="hidden" />
           </div>
           {/* 姓名 + 铅笔 */}
           <div className="flex-1 min-w-0">
