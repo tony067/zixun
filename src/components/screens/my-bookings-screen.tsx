@@ -151,7 +151,7 @@ export default function MyBookingsScreen() {
           ))}
         </div>
       </div>
-      <div className="px-4 pt-4">
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28">
         {loading ? (
           <div className="space-y-3">{[1,2].map(i => <div key={i} className="h-28 rounded-2xl skeleton" />)}</div>
         ) : displayed.length === 0 ? (
