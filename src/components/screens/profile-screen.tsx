@@ -44,11 +44,7 @@ export default function ProfileScreen() {
   useEffect(() => {
     if (!user) return;
     request("/api/bookings/my").then(r => r.json()).then((d: { bookings?: Booking[] }) => {
-      const list: Booking[] = d.bookings ?? [];
-      setBookings(list);
-      const c: Record<string,number> = {};
-      BOOKING_TABS.forEach(t => { c[t.key] = list.filter(b => t.statuses.includes(b.status)).length; });
-      setCounts(c);
+      setBookings(d.bookings ?? []);
     }).catch(() => {});
   }, [user]);
 
