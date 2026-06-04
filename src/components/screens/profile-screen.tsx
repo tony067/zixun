@@ -120,7 +120,7 @@ export default function ProfileScreen() {
             <div className="flex items-center gap-1.5">
               <p className="text-lg font-bold truncate" style={{ color:"#2C2420" }}>{displayName}</p>
               <button className="flex-none p-1 rounded-full" style={{ background:"#F0EBE4" }}
-                onClick={() => { const n = prompt("修改昵称", displayName); if (n?.trim()) alert("已保存：" + n.trim()); }}>
+                onClick={handleNameEdit}>
                 <Pencil className="w-3 h-3" style={{ color:"#9B8E82" }} />
               </button>
             </div>
