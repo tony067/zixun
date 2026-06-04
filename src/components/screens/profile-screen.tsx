@@ -72,14 +72,27 @@ export default function ProfileScreen() {
       {/* ── 个人信息区 ── */}
       <div className="px-5 pt-6 pb-4">
         <div className="flex items-center gap-4">
-          <div className="relative flex-none">
+          {/* 头像 + 相机图标 */}
+          <div className="relative flex-none cursor-pointer" onClick={() => document.getElementById("profile-avatar-input")?.click()}>
             <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white"
               style={{ background:"var(--color-primary)" }}>
               {initials}
             </div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full flex items-center justify-center"
+              style={{ background:"#fff", border:"1.5px solid #D4C8B0" }}>
+              <Camera className="w-3 h-3" style={{ color:"#5A4E44" }} />
+            </div>
+            <input id="profile-avatar-input" type="file" accept="image/*" className="hidden" />
           </div>
+          {/* 姓名 + 铅笔 */}
           <div className="flex-1 min-w-0">
-            <p className="text-lg font-bold truncate" style={{ color:"#2C2420" }}>{displayName}</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-lg font-bold truncate" style={{ color:"#2C2420" }}>{displayName}</p>
+              <button className="flex-none p-1 rounded-full" style={{ background:"#F0EBE4" }}
+                onClick={() => { const n = prompt("修改昵称", displayName); if (n?.trim()) alert("已保存：" + n.trim()); }}>
+                <Pencil className="w-3 h-3" style={{ color:"#9B8E82" }} />
+              </button>
+            </div>
             <p className="text-xs mt-0.5 truncate" style={{ color:"#9B8E82" }}>{user.email}</p>
           </div>
         </div>
