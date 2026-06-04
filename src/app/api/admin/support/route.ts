@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     FROM support_messages
     ORDER BY user_id, created_at DESC
   `);
-  return NextResponse.json({ threads: rows.rows });
+  return NextResponse.json({ threads: rows });
 }
 
 // POST: 管理员回复某用户

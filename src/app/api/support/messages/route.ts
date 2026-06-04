@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     ORDER BY created_at ASC
     LIMIT 100
   `);
-  return NextResponse.json({ messages: rows.rows });
+  return NextResponse.json({ messages: rows });
 }
 
 export async function POST(req: NextRequest) {
