@@ -56,8 +56,8 @@ export default function ProfileScreen() {
     </div>
   );
 
-  const initials    = (user as any).displayName?.[0] ?? (user as any).nickname?.[0] ?? user.email?.[0] ?? "我";
-  const displayName = (user as any).displayName ?? (user as any).nickname ?? user.email ?? "";
+  const initials    = (user as any).name?.[0] ?? (user as any).displayName?.[0] ?? user.email?.[0] ?? "我";
+  const displayName = (user as any).name ?? (user as any).displayName ?? user.email ?? "";
   const [avatarUrl, setAvatarUrl] = useState<string>((user as any).avatarUrl ?? "");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
