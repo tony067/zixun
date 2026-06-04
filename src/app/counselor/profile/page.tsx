@@ -39,9 +39,9 @@ export default function CounselorProfilePage() {
     if (submit) setSubmitting(true); else setSaving(true);
     try {
       const res = await request("/api/counselor/profile", {
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, reviewStatus: submit ? "submitted" : "draft" }),
+        body: JSON.stringify({ ...form, action: submit ? "submit" : "save" }),
       });
       if (res.ok) {
         const data = await res.json();
