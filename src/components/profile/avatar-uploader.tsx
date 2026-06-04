@@ -10,7 +10,7 @@ export function AvatarUploader({
   const ref = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
-  const { user } = useEazo();
+  const user = useEazo((s: { auth: { user: { id?: string } | null } }) => s.auth.user);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
