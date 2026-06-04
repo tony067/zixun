@@ -99,16 +99,21 @@ export default function ProfileScreen() {
       <div className="px-5 pt-6 pb-4">
         <div className="flex items-center gap-4">
           {/* 头像 + 相机图标 */}
-          <div className="relative flex-none cursor-pointer" onClick={() => document.getElementById("profile-avatar-input")?.click()}>
-            <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-              style={{ background:"var(--color-primary)" }}>
-              {initials}
-            </div>
+          <div className="relative flex-none cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="avatar" className="w-20 h-20 rounded-full object-cover" />
+            ) : (
+              <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white"
+                style={{ background:"var(--color-primary)" }}>
+                {uploading ? "..." : initials}
+              </div>
+            )}
             <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full flex items-center justify-center"
               style={{ background:"#fff", border:"1.5px solid #D4C8B0" }}>
               <Camera className="w-3 h-3" style={{ color:"#5A4E44" }} />
             </div>
-            <input id="profile-avatar-input" type="file" accept="image/*" className="hidden" />
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+          </div>tar-input" type="file" accept="image/*" className="hidden" />
           </div>
           {/* 姓名 + 铅笔 */}
           <div className="flex-1 min-w-0">
