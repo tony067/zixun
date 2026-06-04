@@ -58,6 +58,32 @@ export default function ProfileScreen() {
 
   const initials    = (user as any).displayName?.[0] ?? (user as any).nickname?.[0] ?? user.email?.[0] ?? "我";
   const displayName = (user as any).displayName ?? (user as any).nickname ?? user.email ?? "";
+  const [avatarUrl, setAvatarUrl] = useState<string>((user as any).avatarUrl ?? "");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploading(true);
+    try {
+      const path = `avatars/${user.id}/${Date.now()}.jpg`;
+      const url = await storage.upload(path, file);
+      setAvatarUrl(url);
+      await request("/api/user/profile", { method: "PATCH", body: JSON.stringify({ avatarUrl: url }) });
+    } catch (err) {
+      console.error("头像上传失败", err);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleNameEdit() {
+    const newName = window.prompt("修改昵称", displayName);
+    if (!newName || newName === displayName) return;
+    await request("/api/user/profile", { method: "PATCH", body: JSON.stringify({ displayName: newName }) });
+    window.location.reload();
+  }
 
   const QUICK_ACTIONS = [
     { icon: Heart,           label:"收藏的咨询师", sub:"管理收藏",   href:"/favorites" },
