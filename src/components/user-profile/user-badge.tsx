@@ -9,6 +9,7 @@ import type { User } from "@eazo/sdk";
 
 export function UserBadge() {
   const user = useEazo((s) => s.auth.user);
+  const auth = useEazo((s) => s.auth);
   const loading = useEazo((s) => s.auth.loading);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
