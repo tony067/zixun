@@ -413,7 +413,12 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           </motion.button>
           {/* 收藏 */}
           <motion.button whileTap={{ scale: 0.92 }}
-            onClick={() => setSaved(!saved)}
+            onClick={() => {
+              const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
+              const next = saved ? ids.filter(i => i !== c.id) : [...ids, c.id];
+              localStorage.setItem("favorite_counselors", JSON.stringify(next));
+              setSaved(!saved);
+            }}
             className="flex flex-col items-center gap-1 w-12"
             style={{ color: saved ? "#9CB48A" : "#6B5E52" }}>
             <Bookmark className={`w-5 h-5 ${saved ? "fill-current" : ""}`} />
