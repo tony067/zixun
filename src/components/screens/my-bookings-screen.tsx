@@ -120,8 +120,19 @@ export default function MyBookingsScreen() {
   ]));
 
   return (
-    <div className="min-h-svh pb-28" style={{ background: "var(--color-surface)" }}>
-      <div className="sticky top-0 z-10 px-5 pt-12 pb-0" style={{ background: "var(--color-surface)" }}>
+    <div className="h-svh flex flex-col" style={{ background: "var(--color-surface)" }}>
+      <div className="flex-none px-5 pb-0 z-20"
+        style={{ background: "rgba(245,240,232,0.97)", backdropFilter: "blur(10px)", borderBottom: "1px solid #EBE7DF", paddingTop: "max(env(safe-area-inset-top,0px) + 12px, 52px)" }}>
+        <div className="flex items-center gap-3 mb-3">
+          <button onClick={() => window.history.back()}
+            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: "#EBE7DF" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A4E44" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          <h1 className="text-base font-bold" style={{ color: "#2C2420" }}>全部预约</h1>
+        </div>
         <h1 className="text-xl font-bold text-[#2C2420] mb-4">我的预约</h1>
         <div className="flex gap-1.5 pb-3 border-b border-[#EBE7DF]">
           {TABS.map(t => (
