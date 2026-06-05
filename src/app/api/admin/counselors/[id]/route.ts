@@ -22,7 +22,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!c) return NextResponse.json({ error: "Not found" }, { status: 404 });
   // 拉用户邮箱
   const [u] = await db.select({ email: users.email, name: users.name }).from(users).where(eq(users.id, c.userId));
-  return NextResponse.json({ counselor: { ...c, email: u?.email ?? "", userName: u?.name ?? "" } });
+  return NextResponse.json({ counselor: {
+    ...c,
+    email: u?.email ?? "",
+    userName: u?.name ?? "",
+    qualifications: parseListField(c.qualifications),
+    education: parseListField(c.education),
+    trainings: parseListField(c.trainings),
+    workExperiences: parseListField(c.workExperiences),
+  } });
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
