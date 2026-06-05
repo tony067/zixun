@@ -28,7 +28,7 @@ export default function AdminCounselorsScreen() {
 
   useEffect(() => {
     setLoading(true);
-    request(`/api/admin/counselors?status=${tab}`)
+    request(`/api/admin/counselors?status=${tab}&t=${Date.now()}`)
       .then(r => r.json()).then(d => { setCounselors(Array.isArray(d) ? d : []); setLoading(false); })
       .catch(() => setLoading(false));
   }, [tab]);
