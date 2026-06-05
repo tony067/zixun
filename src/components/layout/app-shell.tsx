@@ -187,7 +187,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         border: `1px solid ${isActive ? "#9CB48A" : "#EBE7DF"}`,
                       }}
                     >
-                      <span className="text-2xl">{item.icon}</span>
+                      {ROLE_ICONS[item.role]}
                       <div className="flex-1 min-w-0 text-left">
                         <div className="text-sm font-semibold" style={{ color: "#2C2420" }}>{item.label}</div>
                         <div className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{item.sub}</div>
