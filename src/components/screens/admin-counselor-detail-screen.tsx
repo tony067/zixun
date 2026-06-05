@@ -201,7 +201,8 @@ export default function AdminCounselorDetailScreen({ id }: { id: string }) {
 
       {/* 底部操作栏（只在待审核时显示） */}
       {c.reviewStatus === "pending" && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-8 pt-3 border-t"
+        <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 border-t"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 72px)", background: "rgba(245,240,232,0.97)", backdropFilter: "blur(8px)", borderColor: "#DDD8D0" }}
           style={{ background: "rgba(245,240,232,0.97)", backdropFilter: "blur(8px)", borderColor: "#DDD8D0" }}>
           {showReject && (
             <div className="mb-3">
@@ -238,7 +239,8 @@ export default function AdminCounselorDetailScreen({ id }: { id: string }) {
 
       {/* 已审核状态提示 */}
       {c.reviewStatus !== "pending" && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-8 pt-3 border-t"
+        <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 border-t"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 72px)", background: "rgba(245,240,232,0.97)", backdropFilter: "blur(8px)", borderColor: "#DDD8D0" }}
           style={{ background: "rgba(245,240,232,0.97)", backdropFilter: "blur(8px)", borderColor: "#DDD8D0" }}>
           <div className="text-center text-sm py-2 rounded-2xl font-medium"
             style={{ background: st.bg, color: st.color }}>
