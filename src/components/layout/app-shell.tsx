@@ -76,10 +76,35 @@ const ROLE_ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
+function ClientIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="9" r="4.5" stroke="#4A9B8E" strokeWidth="1.8" fill="none"/>
+      <path d="M5 24c0-4.418 4.03-8 9-8s9 3.582 9 8" stroke="#4A9B8E" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+    </svg>
+  );
+}
+function CounselorIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <path d="M14 5C10 5 7 8 7 11.5c0 2.5 1.4 4.7 3.5 5.9L14 23l3.5-5.6C19.6 16.2 21 14 21 11.5 21 8 18 5 14 5z" stroke="#7AAF5A" strokeWidth="1.8" strokeLinejoin="round" fill="none"/>
+      <circle cx="14" cy="11.5" r="2.5" stroke="#7AAF5A" strokeWidth="1.5" fill="none"/>
+    </svg>
+  );
+}
+function AdminIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <path d="M14 4L6 7.5v6C6 17.9 9.5 22.3 14 24c4.5-1.7 8-6.1 8-10.5v-6L14 4z" stroke="#6B8EC9" strokeWidth="1.8" strokeLinejoin="round" fill="none"/>
+      <path d="M10.5 13.5l2.5 2.5 4.5-4.5" stroke="#6B8EC9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
 const ROLE_ITEMS = [
-  { role: "client"   as Role, label: "来访者",  sub: "浏览咨询师・预约・消息" },
-  { role: "counselor"as Role, label: "咨询师",  sub: "管理预约・档期・档案" },
-  { role: "admin"    as Role, label: "管理员",  sub: "审核・数据・系统设置" },
+  { role: "client"   as Role, label: "来访者", sub: "浏览咨询师・预约・消息", Icon: ClientIcon },
+  { role: "counselor"as Role, label: "咨询师", sub: "管理预约・档期・档案",  Icon: CounselorIcon },
+  { role: "admin"    as Role, label: "管理员", sub: "审核・数据・系统设置",  Icon: AdminIcon },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
