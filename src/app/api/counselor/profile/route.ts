@@ -52,10 +52,14 @@ export async function PUT(request: NextRequest) {
     pricePerSession:    fields.pricePerSession ? parseInt(fields.pricePerSession) : 0,
     languages:          fields.languages ?? [],
     sessionDescription: fields.sessionDescription ?? "",
-    qualifications:     fields.qualifications ?? [],
-    education:          fields.education ?? [],
-    trainings:          fields.trainings ?? [],
-    workExperiences:    fields.workExperiences ?? [],
+    qualifications:     (fields.qualifications ?? []).map((x: unknown) =>
+                          typeof x === "string" ? x : JSON.stringify(x)),
+    education:          (fields.education ?? []).map((x: unknown) =>
+                          typeof x === "string" ? x : JSON.stringify(x)),
+    trainings:          (fields.trainings ?? []).map((x: unknown) =>
+                          typeof x === "string" ? x : JSON.stringify(x)),
+    workExperiences:    (fields.workExperiences ?? []).map((x: unknown) =>
+                          typeof x === "string" ? x : JSON.stringify(x)),
     reviewStatus:       newStatus,
   };
 
