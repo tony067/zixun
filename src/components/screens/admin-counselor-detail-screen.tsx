@@ -95,7 +95,7 @@ export default function AdminCounselorDetailScreen({ id }: { id: string }) {
   const st = STATUS[c.reviewStatus] ?? STATUS.draft;
 
   return (
-    <div className="min-h-screen pb-32" style={{ background: "var(--color-bg)" }}>
+    <div className="min-h-screen pb-48" style={{ background: "var(--color-bg)" }}>
       {/* 顶部导航 */}
       <div className="sticky top-0 z-20 px-4 py-3 flex items-center gap-3 border-b"
         style={{ background: "rgba(245,240,232,0.97)", backdropFilter: "blur(8px)", borderColor: "#DDD8D0" }}>
