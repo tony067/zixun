@@ -51,8 +51,8 @@ const MY_ROUTE: Record<Role, string> = {
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
   client: (
-    <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: "#E8F4EC" }}>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A9A6B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: "#E4F2F0" }}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3A9B8E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
         <circle cx="12" cy="7" r="4"/>
       </svg>
