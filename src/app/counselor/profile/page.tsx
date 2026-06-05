@@ -115,7 +115,7 @@ export default function CounselorProfilePage() {
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-white"
             style={{ background: canSubmit ? "#9CB48A" : "#C0B8B0" }}>
             <Send className="w-4 h-4" />
-            {submitting ? "提交中…" : form.reviewStatus === "submitted" ? "修改档案" : "提交审核"}
+            {submitting ? "提交中…" : (form.reviewStatus === "pending" || form.reviewStatus === "approved") ? "重新提交审核" : "提交审核"}
           </motion.button>
         </div>
       </div>
