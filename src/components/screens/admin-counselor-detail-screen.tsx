@@ -39,9 +39,25 @@ function Tags({ items }: { items: string[] }) {
   );
 }
 
+function parseItem(v: unknown, i: number): { id: string; value: string } {
+  if (typeof v === "string") {
+    try {
+      const parsed = JSON.parse(v);
+      if (parsed && typeof parsed === "object" && "value" in parsed) {
+        return { id: String(parsed.id ?? i), value: String(parsed.value) };
+      }
+    } catch { /* not JSON, use as-is */ }
+    return { id: String(i), value: v };
+  }
+  if (typeof v === "object" && v !== null && "value" in v) {
+    return { id: String((v as { id?: string }).id ?? i), value: String((v as { value?: string }).value ?? "") };
+  }
+  return { id: String(i), value: String(v) };
+}
+
 function ListItems({ items }: { items: ListItem[] | string[] }) {
   if (!items?.length) return <p className="text-sm" style={{ color: "#9B8E82" }}>未填写</p>;
-  const arr = typeof items[0] === "string" ? (items as string[]).map((v, i) => ({ id: String(i), value: v })) : items as ListItem[];
+  const arr = (items as unknown[]).map((v, i) => parseItem(v, i));
   return (
     <ul className="space-y-2">
       {arr.map((item, i) => (
