@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const auth = requireAuth(req);
   if (!auth.ok) return auth.response;
   const status = req.nextUrl.searchParams.get("status") ?? "pending";
-  const rows = await db.select().from(counselors).where(eq(counselors.reviewStatus, status)).orderBy(desc(counselors.updatedAt));
+  const rows = await db.select().from(counselors).where(eq(counselors.reviewStatus, status)).orderBy(desc(counselors.createdAt));
   return NextResponse.json(rows);
 }
 
