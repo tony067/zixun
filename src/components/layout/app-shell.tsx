@@ -49,10 +49,37 @@ const MY_ROUTE: Record<Role, string> = {
   admin:     "/admin",
 };
 
+const ROLE_ICONS: Record<string, React.ReactNode> = {
+  client: (
+    <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: "#E8F4EC" }}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A9A6B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+  ),
+  counselor: (
+    <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: "#E8F0FB" }}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A72C4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3.05 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 17z"/>
+        <path d="M14.5 2a4.5 4.5 0 0 1 4.5 4.5"/>
+        <path d="M14.5 6a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+      </svg>
+    </div>
+  ),
+  admin: (
+    <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: "#FEF3C7" }}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+  ),
+};
+
 const ROLE_ITEMS = [
-  { role: "client"   as Role, icon: "👤", label: "来访者",  sub: "浏览咨询师・预约・消息" },
-  { role: "counselor"as Role, icon: "🧑‍⚕️", label: "咨询师",  sub: "管理预约・档期・档案" },
-  { role: "admin"    as Role, icon: "🛠",  label: "管理员",  sub: "审核・数据・系统设置" },
+  { role: "client"   as Role, label: "来访者",  sub: "浏览咨询师・预约・消息" },
+  { role: "counselor"as Role, label: "咨询师",  sub: "管理预约・档期・档案" },
+  { role: "admin"    as Role, label: "管理员",  sub: "审核・数据・系统设置" },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
