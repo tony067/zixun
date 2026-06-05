@@ -6,6 +6,14 @@ import { users } from "@/lib/db/schema/users";
 import { eq } from "drizzle-orm";
 import { notifyCounselorReviewResult } from "@/lib/notifications/notify";
 
+function parseListField(arr: string[] | null | undefined) {
+  if (!arr?.length) return [];
+  return arr.map((s, i) => {
+    try { const p = JSON.parse(s); return { id: p.id ?? String(i), value: p.value ?? s }; }
+    catch { return { id: String(i), value: s }; }
+  });
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = requireAuth(req);
   if (!auth.ok) return auth.response;
