@@ -19,29 +19,3 @@ export function UserSyncEffect() {
 }
 
 
-g | null>(null);
-
-  useEffect(() => {
-    if (!authenticated || platform !== "mobile") return;
-
-    const userId = auth.user?.id ?? null;
-    if (!userId || syncedUserId.current === userId) return;
-
-    syncedUserId.current = userId;
-
-      (async () => {
-      try {
-        const sessionHeader = await auth.getSessionHeader();
-        if (!sessionHeader) return;
-
-        await fetch("/api/user/profile", {
-          headers: { "x-eazo-session": sessionHeader },
-        });
-      } catch (err) {
-        console.error("[UserSyncEffect] profile fetch failed", err);
-      }
-    })();
-  }, [authenticated, platform]);
-
-  return null;
-}
