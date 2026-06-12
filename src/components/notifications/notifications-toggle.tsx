@@ -32,29 +32,7 @@ export function NotificationsToggle() {
     </button>
   );
 }
-
-
-
-
-  useEffect(() => {
-    if (!user) return;
-    const saved = localStorage.getItem("mindpace_notifications") === "true";
-    setSubscribed(saved);
-  }, [user]);
-
-  const toggle = () => {
-    const next = !subscribed;
-    localStorage.setItem("mindpace_notifications", String(next));
-    setSubscribed(next);
-  };
-
-  if (!user) return null;
-
-  return (
-    <button
-      onClick={toggle}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm"
-      style={{ background: "#EBE7DF", color: "#5A4E44" }}
+r: "#5A4E44" }}
 
 
 
