@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
 import { Camera, Loader2 } from "lucide-react";
-import { storage } from "@eazo/sdk";
 
 export function AvatarUploader({
   url, name, onChange,
