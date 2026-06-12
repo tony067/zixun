@@ -73,7 +73,7 @@ export function UserBadge() {
     return (
       <button
         onClick={() => {
-          auth.login().catch(() => undefined);
+          window.dispatchEvent(new CustomEvent("mindpace:show-login")).catch(() => undefined);
         }}
         className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-shadow hover:shadow-md"
       >

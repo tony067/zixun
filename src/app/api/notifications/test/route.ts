@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { notifications, EazoNotificationPublishError } from "@eazo/sdk/server";
 import { requireAuth } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {

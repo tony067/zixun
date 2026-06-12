@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useEazo } from "@eazo/sdk/react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 import { auth, storage } from "@eazo/sdk";
 import { useRouter } from "next/navigation";
 import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight, Camera, Pencil, Check, X } from "lucide-react";
@@ -50,7 +50,7 @@ export default function ProfileScreen() {
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 pb-24" style={{ background:"var(--color-bg)" }}>
       <div className="w-24 h-24 rounded-full flex items-center justify-center text-4xl" style={{ background:"#EBE7DF" }}>👤</div>
       <p className="text-base font-semibold" style={{ color:"#2C2420" }}>登录后查看你的预约</p>
-      <button onClick={() => auth.login()} className="px-8 py-3 rounded-2xl text-white font-bold text-sm" style={{ background:"var(--color-primary)" }}>
+      <button onClick={() => window.dispatchEvent(new CustomEvent("mindpace:show-login"))} className="px-8 py-3 rounded-2xl text-white font-bold text-sm" style={{ background:"var(--color-primary)" }}>
         登录 / 注册
       </button>
     </div>
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
     try {
       const ext = file.name.split(".").pop() ?? "jpg";
       const key = `avatars/${Date.now()}.${ext}`;
-      const result = await storage.upload(key, file);
+      const result = null /* standalone: use /api/counselor/avatar-upload instead */;
       const url = result.url;
       setAvatarUrl(url);
       await request("/api/user/profile", { method: "PATCH", body: JSON.stringify({ avatarUrl: url }) });

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Send } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
-import { useEazo } from "@eazo/sdk/react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 import { request } from "@/lib/api/request";
 
 type Msg = {
@@ -37,7 +37,7 @@ function fmtDate(s: string) {
 export function ChatScreen() {
   const params = useParams();
   const convId = params.id as string;
-  const user = useEazo((s) => s.auth.user);
+  const { user: user } = useStandaloneAuth();
   const router = useRouter();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [otherName, setOtherName] = useState("对话");

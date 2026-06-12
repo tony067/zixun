@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { notifications, EazoNotificationPublishError } from "@eazo/sdk/server";
 
 /** Scheduled by `vercel.json#crons`. Authenticated via `CRON_SECRET`. */
 export async function GET(request: NextRequest) {

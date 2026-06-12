@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
-import { useEazo } from "@eazo/sdk/react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Camera, User, Mail, Phone } from "lucide-react";
 
 export default function ProfileSettingsPage() {
-  const user = useEazo((s) => s.auth.user);
+  const { user: user } = useStandaloneAuth();
   const router = useRouter();
   const [name, setName] = useState(user?.name ?? "");
   const [phone, setPhone] = useState("");

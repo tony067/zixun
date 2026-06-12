@@ -5,8 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, ChevronDown, Clock, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEazo } from "@eazo/sdk/react";
-import { auth } from "@eazo/sdk";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 
 type Counselor = {
   id: string; displayName: string; title: string; bio: string;
@@ -297,7 +296,7 @@ function Skeleton() {
 
 /* ══ 主屏幕 ══ */
 export function ExploreScreen() {
-  const user = useEazo((s) => s.auth.user);
+  const { user: user } = useStandaloneAuth();
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -382,7 +381,7 @@ export function ExploreScreen() {
               {(user.name ?? user.email ?? "?")[0].toUpperCase()}
             </div>
           ) : (
-            <button onClick={() => auth.login()}
+            <button onClick={() => window.dispatchEvent(new CustomEvent("mindpace:show-login"))}
               className="w-8 h-8 rounded-full text-[13px] font-semibold"
               style={{ background: "#9CB48A", color: "white", display:"flex", alignItems:"center", justifyContent:"center" }}>
               登录

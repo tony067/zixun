@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BarChart3, Users, CalendarCheck, Clock } from "lucide-react";
-import { useEazo } from "@eazo/sdk/react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 import { request } from "@/lib/api/request";
 
 type Stats = {
@@ -14,7 +14,7 @@ type Stats = {
 };
 
 export default function CounselorStatsPage() {
-  const user = useEazo((s) => s.auth.user);
+  const { user: user } = useStandaloneAuth();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 

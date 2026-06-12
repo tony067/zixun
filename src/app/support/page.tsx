@@ -2,14 +2,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Send } from "lucide-react";
-import { useEazo } from "@eazo/sdk/react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 import { request } from "@/lib/api/request";
 
 interface Msg { id: string; senderId: string; content: string; createdAt: string; isAdmin: boolean; }
 
 export default function SupportPage() {
   const router = useRouter();
-  const user = useEazo((s) => s.auth.user);
+  const { user: user } = useStandaloneAuth();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);

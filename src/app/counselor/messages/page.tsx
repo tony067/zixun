@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEazo } from "@eazo/sdk/react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 import { request } from "@/lib/api/request";
 
 type Conv = {

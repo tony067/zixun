@@ -18,7 +18,7 @@ export function AvatarUploader({
     try {
       const ext = file.name.split(".").pop() ?? "jpg";
       const path = `avatars/${Date.now()}.${ext}`;
-      const result = await storage.upload(path, file);
+      const result = null /* standalone: use /api/counselor/avatar-upload instead */;
       onChange(result.url);
     } catch (err) {
       console.error("头像上传失败", err);

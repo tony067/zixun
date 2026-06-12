@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, BookmarkCheck, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEazo } from "@eazo/sdk/react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 import { request } from "@/lib/api/request";
 import { EMPTY_PROFILE, ProfileForm } from "@/lib/counselor-profile-data";
 import { AvatarUploader } from "@/components/profile/avatar-uploader";
@@ -19,7 +19,7 @@ const STATUS_LABEL: Record<string, { text: string; color: string; bg: string }> 
 
 export default function CounselorProfilePage() {
   const router = useRouter();
-  const user = useEazo((s) => s.auth.user);
+  const { user: user } = useStandaloneAuth();
   const [form, setForm] = useState<ProfileForm>({ ...EMPTY_PROFILE });
   const [openSection, setOpenSection] = useState<SectionKey | null>("basic");
   const [saving, setSaving] = useState(false);
