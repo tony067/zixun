@@ -1,4 +1,3 @@
-import { createApp } from '@tarojs/taro'
 import { useEffect } from 'react'
 import './app.scss'
 
@@ -7,4 +6,4 @@ function App({ children }: { children: React.ReactNode }) {
   return children
 }
 
-export default createApp(App)
+export default App

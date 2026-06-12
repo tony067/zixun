@@ -1,161 +1,178 @@
 import { useState, useEffect, useRef } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
-import { View, Text, ScrollView, Input, Image } from '@tarojs/components'
-import { getConversations, getMessages, sendMessage, type Conversation, type Message } from '../../api'
+import { View, Text, Input, ScrollView, Image, Swiper, SwiperItem, Textarea } from '@tarojs/components'
+import { request } from '../../api/request'
 import { useAuthStore } from '../../store/authStore'
-import './index.scss'
 
-// 会话列表页
-function ConversationList() {
-  const [list, setList] = useState<Conversation[]>([])
-  const [loading, setLoading] = useState(true)
+import { useState, useEffect, useRef } from "react";
 
-  useEffect(() => {
-    getConversations()
-      .then(d => setList(Array.isArray(d) ? d : []))
-      .catch(() => setList([]))
-      .finally(() => setLoading(false))
-  }, [])
+type Msg = {
+  msg: { id: string; content: string; senderId: string; createdAt: string };
+  sender: { id: string; name: string | null; email: string | null };
+};
 
-  if (loading) return <View className='loading'><Text>加载中…</Text></View>
-
-  if (list.length === 0) {
-    return (
-      <View className='empty-state'>
-        <Text className='empty-icon'>💬</Text>
-        <Text className='empty-text'>暂无消息</Text>
-        <Text className='empty-sub'>与咨询师预约后可在此私信沟通</Text>
-      </View>
-    )
-  }
-
+function Avatar({ name, size = 34 }: { name: string; size?: number }) {
+  const COLORS = ["#9CB48A","#C4A882","#89B4C8","#B8A86E","#A89BC8","#C8A889"];
+  const idx = name.charCodeAt(0) % COLORS.length;
   return (
-    <ScrollView scrollY className='conv-list'>
-      {list.map(conv => (
-        <View
-          key={conv.id}
-          className='conv-item'
-          onClick={() => Taro.navigateTo({ url: `/pages/chat/index?convId=${conv.id}` })}
-        >
-          <View className='conv-avatar'>
-            {conv.otherUser.avatarUrl
-              ? <Image src={conv.otherUser.avatarUrl} className='avatar-img' mode='aspectFill' />
-              : (
-                <View className='avatar-placeholder'>
-                  <Text className='avatar-initial'>{conv.otherUser.displayName?.[0] || '咨'}</Text>
-                </View>
-              )
-            }
-            {conv.unreadCount > 0 && (
-              <View className='unread-badge'>
-                <Text className='unread-num'>{conv.unreadCount > 99 ? '99+' : conv.unreadCount}</Text>
-              </View>
-            )}
-          </View>
-          <View className='conv-info'>
-            <View className='conv-top'>
-              <Text className='conv-name'>{conv.otherUser.displayName}</Text>
-              {conv.lastMessage && (
-                <Text className='conv-time'>
-                  {new Date(conv.lastMessage.createdAt).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' })}
-                </Text>
-              )}
-            </View>
-            <Text className='conv-preview' numberOfLines={1}>
-              {conv.lastMessage?.content || '暂无消息'}
-            </Text>
-          </View>
-        </View>
-      ))}
-    </ScrollView>
-  )
+    <View className="rounded-full flex items-center justify-center font-bold text-white flex-none"
+      style={{ width: size, height: size, background: COLORS[idx], fontSize: size * 0.38 }}>
+      {name.slice(0,1)}
+    </View>
+  );
 }
 
-// 聊天详情页
-function ChatDetail({ convId }: { convId: string }) {
-  const user = useAuthStore(s => s.user)
-  const [msgs, setMsgs] = useState<Message[]>([])
-  const [text, setText] = useState('')
-  const [otherName, setOtherName] = useState('咨询师')
-  const [sending, setSending] = useState(false)
-  const scrollRef = useRef<any>(null)
+function fmtTime(s: string) {
+  const d = new Date(s);
+  return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+function fmtDate(s: string) {
+  const d = new Date(s), t = new Date();
+  if (d.toDateString() === t.toDateString()) return "今天";
+  const y = new Date(t); y.setDate(t.getDate()-1);
+  if (d.toDateString() === y.toDateString()) return "昨天";
+  return `${d.getMonth()+1}月${d.getDate()}日`;
+}
 
-  async function load() {
+export default function ChatScreen() {
+  const params = useParams();
+  const convId = params.id as string;
+  const { user } = useAuthStore() => s.auth.user);
+  const router = useRouter();
+  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [otherName, setOtherName] = useState("对话");
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const load = () => {
+    if (!user) return;
+    request(`/api/messages/${convId}`).then((d:Msg[])=>{
+      if (Array.isArray(d)) {
+        setMsgs(d);
+        const other = d.find(m=>m.sender.id!==user.id)?.sender;
+        if (other) setOtherName(other.name ?? other.email ?? "对方");
+      }
+    });
+  };
+
+  useEffect(()=>{ load(); },[convId, user]);
+
+  // 5秒轮询
+  useEffect(()=>{
+    const t = setInterval(load, 5000);
+    return ()=>clearInterval(t);
+  },[convId, user]);
+
+  useEffect(()=>{ bottomRef.current?.scrollIntoView({ behavior:"smooth" }); },[msgs]);
+
+  const send = async () => {
+    const content = input.trim();
+    if (!content || sending || !user) return;
+    setInput(""); setSending(true);
+    const opt: Msg = {
+      msg: { id:`opt_${Date.now()}`, content, senderId: user.id, createdAt: new Date().toISOString() },
+      sender: { id: user.id, name: user.name??null, email: user.email??null },
+    };
+    setMsgs(p=>[...p, opt]);
     try {
-      const data = await getMessages(convId)
-      setMsgs(Array.isArray(data) ? data : [])
-    } catch {}
-  }
+      const res = await request(`/api/messages/${convId}`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      setMsgs(p=>p.map(m=>m.msg.id===opt.msg.id ? data : m));
+    } catch { setMsgs(p=>p.filter(m=>m.msg.id!==opt.msg.id)); }
+    finally { setSending(false); }
+  };
 
-  useEffect(() => { load() }, [convId])
+  // 日期分组
+  const grouped: {date:string; items:Msg[]}[] = [];
+  msgs.forEach(m=>{
+    const d = fmtDate(m.msg.createdAt);
+    const last = grouped[grouped.length-1];
+    if (!last||last.date!==d) grouped.push({date:d,items:[m]});
+    else last.items.push(m);
+  });
 
-  async function handleSend() {
-    if (!text.trim() || sending) return
-    setSending(true)
-    const content = text.trim()
-    setText('')
-    try {
-      const msg = await sendMessage(convId, content)
-      setMsgs(prev => [...prev, msg])
-    } catch {
-      Taro.showToast({ title: '发送失败', icon: 'none' })
-      setText(content)
-    } finally {
-      setSending(false)
-    }
-  }
-
-  const myId = user?.id
+  if (!user) return (
+    <View className="min-h-svh flex items-center justify-center" style={{background:"var(--color-bg)"}}>
+      <Text className="text-sm" style={{color:"#9B8E82"}}>请先登录</Text>
+    </View>
+  );
 
   return (
-    <View className='chat-detail'>
-      <ScrollView scrollY className='msg-list' scrollWithAnimation>
-        {msgs.map(msg => {
-          const isMine = msg.senderId === myId
-          return (
-            <View key={msg.id} className={`msg-row ${isMine ? 'mine' : 'theirs'}`}>
-              {!isMine && (
-                <View className='msg-avatar'>
-                  <Text className='msg-initial'>{otherName?.[0] || '咨'}</Text>
-                </View>
-              )}
-              <View className={`bubble ${isMine ? 'bubble-mine' : 'bubble-theirs'}`}>
-                <Text className='bubble-text'>{msg.content}</Text>
-              </View>
-            </View>
-          )
-        })}
-        <View className='msg-bottom' />
-      </ScrollView>
+    <View className="flex flex-col h-svh" style={{background:"var(--color-bg)"}}>
+      {/* 顶栏 */}
+      <View className="flex items-center gap-3 px-4 pt-12 pb-3 flex-none"
+        style={{background:"var(--color-bg)", borderBottom:"1px solid var(--color-border)"}}>
+        <View onClick={()=>Taro.navigateBack()}
+          className="w-9 h-9 rounded-full flex items-center justify-center" style={{background:"#F5F0EA"}}>
+          <Text>←</Text>
+        </View>
+        <Avatar name={otherName} size={36}/>
+        <View>
+          <Text className="text-sm font-bold" style={{color:"#2C2420"}}>{otherName}</Text>
+          <Text className="text-xs" style={{color:"#9B8E82"}}>私信对话</Text>
+        </View>
+      </View>
 
-      <View className='input-bar'>
-        <Input
-          className='chat-input'
-          placeholder='输入消息…'
-          placeholderStyle='color:#C2BDB7'
-          value={text}
-          onInput={e => setText(e.detail.value)}
-          onConfirm={handleSend}
-          confirmType='send'
-          adjustPosition
-        />
-        <View
-          className={`send-btn ${text.trim() ? 'active' : ''}`}
-          onClick={handleSend}
-        >
-          <Text className='send-icon'>➤</Text>
+      {/* 消息列表 */}
+      <View className="flex-1 overflow-y-auto px-4 py-4">
+        {msgs.length === 0 && (
+          <View className="flex flex-col items-center pt-16 text-center">
+            <Text className="text-sm" style={{color:"#C4BDB5"}}>开始你们的第一条消息吧</Text>
+          </View>
+        )}
+        {grouped.map(g=>(
+          <View key={g.date}>
+            <View className="flex items-center gap-3 my-4">
+              <View className="flex-1 h-px" style={{background:"#EBE7DF"}}/>
+              <Text className="text-[10px] px-2" style={{color:"#C4BDB5"}}>{g.date}</Text>
+              <View className="flex-1 h-px" style={{background:"#EBE7DF"}}/>
+            </View>
+            {g.items.map((m,i)=>{
+              const mine = m.sender.id===user.id;
+              const name = m.sender.name ?? m.sender.email ?? "用户";
+              const showAv = !mine && (i===0 || g.items[i-1]?.sender.id!==m.sender.id);
+              return (
+                <View key={m.msg.id} className={`flex items-end gap-2 mb-2 ${mine?"flex-row-reverse":"flex-row"}`}>
+                  {!mine ? (showAv ? <Avatar name={name} size={28}/> : <View style={{width:28}}/>): null}
+                  <View className={`max-w-[72%] flex flex-col ${mine?"items-end":"items-start"}`}>
+                    <View className="px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed"
+                      style={{
+                        background: mine ? "var(--color-primary)" : "white",
+                        color: mine ? "white" : "#2C2420",
+                        borderBottomRightRadius: mine ? 6 : 18,
+                        borderBottomLeftRadius: mine ? 18 : 6,
+                        boxShadow: mine ? "none" : "0 1px 4px rgba(0,0,0,0.07)",
+                      }}>
+                      {m.msg.content}
+                    </View>
+                    <Text className="text-[10px] mt-1 px-1" style={{color:"#C4BDB5"}}>{fmtTime(m.msg.createdAt)}</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        ))}
+        <View ref={bottomRef}/>
+      </View>
+
+      {/* 输入栏 */}
+      <View className="flex items-end gap-2 px-4 py-3 flex-none border-t"
+        style={{background:"var(--color-bg)", borderColor:"var(--color-border)", paddingBottom:"calc(env(safe-area-inset-bottom)+12px)"}}>
+        <Textarea value={input} onChange={e=>setInput(e.target.value)}
+          onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();} }}
+          placeholder="说点什么…" rows={1}
+          className="flex-1 resize-none rounded-2xl px-4 py-2.5 text-sm outline-none"
+          style={{background:"white", border:"1.5px solid var(--color-border)", color:"#2C2420", maxHeight:120}}/>
+        <View} onClick={send} disabled={!input.trim()||sending}
+          className="w-10 h-10 rounded-full flex items-center justify-center flex-none"
+          style={{background: input.trim() ? "var(--color-primary)" : "#E8E2D8"}}>
+          <Text>➤</Text>
         </View>
       </View>
     </View>
-  )
-}
-
-export default function ChatPage() {
-  const router = useRouter()
-  const { convId } = router.params
-
-  if (convId) {
-    return <ChatDetail convId={convId} />
-  }
-  return <ConversationList />
+  );
 }

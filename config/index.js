@@ -44,7 +44,9 @@ const config = {
   h5: {
     publicPath: '/',
     staticDirectory: 'static',
-    esnextModules: ['nutui-react'],
+    htmlPluginOption: {
+      filename: 'index.html'
+    },
     postcss: {
       autoprefixer: {
         enable: true,
