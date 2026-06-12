@@ -1,15 +1,14 @@
-import { auth } from "@eazo/sdk";
-
 /**
- * Drop-in replacement for `fetch` that automatically injects `x-eazo-session`.
- * The SDK resolves the current session header from either the host bridge
- * (Eazo Mobile) or localStorage (web).
+ * Drop-in replacement for `fetch` that automatically injects session token.
+ * Reads JWT token from localStorage for standalone deployment.
  */
 export async function request(
   input: RequestInfo | URL,
   init: RequestInit = {},
 ): Promise<Response> {
-  const sessionHeader = await auth.getSessionHeader();
+  const token = typeof window !== "undefined"
+    ? localStorage.getItem("mindpace_token")
+    : null;
 
   const hasBody = init.body != null;
   return fetch(input, {
@@ -17,7 +16,7 @@ export async function request(
     headers: {
       ...(hasBody ? { "Content-Type": "application/json" } : {}),
       ...init.headers,
-      ...(sessionHeader ? { "x-eazo-session": sessionHeader } : {}),
+      ...(token ? { "x-session-token": token } : {}),
     },
   });
 }
