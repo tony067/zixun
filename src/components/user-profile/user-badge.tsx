@@ -60,35 +60,6 @@ export function UserBadge() {
   );
 }
 
-        className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-shadow hover:shadow-md"
-      >
-        <UserRound className="h-4 w-4 text-muted-foreground" />
-        Sign in
-      </button>
-    );
-  }
-
-  return (
-    <div ref={ref} className="relative">
-      <BadgeTrigger user={user} onClick={() => setOpen((v) => !v)} />
-      {open && (
-        <DropdownPanel user={user} onClose={() => setOpen(false)}>
-          <button
-            onClick={() => {
-              auth.logout();
-              setOpen(false);
-            }}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Sign out
-          </button>
-        </DropdownPanel>
-      )}
-    </div>
-  );
-}
-
 function BadgeTrigger({ user, onClick }: { user: User; onClick: () => void }) {
   return (
     <button
