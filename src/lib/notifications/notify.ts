@@ -13,12 +13,13 @@ type NotifyPayload = {
 
 export async function notifyUser({ userId, title, body, data = {} }: NotifyPayload) {
   try {
-    await notifications.publish({
-      title,
-      body,
-      audience: "subscribers",
-      data: { targetUserId: userId, ...data },
-    });
+    // 独立版本：将通知存入数据库，用户下次登录时读取
+    await db.execute(
+      `INSERT INTO notifications (user_id, title, body, data, created_at, is_read)
+       VALUES ($1, $2, $3, $4, NOW(), false)
+       ON CONFLICT DO NOTHING`,
+      [userId, title, body, JSON.stringify(data)]
+    );
   } catch (e) {
     // 通知失败不影响主流程
     console.error("[notify] failed:", e);
