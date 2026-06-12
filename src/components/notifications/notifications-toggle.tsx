@@ -25,12 +25,7 @@ export function NotificationsToggle() {
       }}
       className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm"
       style={{ background: "#EBE7DF", color: "#5A4E44" }}
-    >
-      {subscribed ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
-      {subscribed ? "通知已开启" : "开启通知"}
-    </button>
-  );
-}
+
     >
       {subscribed ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
       {subscribed ? "通知已开启" : "开启通知"}
@@ -60,12 +55,7 @@ export function NotificationsToggle() {
       onClick={toggle}
       className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm"
       style={{ background: "#EBE7DF", color: "#5A4E44" }}
-    >
-      {subscribed ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
-      {subscribed ? "通知已开启" : "开启通知"}
-    </button>
-  );
-}
+
 
 
 order-white/70 bg-white/72 text-slate-950/60 shadow-[0_2px_8px_rgba(15,23,42,0.06)] hover:bg-white/86"
