@@ -108,7 +108,7 @@ const ROLE_ITEMS = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
-  const user = useEazo((s) => s.auth.user);
+  const { user, login } = useStandaloneAuth();
 
   const role = detectRole(pathname);
   const tabs = role === "counselor" ? COUNSELOR_TABS
@@ -122,7 +122,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   function switchRole(targetRole: Role) {
     setShowRolePicker(false);
     if (!user) {
-      auth.login();
+      window.dispatchEvent(new CustomEvent("mindpace:show-login"));
       return;
     }
     router.push(MY_ROUTE[targetRole]);
