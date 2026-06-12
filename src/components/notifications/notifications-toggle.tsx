@@ -36,33 +36,7 @@ export function NotificationsToggle() {
   );
 }
 
-}st.success("Subscribed — you'll receive system notifications.");
-      } else {
-        toast.success("Unsubscribed.");
-      }
-    } catch (err) {
-      console.error("[notifications] toggle failed", err);
-      setSubscribed(!wantOn); // revert
-      toast.error("Couldn't update subscription. Try again.");
-    } finally {
-      setToggling(false);
-    }
-  }
 
-  async function handleSendTest() {
-    if (sending) return;
-    setSending(true);
-    try {
-      const sessionHeader = await auth.getSessionHeader();
-      if (!sessionHeader) {
-        toast.error(
-          "Session not ready yet — please sign in again and retry.",
-        );
-        console.warn(
-          "[notifications] test publish skipped: auth.getSessionHeader() returned null",
-        );
-        return;
-      }
 
       const res = await request("/api/notifications/test", { method: "POST" });
       const text = await res.text();
