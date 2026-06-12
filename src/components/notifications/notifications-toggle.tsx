@@ -36,38 +36,7 @@ export function NotificationsToggle() {
   );
 }
 
-ror("[notifications] test publish unexpected error", err);
-      toast.error(
-        err instanceof Error ? `Test failed: ${err.message}` : "Test failed.",
-      );
-    } finally {
-      setSending(false);
-    }
-  }
-
-  const showHint = subscribed !== null && !isMobileHost;
-
-  return (
-    <div className="mb-4 flex flex-col gap-2 rounded-[14px] border border-white/70 bg-white/60 p-3 shadow-[0_8px_20px_rgba(15,23,42,0.06)]">
-      <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-slate-950/5">
-          {subscribed ? (
-            <Bell className="h-4 w-4 text-[#EE5C2A]" />
-          ) : (
-            <BellOff className="h-4 w-4 text-slate-950/40" />
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-semibold text-slate-950/80">
-            Push notifications
-          </p>
-          <p className="text-[12px] text-slate-950/45">
-            {showHint
-              ? "Open this app inside Eazo Mobile to receive system pushes."
-              : subscribed === null
-                ? "Loading…"
-                : subscribed
-                  ? "On — you'll receive system pushes from this app."
+}            ? "On — you'll receive system pushes from this app."
                   : "Off — turn on to receive system pushes."}
           </p>
         </div>
