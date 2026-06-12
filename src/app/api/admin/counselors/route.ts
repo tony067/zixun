@@ -6,7 +6,7 @@ import { eq, desc } from "drizzle-orm";
 import { notifyCounselorReviewResult } from "@/lib/notifications/notify";
 
 export async function GET(req: NextRequest) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const status = req.nextUrl.searchParams.get("status") ?? "pending";
   const rows = await db.select().from(counselors).where(eq(counselors.reviewStatus, status)).orderBy(desc(counselors.createdAt));
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const { counselorId, action, reason } = await req.json();
   const approved = action === "approve";

@@ -5,7 +5,7 @@ import { sql } from "drizzle-orm";
 
 // GET: 所有用户的客服消息列表（管理员）
 export async function GET(req: NextRequest) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const rows = await db.execute(sql`
     SELECT DISTINCT ON (user_id) user_id as "userId",
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
 // POST: 管理员回复某用户
 export async function POST(req: NextRequest) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const { userId, content } = await req.json();
   await db.execute(sql`

@@ -8,7 +8,7 @@ import { notifyCounselorRescheduleRequest, notifyClientRescheduleResult } from "
 
 // 来访提交改期申请
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const { id } = await params;
   const { newTime, reason } = await req.json();
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
 // 咨询师确认或拒绝改期
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const { id } = await params;
   const { action, note } = await req.json(); // action: "approve" | "reject"

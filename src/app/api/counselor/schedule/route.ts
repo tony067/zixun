@@ -4,7 +4,7 @@ import { getRules, createRule, deleteRule } from "@/lib/db/queries/schedules";
 import { getOrCreateCounselorForUser } from "@/lib/db/queries/counselors";
 
 export async function GET(req: NextRequest) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const c = await getOrCreateCounselorForUser(auth.user.id, auth.user.name || "咨询师");
   if (!c) return NextResponse.json([], { status: 200 });
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const c = await getOrCreateCounselorForUser(auth.user.id, auth.user.name || "咨询师");
   if (!c) return NextResponse.json({ error: "not counselor" }, { status: 403 });
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const c = await getOrCreateCounselorForUser(auth.user.id, auth.user.name || "咨询师");
   if (!c) return NextResponse.json({ error: "not counselor" }, { status: 403 });

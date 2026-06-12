@@ -12,7 +12,7 @@ import {
 } from "@/lib/notifications/notify";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const { id } = await params;
   const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const { id } = await params;
   const { status, counselorNote } = await req.json();

@@ -7,7 +7,7 @@ import { users } from "@/lib/db/schema";
 import { sql, count, sum } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
 
   const now = new Date();

@@ -6,7 +6,7 @@ import { counselors } from "@/lib/db/schema/counselors";
 import { eq } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
-  const auth = requireAuth(request);
+  const auth = await requireAuth(request);
   if (!auth.ok) return auth.response;
   const { id: clientId } = auth.user;
 

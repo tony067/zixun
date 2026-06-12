@@ -6,7 +6,7 @@ import { eq, sql } from "drizzle-orm";
 import { getCounselorByUserId } from "@/lib/db/queries/counselors";
 
 export async function GET(req: NextRequest) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const c = await getCounselorByUserId(auth.user.id);
   if (!c) return NextResponse.json({ error: "not counselor" }, { status: 403 });

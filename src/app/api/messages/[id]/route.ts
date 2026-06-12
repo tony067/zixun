@@ -3,7 +3,7 @@ import { requireAuth } from "@/lib/auth";
 import { getConversationMessages, sendMessage } from "@/lib/db/queries/messages";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const { id } = await params;
   const msgs = await getConversationMessages(id);
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const { id } = await params;
   const { content } = await req.json();

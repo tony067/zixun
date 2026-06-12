@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { notifyAdminNewCounselorApplication } from "@/lib/notifications/notify";
 
 export async function GET(request: NextRequest) {
-  const auth = requireAuth(request);
+  const auth = await requireAuth(request);
   if (!auth.ok) return auth.response;
   const userId = auth.user.id;
 
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const auth = requireAuth(request);
+  const auth = await requireAuth(request);
   if (!auth.ok) return auth.response;
   const userId = auth.user.id;
 

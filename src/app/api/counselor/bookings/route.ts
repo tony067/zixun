@@ -4,7 +4,7 @@ import { getCounselorByUserId } from "@/lib/db/queries/counselors";
 import { getCounselorBookings } from "@/lib/db/queries/bookings";
 
 export async function GET(request: NextRequest) {
-  const result = requireAuth(request);
+  const result = await requireAuth(request);
   if (!result.ok) return result.response;
   try {
     const c = await getCounselorByUserId(result.user.id);

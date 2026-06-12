@@ -7,7 +7,7 @@ import { counselors } from "@/lib/db/schema/counselors";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   const { id } = await params;
   const [b] = await db.select().from(bookings).where(eq(bookings.id, id));

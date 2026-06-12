@@ -18,7 +18,7 @@ async function ensureTable() {
 }
 
 export async function GET(req: NextRequest) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   await ensureTable();
   const rows = await db.execute(sql`
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   await ensureTable();
   const { content } = await req.json();

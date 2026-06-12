@@ -5,7 +5,7 @@ import { users } from "@/lib/db/schema/users";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const [user] = await db.select().from(users).where(eq(users.id, r.user.id));
   if (!user) return NextResponse.json({ error: "not found" }, { status: 404 });
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const { displayName, avatarUrl } = await req.json();
   const update: Record<string, string> = {};

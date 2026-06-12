@@ -5,14 +5,14 @@ import { getCounselorById } from "@/lib/db/queries/counselors";
 import { notifyCounselorNewBooking } from "@/lib/notifications/notify";
 
 export async function GET(req: NextRequest) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const list = await getClientBookings(r.user.id);
   return NextResponse.json(list);
 }
 
 export async function POST(req: NextRequest) {
-  const r = requireAuth(req);
+  const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const body = await req.json();
   const { counselorId, scheduledAt, sessionMode, clientNote, applicationForm, agreementSigned, sessionNumber } = body;
