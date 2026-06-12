@@ -1,11 +1,64 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import Image from "next/image";
-import { LogOut, UserRound, X } from "lucide-react";
-import { auth } from "@eazo/sdk";
-import { useEazo } from "@eazo/sdk/react";
-import type { User } from "@eazo/sdk";
+import { LogOut, UserRound } from "lucide-react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+
+export function UserBadge() {
+  const { user, loading, logout } = useStandaloneAuth();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-9 items-center rounded-full border px-3">
+        <div className="size-4 animate-spin rounded-full border-2 border-muted border-t-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <button
+        onClick={() => window.dispatchEvent(new CustomEvent("mindpace:show-login"))}
+        className="flex h-9 items-center gap-2 rounded-full border px-3 text-sm"
+      >
+        <UserRound className="size-4" />
+        登录
+      </button>
+    );
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen(!open)} className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+          style={{ background: "var(--color-primary, #6B8F5E)" }}>
+          {user.name?.[0] || user.email[0].toUpperCase()}
+        </div>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-10 z-50 min-w-[160px] rounded-xl border bg-white p-2 shadow-lg">
+          <p className="px-2 py-1 text-sm font-medium truncate">{user.name || user.email}</p>
+          <hr className="my-1" />
+          <button onClick={() => { logout(); setOpen(false); }}
+            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-red-500 hover:bg-red-50">
+            <LogOut className="size-4" />
+            退出登录
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function UserBadge() {
   const user = useEazo((s) => s.auth.user);
