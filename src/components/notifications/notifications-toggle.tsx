@@ -36,45 +36,7 @@ export function NotificationsToggle() {
   );
 }
 
-  const [subscribed, setSubscribed] = useState<boolean | null>(null);
-  const [toggling, setToggling] = useState(false);
-  const [sending, setSending] = useState(false);
-
-  useEffect(() => {
-    if (!user) {
-      setSubscribed(null);
-      return;
-    }
-    let cancelled = false;
-    notifications
-      .isSubscribed()
-      .then((r) => {
-        if (!cancelled) setSubscribed(r.subscribed);
-      })
-      .catch(() => {
-        if (!cancelled) setSubscribed(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
-
-  if (!user) return null;
-
-  async function handleToggle() {
-    if (toggling) return;
-    setToggling(true);
-    const wantOn = subscribed !== true;
-    setSubscribed(wantOn); // optimistic
-    try {
-      const result = wantOn
-        ? await notifications.subscribe()
-        : await notifications.unsubscribe();
-      setSubscribed(result.subscribed);
-      if (!isMobileHost) {
-        toast.info("Notifications only deliver inside the Eazo mobile app.");
-      } else if (result.subscribed) {
-        toast.success("Subscribed — you'll receive system notifications.");
+}st.success("Subscribed — you'll receive system notifications.");
       } else {
         toast.success("Unsubscribed.");
       }
