@@ -5,8 +5,8 @@ import { Bell, BellOff } from "lucide-react";
 import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 
 export function NotificationsToggle() {
-  const { user } = useStandaloneAuth();
-  const [subscribed, setSubscribed] = useState(false);
+  const { user } = useS
+
 
   useEffect(() => {
     if (!user) return;
@@ -32,8 +32,8 @@ export function NotificationsToggle() {
   );
 }
 
-tandaloneAuth();
-  const [subscribed, setSubscribed] = useState(false);
+
+
 
   useEffect(() => {
     if (!user) return;
@@ -61,8 +61,8 @@ tandaloneAuth();
   );
 }
 
-tandaloneAuth();
-  const [subscribed, setSubscribed] = useState(false);
+
+
 
   useEffect(() => {
     if (!user) return;
