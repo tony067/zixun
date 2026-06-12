@@ -18,17 +18,8 @@ export function UserSyncEffect() {
   return null;
 }
 
-/**
- * Mobile-only: hits /api/user/profile once after login to upsert the user
- * into the local DB. Web doesn't need this — the SDK already calls the same
- * endpoint during web bootstrap; mobile bootstraps from the bridge `hello`
- * instead and never auto-fetches profile, so the upsert has to be triggered
- * manually here.
- */
-export function UserSyncEffect() {
-  const authenticated = useEazo((s) => s.auth.authenticated);
-  const platform = useEazo((s) => s.device.platform);
-  const syncedUserId = useRef<string | null>(null);
+
+g | null>(null);
 
   useEffect(() => {
     if (!authenticated || platform !== "mobile") return;
