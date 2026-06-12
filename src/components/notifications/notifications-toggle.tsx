@@ -32,9 +32,7 @@ export function NotificationsToggle() {
   );
 }
 
-/** 独立版本：通知开关（不依赖 Eazo 平台推送）*/
-export function NotificationsToggle() {
-  const { user } = useStandaloneAuth();
+tandaloneAuth();
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
@@ -63,9 +61,7 @@ export function NotificationsToggle() {
   );
 }
 
-/** 独立版本：通知开关（不依赖 Eazo 平台推送）*/
-export function NotificationsToggle() {
-  const { user } = useStandaloneAuth();
+tandaloneAuth();
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
