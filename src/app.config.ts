@@ -1,0 +1,37 @@
+export default defineAppConfig({
+  pages: [
+    'pages/index/index',
+    'pages/counselor-detail/index',
+    'pages/booking/index',
+    'pages/chat/index',
+    'pages/my-bookings/index',
+    'pages/profile/index',
+    'pages/favorites/index',
+    'pages/settings/index',
+    'pages/counselor-bookings/index',
+    'pages/counselor-schedule/index',
+    'pages/counselor-profile/index',
+    'pages/admin-overview/index',
+    'pages/admin-counselors/index',
+    'pages/admin-orders/index',
+    'pages/admin-users/index',
+  ],
+  tabBar: {
+    custom: true,
+    color: '#9B8E82',
+    selectedColor: '#9CB48A',
+    backgroundColor: '#F5F1E8',
+    list: [
+      { pagePath: 'pages/index/index', text: '首页' },
+      { pagePath: 'pages/my-bookings/index', text: '预约' },
+      { pagePath: 'pages/profile/index', text: '我的' },
+    ],
+  },
+  window: {
+    backgroundTextStyle: 'light',
+    navigationBarBackgroundColor: '#F5F1E8',
+    navigationBarTitleText: 'MindPace',
+    navigationBarTextStyle: 'black',
+    backgroundColor: '#F5F1E8',
+  },
+})

@@ -1,0 +1,26 @@
+.fav-page { min-height: 100vh; background: #F5F1E8; }
+.loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: #9B8E82; }
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 60px 0; }
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-text { font-size: 16px; color: #5C5552; font-weight: 600; margin-bottom: 20px; }
+.cta-btn { background: #9CB48A; border-radius: 999px; padding: 12px 28px; }
+.cta-text { font-size: 15px; color: #fff; font-weight: 700; }
+.fav-list { padding: 12px 16px 0; }
+.list-bottom { height: 100px; }
+.fav-card {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fff; border-radius: 20px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid #EBE7DF;
+}
+.fav-left { display: flex; gap: 12px; align-items: center; flex: 1; }
+.fav-avatar { width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0; }
+.fav-avatar-placeholder {
+  width: 52px; height: 52px; border-radius: 14px; background: #E4F0DC; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.fav-initial { font-size: 22px; font-weight: 700; color: #9CB48A; }
+.fav-info { flex: 1; }
+.fav-name { font-size: 15px; font-weight: 700; color: #2C2420; display: block; margin-bottom: 3px; }
+.fav-title { font-size: 12px; color: #9B8E82; display: block; margin-bottom: 4px; }
+.fav-price { font-size: 13px; color: #5C5552; font-weight: 600; }
+.remove-btn { padding: 8px; flex-shrink: 0; }
+.remove-icon { font-size: 22px; color: #E85C5C; }

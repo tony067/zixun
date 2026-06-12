@@ -1,0 +1,15 @@
+.admin-list-page { min-height: 100vh; background: #F5F1E8; }
+.loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: #9B8E82; }
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 60px 0; }
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-text { font-size: 16px; color: #5C5552; font-weight: 600; }
+.list-scroll { padding: 12px 16px 0; }
+.list-card { background: #fff; border-radius: 20px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid #EBE7DF; }
+.user-row { display: flex; align-items: center; gap: 12px; }
+.user-avatar { width: 44px; height: 44px; border-radius: 14px; background: #E4F0DC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.user-initial { font-size: 18px; font-weight: 700; color: #9CB48A; }
+.user-info { flex: 1; }
+.user-name { font-size: 15px; font-weight: 600; color: #2C2420; display: block; margin-bottom: 2px; }
+.user-email { font-size: 12px; color: #9B8E82; }
+.user-role-badge { background: #F5F1E8; border-radius: 999px; padding: 4px 10px; }
+.user-role-text { font-size: 12px; color: #9B8E82; }

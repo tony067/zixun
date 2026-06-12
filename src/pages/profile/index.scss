@@ -1,0 +1,36 @@
+.profile-page { min-height: 100vh; background: #F5F1E8; }
+.user-card {
+  display: flex; align-items: center; gap: 14px;
+  background: #fff; padding: 20px 16px; border-bottom: 1px solid #EBE7DF; margin-bottom: 16px;
+}
+.user-avatar { width: 60px; height: 60px; border-radius: 18px; flex-shrink: 0; }
+.user-avatar-placeholder {
+  width: 60px; height: 60px; border-radius: 18px; background: #E4F0DC; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.user-initial { font-size: 26px; font-weight: 700; color: #9CB48A; }
+.user-info { flex: 1; }
+.user-name { font-size: 18px; font-weight: 700; color: #2C2420; display: block; margin-bottom: 4px; }
+.user-email { font-size: 13px; color: #9B8E82; }
+.login-btn { background: #9CB48A; border-radius: 999px; padding: 8px 16px; }
+.login-btn-text { font-size: 13px; color: #fff; font-weight: 700; }
+
+.menu-section { margin: 0 16px 16px; }
+.menu-section-title { font-size: 12px; color: #C2BDB7; font-weight: 600; letter-spacing: 1px; display: block; margin-bottom: 8px; text-transform: uppercase; }
+.menu-list { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #EBE7DF; }
+.menu-item {
+  display: flex; align-items: center; gap: 12px; padding: 16px;
+  border-bottom: 1px solid #F5F1E8;
+  &:last-child { border-bottom: none; }
+}
+.menu-icon { font-size: 20px; flex-shrink: 0; }
+.menu-label { flex: 1; font-size: 15px; color: #2C2420; }
+.menu-arrow { font-size: 20px; color: #C2BDB7; }
+
+.logout-wrap { padding: 0 16px; margin-top: 8px; }
+.logout-btn {
+  width: 100%; padding: 14px; border-radius: 16px; background: #fff;
+  border: 1px solid #EBE7DF; display: flex; align-items: center; justify-content: center;
+}
+.logout-text { font-size: 15px; color: #E85C5C; font-weight: 600; }
+.page-bottom { height: 100px; }

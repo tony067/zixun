@@ -1,0 +1,15 @@
+.c-profile-page { min-height: 100vh; background: #F5F1E8; padding: 16px; }
+.loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: #9B8E82; }
+.profile-card { background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 16px; border: 1px solid #EBE7DF; }
+.avatar-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+.c-avatar-placeholder { width: 72px; height: 72px; border-radius: 22px; background: #E4F0DC; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+.c-avatar-initial { font-size: 30px; font-weight: 700; color: #9CB48A; }
+.change-avatar-text { font-size: 13px; color: #9CB48A; }
+.field-group { margin-bottom: 16px; }
+.field-label { font-size: 13px; color: #9B8E82; display: block; margin-bottom: 6px; }
+.field-display { background: #F8F5F0; border-radius: 12px; padding: 12px 14px; }
+.field-value { font-size: 15px; color: #2C2420; }
+.field-input { width: 100%; padding: 12px 14px; border-radius: 12px; background: #F8F5F0; font-size: 15px; color: #2C2420; border: 1px solid #EBE7DF; }
+.field-textarea { width: 100%; padding: 12px 14px; border-radius: 12px; background: #F8F5F0; font-size: 15px; color: #2C2420; border: 1px solid #EBE7DF; min-height: 80px; }
+.save-btn { width: 100%; padding: 16px; border-radius: 16px; background: #9CB48A; display: flex; align-items: center; justify-content: center; }
+.save-btn-text { font-size: 16px; color: #fff; font-weight: 700; }

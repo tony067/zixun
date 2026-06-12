@@ -1,0 +1,127 @@
+.booking-page {
+  min-height: 100vh;
+  background: #F5F1E8;
+  display: flex;
+  flex-direction: column;
+}
+.loading { display: flex; align-items: center; justify-content: center; padding: 60px; }
+
+// 步骤条
+.step-bar {
+  display: flex; align-items: center; padding: 16px 12px;
+  background: #fff; border-bottom: 1px solid #EBE7DF;
+}
+.step-item {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; flex: 1;
+}
+.step-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #EBE7DF; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+  &.active { background: #9CB48A; }
+  &.done { background: #7A9E6A; }
+}
+.step-check, .step-num { font-size: 12px; color: #fff; font-weight: 700; }
+.step-label { font-size: 10px; color: #C2BDB7; &.active { color: #9CB48A; } }
+.step-line {
+  position: absolute; top: 14px; right: 0; left: 50%;
+  height: 2px; background: #EBE7DF; z-index: 0;
+  &.done { background: #9CB48A; }
+}
+
+// 步骤内容
+.step-content { flex: 1; padding: 16px; }
+.step-tip { font-size: 15px; font-weight: 700; color: #2C2420; display: block; margin-bottom: 12px; }
+
+// 时间选择
+.day-block { margin-bottom: 16px; }
+.day-label { font-size: 13px; color: #9B8E82; font-weight: 600; display: block; margin-bottom: 8px; }
+.slots-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.slot-btn {
+  padding: 8px 16px; border-radius: 999px;
+  background: #F0F7EC; border: 1px solid #D8ECCC;
+  &.selected { background: #9CB48A; border-color: #9CB48A; }
+}
+.slot-text {
+  font-size: 14px; color: #3A6228; font-weight: 500;
+  .selected & { color: #fff; }
+}
+.mode-row { display: flex; gap: 8px; margin-bottom: 24px; }
+.mode-btn {
+  flex: 1; padding: 12px 0; border-radius: 14px;
+  background: #F0EDE8; border: 1px solid #DDD8D0;
+  display: flex; align-items: center; justify-content: center;
+  &.selected { background: #9CB48A; border-color: #9CB48A; }
+}
+.mode-text { font-size: 14px; color: #5C5552; .selected & { color: #fff; font-weight: 700; } }
+
+// 表单
+.field-label { font-size: 13px; color: #9B8E82; display: block; margin-bottom: 6px; margin-top: 16px; }
+.field-input {
+  width: 100%; padding: 12px 14px; border-radius: 14px;
+  background: #fff; border: 1px solid #EBE7DF; font-size: 14px; color: #2C2420;
+}
+.field-textarea {
+  width: 100%; padding: 12px 14px; border-radius: 14px;
+  background: #fff; border: 1px solid #EBE7DF; font-size: 14px; color: #2C2420;
+  min-height: 80px;
+}
+.price-summary {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #FEFBF5; border-radius: 14px; padding: 14px 16px;
+  border: 1px solid #EBE7DF; margin: 20px 0 16px;
+}
+.price-label { font-size: 14px; color: #5C5552; }
+.price-value { font-size: 16px; font-weight: 700; color: #2C2420; }
+.agreement-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.checkbox {
+  width: 20px; height: 20px; border-radius: 6px; border: 2px solid #9CB48A;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  &.checked { background: #9CB48A; }
+}
+.checkbox-check { font-size: 12px; color: #fff; }
+.agreement-text { font-size: 13px; color: #9B8E82; }
+.btn-row { display: flex; gap: 10px; }
+.back-btn {
+  flex: 0 0 auto; padding: 14px 20px; border-radius: 16px;
+  background: #F0EDE8; border: 1px solid #DDD8D0;
+}
+.back-btn-text { font-size: 15px; color: #5A4E44; }
+
+// 通用按钮
+.next-btn {
+  width: 100%; padding: 16px; border-radius: 16px;
+  background: #9CB48A; display: flex; align-items: center; justify-content: center;
+  margin-top: 16px;
+  &.disabled { opacity: 0.5; }
+}
+.next-btn-text { font-size: 16px; color: #fff; font-weight: 700; }
+
+// 等待/成功中心页
+.step-center {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 24px;
+}
+.waiting-icon, .success-icon { font-size: 56px; margin-bottom: 16px; }
+.waiting-title, .success-title {
+  font-size: 22px; font-weight: 700; color: #2C2420; margin-bottom: 8px;
+}
+.waiting-sub, .success-sub {
+  font-size: 14px; color: #9B8E82; text-align: center; margin-bottom: 20px; line-height: 1.7;
+}
+.booking-id { font-size: 12px; color: #C2BDB7; margin-bottom: 24px; }
+.skip-btn { margin-top: 12px; }
+.skip-text { font-size: 13px; color: #9B8E82; text-decoration: underline; }
+
+// 支付
+.pay-title { font-size: 18px; font-weight: 700; color: #2C2420; margin-bottom: 20px; }
+.pay-card {
+  width: 100%; background: #fff; border-radius: 20px; padding: 20px;
+  border: 1px solid #EBE7DF; margin-bottom: 24px;
+}
+.pay-name { font-size: 16px; font-weight: 700; color: #2C2420; margin-bottom: 14px; display: block; }
+.pay-divider { height: 1px; background: #EBE7DF; margin-bottom: 14px; }
+.pay-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.pay-key { font-size: 14px; color: #9B8E82; }
+.pay-val { font-size: 14px; color: #2C2420; &.total { font-size: 20px; font-weight: 700; color: #9CB48A; } }

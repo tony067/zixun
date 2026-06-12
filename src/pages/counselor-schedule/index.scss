@@ -1,0 +1,16 @@
+.schedule-page { min-height: 100vh; background: #F5F1E8; padding: 16px; }
+.section-card { background: #fff; border-radius: 20px; padding: 18px; margin-bottom: 14px; border: 1px solid #EBE7DF; }
+.section-title { font-size: 16px; font-weight: 700; color: #2C2420; display: block; margin-bottom: 4px; }
+.section-sub { font-size: 13px; color: #9B8E82; display: block; margin-bottom: 16px; }
+.rule-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.rule-day { font-size: 14px; font-weight: 600; color: #5C5552; width: 36px; flex-shrink: 0; }
+.rule-slots { display: flex; flex-wrap: wrap; gap: 6px; }
+.rule-slot { background: #E4F0DC; border-radius: 999px; padding: 5px 12px; border: 1px solid #CCE0C0; }
+.slot-text { font-size: 13px; color: #3A6228; font-weight: 500; }
+.add-rule-btn { margin-top: 12px; padding: 12px 0; border-radius: 14px; background: #F5F1E8; border: 2px dashed #D8D0C4; display: flex; align-items: center; justify-content: center; }
+.add-rule-text { font-size: 14px; color: #9B8E82; }
+.rule-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-chip { padding: 8px 14px; border-radius: 999px; background: #F5F1E8; border: 1px solid #EBE7DF; &.active { background: #E4F0DC; border-color: #CCE0C0; } }
+.day-chip-text { font-size: 14px; color: #9B8E82; .active & { color: #3A6228; font-weight: 600; } }
+.tip-card { background: #FEFBF5; border-radius: 14px; padding: 14px 16px; border: 1px solid #EBE7DF; }
+.tip-text { font-size: 13px; color: #9B8E82; line-height: 1.6; }
