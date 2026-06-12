@@ -1,8 +1,8 @@
 /**
- * MindPace 通知触发器
- * 使用 Eazo 内置推送，发给特定用户
+ * MindPace 通知触发器 - 独立版本
+ * 使用数据库存储通知，不依赖 Eazo 平台
  */
-import { notifications } from "@eazo/sdk/server";
+import { db } from "@/lib/db/client";
 
 type NotifyPayload = {
   userId: string;
