@@ -2,16 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, CalendarDays, MessageCircle, User,
   LayoutDashboard, ClipboardList, ShieldCheck, Users,
   ChevronRight,
 } from "lucide-react";
-import { useEazo } from "@eazo/sdk/react";
-import { auth } from "@eazo/sdk";
-import { useEffect } from "react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 
 const CLIENT_TABS = [
   { href: "/",            icon: Home,          label: "首页" },
