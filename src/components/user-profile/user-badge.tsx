@@ -60,21 +60,8 @@ export function UserBadge() {
   );
 }
 
-export function UserBadge() {
-  const user = useEazo((s) => s.auth.user);
-  const loading = useEazo((s) => s.auth.loading);
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, []);
-
-  if (loading) {
+(loading) {
     return (
       <div className="flex h-9 items-center rounded-full border border-border bg-background px-3 shadow-sm">
         <div className="size-4 animate-spin rounded-full border-2 border-muted border-t-muted-foreground" />
