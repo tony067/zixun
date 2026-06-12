@@ -36,17 +36,8 @@ export function NotificationsToggle() {
   );
 }
 
-}            ? "On — you'll receive system pushes from this app."
-                  : "Off — turn on to receive system pushes."}
-          </p>
-        </div>
-        <button
-          onClick={handleToggle}
-          disabled={toggling || subscribed === null}
-          className={`flex h-8 items-center justify-center rounded-[10px] px-3 text-[12px] font-semibold transition-all duration-200 ${
-            subscribed
-              ? "bg-[linear-gradient(180deg,#F47A42_0%,#EE5C2A_100%)] text-white shadow-[0_4px_10px_rgba(238,92,42,0.32)] hover:brightness-105"
-              : "border border-white/70 bg-white/72 text-slate-950/60 shadow-[0_2px_8px_rgba(15,23,42,0.06)] hover:bg-white/86"
+
+order-white/70 bg-white/72 text-slate-950/60 shadow-[0_2px_8px_rgba(15,23,42,0.06)] hover:bg-white/86"
           } disabled:opacity-50`}
         >
           {toggling ? (
