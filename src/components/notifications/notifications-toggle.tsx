@@ -32,29 +32,4 @@ export function NotificationsToggle() {
     </button>
   );
 }
-r: "#5A4E44" }}
 
-
-
-order-white/70 bg-white/72 text-slate-950/60 shadow-[0_2px_8px_rgba(15,23,42,0.06)] hover:bg-white/86"
-          } disabled:opacity-50`}
-        >
-          {toggling ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : subscribed ? (
-            "On"
-          ) : (
-            "Off"
-          )}
-        </button>
-      </div>
-      <button
-        onClick={handleSendTest}
-        disabled={sending}
-        className="self-end h-7 rounded-[8px] border border-white/70 bg-white/72 px-3 text-[11px] font-semibold text-slate-950/55 shadow-[0_2px_6px_rgba(15,23,42,0.05)] transition-colors hover:bg-white/86 hover:text-[#EE5C2A] disabled:opacity-50"
-      >
-        {sending ? "Sending…" : "Send test notification"}
-      </button>
-    </div>
-  );
-}
