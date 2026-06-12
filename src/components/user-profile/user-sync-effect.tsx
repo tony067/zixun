@@ -1,8 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { auth } from "@eazo/sdk";
-import { useEazo } from "@eazo/sdk/react";
+import { useEffect } from "react";
+import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { request } from "@/lib/api/request";
+
+/**
+ * 独立版本：登录后同步用户 profile 到数据库
+ */
+export function UserSyncEffect() {
+  const { user } = useStandaloneAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    request("/api/user/profile").catch(() => {});
+  }, [user?.id]);
+
+  return null;
+}
 
 /**
  * Mobile-only: hits /api/user/profile once after login to upsert the user
