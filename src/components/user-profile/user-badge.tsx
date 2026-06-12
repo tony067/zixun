@@ -60,21 +60,6 @@ export function UserBadge() {
   );
 }
 
-
-(loading) {
-    return (
-      <div className="flex h-9 items-center rounded-full border border-border bg-background px-3 shadow-sm">
-        <div className="size-4 animate-spin rounded-full border-2 border-muted border-t-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <button
-        onClick={() => {
-          window.dispatchEvent(new CustomEvent("mindpace:show-login")).catch(() => undefined);
-        }}
         className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-shadow hover:shadow-md"
       >
         <UserRound className="h-4 w-4 text-muted-foreground" />
