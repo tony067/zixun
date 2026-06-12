@@ -36,43 +36,7 @@ export function NotificationsToggle() {
   );
 }
 
-
-
-      const res = await request("/api/notifications/test", { method: "POST" });
-      const text = await res.text();
-      let body: unknown = null;
-      try {
-        body = text ? JSON.parse(text) : null;
-      } catch {
-        body = text;
-      }
-      if (!res.ok) {
-        const message =
-          body && typeof body === "object" && "error" in body
-            ? String((body as { error: unknown }).error)
-            : `HTTP ${res.status}`;
-        console.error("[notifications] test publish failed", {
-          status: res.status,
-          body,
-        });
-        toast.error(`Test failed: ${message}`);
-        return;
-      }
-
-      const data = body as { delivered: number; publishId: string };
-      if (data.delivered > 0) {
-        toast.success(
-          `Sent! Delivered to ${data.delivered} subscriber${
-            data.delivered === 1 ? "" : "s"
-          }.`,
-        );
-      } else {
-        toast.info(
-          "No subscribers yet — turn on notifications above and try again.",
-        );
-      }
-    } catch (err) {
-      console.error("[notifications] test publish unexpected error", err);
+ror("[notifications] test publish unexpected error", err);
       toast.error(
         err instanceof Error ? `Test failed: ${err.message}` : "Test failed.",
       );
