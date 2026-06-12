@@ -36,12 +36,6 @@ export function NotificationsToggle() {
   );
 }
 
-/** Subscribe toggle + "Send test" button shown above the todo list. */
-export function NotificationsToggle() {
-  const user = useEazo((s) => s.auth.user);
-  const platform = useEazo((s) => s.device.platform);
-  const isMobileHost = platform === "mobile";
-
   const [subscribed, setSubscribed] = useState<boolean | null>(null);
   const [toggling, setToggling] = useState(false);
   const [sending, setSending] = useState(false);
