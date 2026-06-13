@@ -1,24 +1,6 @@
 "use client";
-// This file is kept for backwards compatibility but no longer used.
-// All auth is handled via @eazo/sdk
+// This file is no longer used. All auth is handled via @eazo/sdk
 export {};
-
-export interface StandaloneUser {
-  id: string;
-  email: string;
-  name?: string;
-  avatarUrl?: string;
-}
-
-interface AuthState {
-  user: StandaloneUser | null;
-  token: string | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => void;
-  getSessionHeader: () => Record<string, string>;
-}
 
 const AuthContext = createContext<AuthState>({
   user: null,
