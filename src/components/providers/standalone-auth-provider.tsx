@@ -1,6 +1,7 @@
 "use client";
-
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+// This file is kept for backwards compatibility but no longer used.
+// All auth is handled via @eazo/sdk
+export {};
 
 export interface StandaloneUser {
   id: string;
