@@ -10,6 +10,8 @@ export const users = pgTable(
     avatarUrl: text("avatar_url"),
     /** bcrypt hash，独立部署注册/登录使用；Eazo 平台迁入的老用户此字段为 null */
     passwordHash: text("password_hash"),
+    /** 用户角色：visitor（来访者）| counselor（咨询师）| admin（管理员） */
+    role: varchar("role", { length: 32 }).default("visitor"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
