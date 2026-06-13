@@ -1,9 +1,9 @@
 "use client";
-import { auth } from "@eazo/sdk";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, Video, Phone, MessageCircle, Check, X } from "lucide-react";
-import { useEazo } from "@eazo/sdk/react";
+import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 
 type Booking = {
@@ -143,8 +143,8 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
 }
 
 export function CounselorBookingsScreen() {
-  const user = useEazo((s) => s.auth.user);
-  const loadingAuth = useEazo((s) => s.auth.loading);
+  const { user, loading: loadingAuth } = useAuth();
+  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKey, setSelectedKey] = useState("pending_confirmation");
@@ -190,7 +190,7 @@ export function CounselorBookingsScreen() {
       <div className="min-h-svh flex items-center justify-center px-6" style={{ background: "var(--color-surface)" }}>
         <div className="text-center">
           <p className="text-base font-medium mb-4" style={{ color: "var(--color-text-primary)" }}>请先登录</p>
-          <button onClick={() => auth.login()} className="px-6 py-2.5 rounded-2xl text-white text-sm font-medium"
+          <button onClick={() => router.push("/login")} className="px-6 py-2.5 rounded-2xl text-white text-sm font-medium"
             style={{ background: "var(--color-primary)" }}>登录</button>
         </div>
       </div>
