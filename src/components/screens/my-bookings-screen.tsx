@@ -12,9 +12,9 @@ type Booking = {
 };
 
 const TABS = [
-  { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation"] },
-  { key: "pending_payment",      label: "待支付", statuses: ["pending_payment"] },
-  { key: "upcoming",             label: "待咨询", statuses: ["paid"] },
+  { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation","pending"] },
+  { key: "pending_payment",      label: "待支付", statuses: ["pending_payment","confirmed"] },
+  { key: "upcoming",             label: "待咨询", statuses: ["paid","upcoming"] },
   { key: "past",                 label: "已完成",   statuses: ["completed","cancelled","rejected"] },
 ];
 
