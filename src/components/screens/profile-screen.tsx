@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
-import { auth, storage } from "@eazo/sdk";
+import { auth } from "@/lib/eazo-shim";
 import { useRouter } from "next/navigation";
 import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight, Camera, Pencil, Check, X } from "lucide-react";
 import { request } from "@/lib/api/request";
