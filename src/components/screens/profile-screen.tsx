@@ -186,7 +186,29 @@ export default function ProfileScreen() {
                   </div>
                   <span className="text-xs px-2 py-0.5 rounded-full font-medium flex-none"
                     style={{ background:st.bg, color:st.color }}>{st.label}</span>
-                </button>
+                  </button>
+                  {/* 操作按钮行 */}
+                  {isPending && (
+                    <div className="flex gap-2 px-4 pb-3" onClick={e => e.stopPropagation()}>
+                      <button onClick={() => router.push(`/messages`)}
+                        className="flex-1 py-1.5 rounded-xl text-xs font-medium border"
+                        style={{ borderColor:"var(--color-primary)", color:"var(--color-primary)" }}>
+                        联系咨询师
+                      </button>
+                      <button onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!confirm("确认取消这个预约吗？")) return;
+                        const { request } = await import("@/lib/api/request");
+                        await request(`/api/bookings/${b.id}`, { method:"PATCH", body: JSON.stringify({ status:"cancelled" }) });
+                        setBookings(prev => prev.filter(x => x.id !== b.id));
+                      }}
+                        className="flex-1 py-1.5 rounded-xl text-xs font-medium border"
+                        style={{ borderColor:"#D1D5DB", color:"#6B7280" }}>
+                        取消预约
+                      </button>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
