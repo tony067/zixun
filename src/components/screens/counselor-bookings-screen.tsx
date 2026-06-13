@@ -1,3 +1,4 @@
+import { auth } from "@eazo/sdk";
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -188,7 +189,7 @@ export function CounselorBookingsScreen() {
       <div className="min-h-svh flex items-center justify-center px-6" style={{ background: "var(--color-surface)" }}>
         <div className="text-center">
           <p className="text-base font-medium mb-4" style={{ color: "var(--color-text-primary)" }}>请先登录</p>
-          <button onClick={() => window.dispatchEvent(new CustomEvent("mindpace:show-login"))} className="px-6 py-2.5 rounded-2xl text-white text-sm font-medium"
+          <button onClick={() => auth.login()} className="px-6 py-2.5 rounded-2xl text-white text-sm font-medium"
             style={{ background: "var(--color-primary)" }}>登录</button>
         </div>
       </div>

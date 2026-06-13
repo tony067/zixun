@@ -1,3 +1,4 @@
+import { auth } from "@eazo/sdk";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -381,7 +382,7 @@ export function ExploreScreen() {
               {(user.name ?? user.email ?? "?")[0].toUpperCase()}
             </div>
           ) : (
-            <button onClick={() => window.dispatchEvent(new CustomEvent("mindpace:show-login"))}
+            <button onClick={() => auth.login()}
               className="w-8 h-8 rounded-full text-[13px] font-semibold"
               style={{ background: "#9CB48A", color: "white", display:"flex", alignItems:"center", justifyContent:"center" }}>
               登录

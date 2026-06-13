@@ -1,3 +1,4 @@
+import { auth } from "@eazo/sdk";
 "use client";
 
 import { useRef, useState, useEffect } from "react";
@@ -33,7 +34,7 @@ export function UserBadge() {
   if (!user) {
     return (
       <button
-        onClick={() => window.dispatchEvent(new CustomEvent("mindpace:show-login"))}
+        onClick={() => auth.login()}
         className="flex h-9 items-center gap-2 rounded-full border px-3 text-sm"
       >
         <UserRound className="size-4" />

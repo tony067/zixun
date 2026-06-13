@@ -50,7 +50,7 @@ export default function ProfileScreen() {
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 pb-24" style={{ background:"var(--color-bg)" }}>
       <div className="w-24 h-24 rounded-full flex items-center justify-center text-4xl" style={{ background:"#EBE7DF" }}>👤</div>
       <p className="text-base font-semibold" style={{ color:"#2C2420" }}>登录后查看你的预约</p>
-      <button onClick={() => window.dispatchEvent(new CustomEvent("mindpace:show-login"))} className="px-8 py-3 rounded-2xl text-white font-bold text-sm" style={{ background:"var(--color-primary)" }}>
+      <button onClick={() => auth.login()} className="px-8 py-3 rounded-2xl text-white font-bold text-sm" style={{ background:"var(--color-primary)" }}>
         登录 / 注册
       </button>
     </div>

@@ -1,3 +1,4 @@
+import { auth } from "@eazo/sdk";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -406,7 +407,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           <motion.button whileTap={{ scale: 0.92 }}
             className="flex flex-col items-center gap-1 w-12"
             style={{ color: "#6B5E52" }}
-            onClick={() => { if (!user) { window.dispatchEvent(new CustomEvent("mindpace:show-login")); return; } window.location.href = `/messages`; }}>
+            onClick={() => { if (!user) { auth.login(); return; } window.location.href = `/messages`; }}>
             <MessageCircle className="w-5 h-5" />
             <span className="text-[10px]">私信</span>
           </motion.button>
@@ -428,7 +429,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
             className="flex-1 py-3 rounded-2xl text-white font-semibold text-base"
             style={{ background: c.isAccepting ? "#9CB48A" : "#C2BDB7" }}
             onClick={() => {
-              if (!user) { window.dispatchEvent(new CustomEvent("mindpace:show-login")); return; }
+              if (!user) { auth.login(); return; }
               window.location.href = `/booking/${c.id}`;
             }}>
             {c.isAccepting ? "预约咨询" : "暂停接诊"}

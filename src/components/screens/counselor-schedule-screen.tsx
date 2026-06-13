@@ -1,3 +1,4 @@
+import { auth } from "@eazo/sdk";
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -427,7 +428,7 @@ export function CounselorScheduleScreen() {
     return (
       <div className="min-h-svh flex flex-col items-center justify-center px-6" style={{ background: "#F5F0E8" }}>
         <p className="text-base font-semibold text-[#2C2420] mb-4">请先登录</p>
-        <button onClick={() => window.dispatchEvent(new CustomEvent("mindpace:show-login"))} className="px-6 py-3 rounded-2xl text-white font-semibold" style={{ background: "#9CB48A" }}>登录</button>
+        <button onClick={() => auth.login()} className="px-6 py-3 rounded-2xl text-white font-semibold" style={{ background: "#9CB48A" }}>登录</button>
       </div>
     );
   }
