@@ -159,7 +159,7 @@ export default function MyBookingsScreen() {
         <h1 className="text-xl font-bold text-[#2C2420] mb-4">我的预约</h1>
         <div className="flex gap-1.5 pb-3 border-b border-[#EBE7DF]">
           {TABS.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
+            <button key={t.key} onClick={() => switchTab(t.key)}
               className="flex-1 py-2 rounded-xl text-xs font-semibold relative transition-all"
               style={{
                 background: tab === t.key ? "#9CB48A" : "#F0EBE3",
