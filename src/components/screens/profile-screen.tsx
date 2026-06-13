@@ -46,8 +46,10 @@ export default function ProfileScreen() {
     }).catch(() => {});
   }, [user]);
 
-  // 只显示进行中的订单
-  const activeBookings = bookings.filter(b => ACTIVE_STATUSES.includes(b.status));
+  // 只显示进行中的订单（不含已完成），最多显示3条
+  const activeBookings = bookings
+    .filter(b => ACTIVE_STATUSES.includes(b.status))
+    .slice(0, 3);
 
   if (!user) return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 pb-24" style={{ background:"var(--color-bg)" }}>
