@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db/client";
-import { sql } from "drizzle-orm";
-import { signToken } from "@/lib/auth";
-import * as crypto from "crypto";
+import { NextResponse } from "next/server";
+
+// Eazo handles authentication — this route is not used
+export async function POST() {
+  return NextResponse.json({ error: "Use Eazo authentication" }, { status: 404 });
+}
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password + (process.env.JWT_SECRET ?? "mindpace")).digest("hex");
