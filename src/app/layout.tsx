@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
 import { EazoProvider } from "@eazo/sdk/react";
-import { AuthInit } from "@/components/auth/auth-init";
-import { LoginModal } from "@/components/auth/login-modal";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
