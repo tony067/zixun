@@ -9,8 +9,7 @@ import {
   LayoutDashboard, ClipboardList, ShieldCheck, Users,
   ChevronRight,
 } from "lucide-react";
-import { useEazo } from "@eazo/sdk/react";
-import { auth } from "@eazo/sdk";
+import { useAuth } from "@/contexts/auth-context";
 
 const CLIENT_TABS = [
   { href: "/",            icon: Home,          label: "首页" },
@@ -109,8 +108,7 @@ const ROLE_ITEMS = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
-  const user = useEazo((s) => s.auth.user);
-  const { login } = useEazo((s) => s.auth) as any;
+  const { user } = useAuth();
 
   const role = detectRole(pathname);
   const tabs = role === "counselor" ? COUNSELOR_TABS
@@ -124,7 +122,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   function switchRole(targetRole: Role) {
     setShowRolePicker(false);
     if (!user) {
-      auth.login();
+      router.push("/login");
       return;
     }
     router.push(MY_ROUTE[targetRole]);
