@@ -124,7 +124,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   function switchRole(targetRole: Role) {
     setShowRolePicker(false);
     if (!user) {
-      window.dispatchEvent(new CustomEvent("mindpace:show-login"));
+      auth.login();
       return;
     }
     router.push(MY_ROUTE[targetRole]);
