@@ -1,10 +1,9 @@
 "use client";
-import { auth } from "@eazo/sdk";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, CalendarDays, AlignLeft, Plus, Trash2, Check, Lock, Repeat, BarChart2, Users, TrendingUp, Clock } from "lucide-react";
-import { useEazo } from "@eazo/sdk/react";
+import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 
 type Rule = {
@@ -388,7 +387,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
-  const user = useEazo((s) => s.auth.user);
+  const { user } = useAuth();
+  const router = useRouter();
   const [tab, setTab] = useState<"rules" | "calendar" | "stats" | "clients">("rules");
   const [rules, setRules] = useState<Rule[]>([]);
   const [saving, setSaving] = useState(false);
@@ -428,7 +428,7 @@ export function CounselorScheduleScreen() {
     return (
       <div className="min-h-svh flex flex-col items-center justify-center px-6" style={{ background: "#F5F0E8" }}>
         <p className="text-base font-semibold text-[#2C2420] mb-4">请先登录</p>
-        <button onClick={() => auth.login()} className="px-6 py-3 rounded-2xl text-white font-semibold" style={{ background: "#9CB48A" }}>登录</button>
+        <button onClick={() => router.push("/login")} className="px-6 py-3 rounded-2xl text-white font-semibold" style={{ background: "#9CB48A" }}>登录</button>
       </div>
     );
   }
