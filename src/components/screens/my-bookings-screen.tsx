@@ -108,6 +108,16 @@ export default function MyBookingsScreen() {
   const [tab, setTab] = useState(TABS[0].key);
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  // 未读记录：上次查看该Tab时的数量
+  const [seenCounts, setSeenCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    // 从 localStorage 恢复上次已读数量
+    try {
+      const saved = localStorage.getItem("mindpace_booking_seen");
+      if (saved) setSeenCounts(JSON.parse(saved));
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -115,6 +125,16 @@ export default function MyBookingsScreen() {
       setAllBookings(Array.isArray(d) ? d : []);
     }).finally(() => setLoading(false));
   }, [user]);
+
+  // 切换Tab时标记已读
+  const switchTab = (key: string) => {
+    setTab(key);
+    const tabDef = TABS.find(t => t.key === key)!;
+    const count = allBookings.filter(b => tabDef.statuses.includes(b.status)).length;
+    const next = { ...seenCounts, [key]: count };
+    setSeenCounts(next);
+    try { localStorage.setItem("mindpace_booking_seen", JSON.stringify(next)); } catch {}
+  };
 
   const currentTab = TABS.find(t => t.key === tab)!;
   const displayed = allBookings.filter(b => currentTab.statuses.includes(b.status));
