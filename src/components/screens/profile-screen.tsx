@@ -13,7 +13,7 @@ type Booking = {
 };
 
 // 主页只显示进行中的订单
-const ACTIVE_STATUSES = ["pending_confirmation","pending_payment","paid","upcoming","confirmed"];
+const ACTIVE_STATUSES = ["pending_confirmation","pending_payment","paid","upcoming","confirmed","pending"];
 
 const STATUS_BADGE: Record<string,{label:string;color:string;bg:string}> = {
   pending_confirmation: { label:"待确认",   color:"#D97706", bg:"#FEF3C7" },
