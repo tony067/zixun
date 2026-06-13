@@ -170,7 +170,7 @@ function MultiPara({ text }: { text: string }) {
 
 export function CounselorDetailScreen({ counselorId }: { counselorId: string }) {
   const router = useRouter();
-  const { user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const [c, setC] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
