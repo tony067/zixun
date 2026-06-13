@@ -110,6 +110,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router   = useRouter();
   const { user } = useAuth();
 
+  // 根据数据库里的 role 字段决定用户能看到哪些端口
+  const userDbRole = (user as any)?.role ?? "visitor";
+  const visibleRoleItems = ROLE_ITEMS.filter(item => {
+    if (item.role === "client")    return true;
+    if (item.role === "counselor") return userDbRole === "counselor" || userDbRole === "admin";
+    if (item.role === "admin")     return userDbRole === "admin";
+    return false;
+  });
+
   const role = detectRole(pathname);
   const tabs = role === "counselor" ? COUNSELOR_TABS
              : role === "admin"     ? ADMIN_TABS
