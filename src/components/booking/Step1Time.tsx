@@ -37,10 +37,22 @@ const MODE_MAP: Record<string, { label: string; icon: React.ReactNode }> = {
   "面对面":  { label: "面对面咨询", icon: FACE_ICON },
 };
 
-const PERIOD_ICON: Record<string, string> = {
-  morning: "🌤",
-  afternoon: "🌿",
-  evening: "🌙",
+const PERIOD_SVG: Record<string, React.ReactNode> = {
+  morning: (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5">
+      <circle cx="8" cy="9" r="3.5"/><path d="M8 2v1.5M8 13.5V15M2 9H3.5M12.5 9H14M3.757 4.757l1.06 1.06M11.182 11.182l1.06 1.06M3.757 13.243l1.06-1.06M11.182 6.818l1.06-1.06"/>
+    </svg>
+  ),
+  afternoon: (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5">
+      <circle cx="8" cy="8" r="3.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/>
+    </svg>
+  ),
+  evening: (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5">
+      <path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/>
+    </svg>
+  ),
 };
 
 export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
