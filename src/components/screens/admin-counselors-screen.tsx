@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useEazo } from "@eazo/sdk/react";
+import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight, CheckCircle, XCircle } from "lucide-react";
 import { request } from "@/lib/api/request";

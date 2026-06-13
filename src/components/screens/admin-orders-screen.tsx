@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useEazo } from "@eazo/sdk/react";
+import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { request } from "@/lib/api/request";
 import { User, Clock, CreditCard } from "lucide-react";
@@ -34,7 +34,7 @@ const STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = 
 
 export default function AdminOrdersScreen() {
   const router = useRouter();
-  const user = useEazo((s) => s.auth.user);
+  const { user } = useAuth();
   const [tab, setTab] = useState("all");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
