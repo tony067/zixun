@@ -1,17 +1,15 @@
 "use client";
-import { auth } from "@eazo/sdk";
-
 import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { LogOut, UserRound, X } from "lucide-react";
-import { useEazo } from "@eazo/sdk/react";
+import { useAuth } from "@/contexts/auth-context";
 
 type User = { id: string; name?: string; email?: string; avatarUrl?: string };
 
 export function UserBadge() {
-  const user = useEazo((s) => s.auth.user);
-  const loading = useEazo((s) => s.auth.loading);
-  const { logout } = useEazo((s) => s.auth) as any;
+  const { user, loading, logout } = useAuth();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,7 +32,7 @@ export function UserBadge() {
   if (!user) {
     return (
       <button
-        onClick={() => auth.login()}
+        onClick={() => router.push("/login")}
         className="flex h-9 items-center gap-2 rounded-full border px-3 text-sm"
       >
         <UserRound className="size-4" />
