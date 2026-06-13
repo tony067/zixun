@@ -1,15 +1,6 @@
 "use client";
 // This file is no longer used. All auth is handled via @eazo/sdk
 export {};
-
-const AuthContext = createContext<AuthState>({
-
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
     if (!res.ok) {
       const data = await res.json();
       throw new Error(data.error || "登录失败");
