@@ -35,7 +35,7 @@ function Avatar({ name, size = 44 }: { name: string; size?: number }) {
 }
 
 export default function MessagesPage() {
-  const { user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const pathname = usePathname();
   const role = pathname.startsWith("/counselor") ? "counselor" : pathname.startsWith("/admin") ? "admin" : "client";
   const router = useRouter();

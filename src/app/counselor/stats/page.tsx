@@ -14,7 +14,7 @@ type Stats = {
 };
 
 export default function CounselorStatsPage() {
-  const { user: user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 

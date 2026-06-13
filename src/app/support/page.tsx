@@ -9,7 +9,7 @@ interface Msg { id: string; senderId: string; content: string; createdAt: string
 
 export default function SupportPage() {
   const router = useRouter();
-  const { user: user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);

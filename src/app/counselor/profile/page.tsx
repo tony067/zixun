@@ -19,7 +19,7 @@ const STATUS_LABEL: Record<string, { text: string; color: string; bg: string }> 
 
 export default function CounselorProfilePage() {
   const router = useRouter();
-  const { user: user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const [form, setForm] = useState<ProfileForm>({ ...EMPTY_PROFILE });
   const [openSection, setOpenSection] = useState<SectionKey | null>("basic");
   const [saving, setSaving] = useState(false);

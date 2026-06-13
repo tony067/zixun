@@ -37,7 +37,7 @@ function fmtDate(s: string) {
 export function ChatScreen() {
   const params = useParams();
   const convId = params.id as string;
-  const { user: user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const router = useRouter();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [otherName, setOtherName] = useState("对话");

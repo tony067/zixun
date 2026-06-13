@@ -35,7 +35,7 @@ function Avatar({ name, size = 44 }: { name: string; size?: number }) {
 }
 
 export default function CounselorMessagesPage() {
-  const { user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const router = useRouter();
   const [convs, setConvs] = useState<Conv[]>([]);
   const [loading, setLoading] = useState(true);

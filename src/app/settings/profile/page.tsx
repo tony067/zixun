@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Camera, User, Mail, Phone } from "lucide-react";
 
 export default function ProfileSettingsPage() {
-  const { user: user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const router = useRouter();
   const [name, setName] = useState(user?.name ?? "");
   const [phone, setPhone] = useState("");

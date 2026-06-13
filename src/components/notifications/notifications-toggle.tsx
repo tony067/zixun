@@ -5,7 +5,7 @@ import { Bell, BellOff } from "lucide-react";
 import { useEazo } from "@eazo/sdk/react";
 
 export function NotificationsToggle() {
-  const { user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
