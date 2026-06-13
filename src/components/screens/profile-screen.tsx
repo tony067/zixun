@@ -24,8 +24,6 @@ const STATUS_BADGE: Record<string,{label:string;color:string;bg:string}> = {
   pending:              { label:"待确认",   color:"#D97706", bg:"#FEF3C7" },
   cancelled:            { label:"已取消",   color:"#6B7280", bg:"#F3F4F6" },
   completed:            { label:"已完成",   color:"#059669", bg:"#D1FAE5" },
-  completed:            { label:"已完成",   color:"#6B7280", bg:"#F3F4F6" },
-  cancelled:            { label:"已取消",   color:"#9B8E82", bg:"#F5F0EA" },
   rejected:             { label:"已拒绝",   color:"#9B8E82", bg:"#F5F0EA" },
 };
 
