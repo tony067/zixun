@@ -25,9 +25,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body>
-        <StandaloneAuthProvider>
+        <EazoProvider>
+          <AuthInit />
+          <LoginModal />
+          <Toaster />
           <AppShell>{children}</AppShell>
-        </StandaloneAuthProvider>
+        </EazoProvider>
       </body>
     </html>
   );
