@@ -32,7 +32,7 @@ function fmt(iso: string) {
 }
 
 export default function ProfileScreen() {
-  const user = useEazo((s) => s.auth.user);
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
 
