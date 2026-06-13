@@ -2,19 +2,9 @@
 // This file is no longer used. All auth is handled via @eazo/sdk
 export {};
     if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error || "登录失败");
+      // removed
     }
-    const data = await res.json();
-    localStorage.setItem("mindpace_token", data.token);
-    setToken(data.token);
-    setUser(data.user);
-  }, []);
-
-  const register = useCallback(async (email: string, password: string, name: string) => {
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+ "application/json" },
       body: JSON.stringify({ email, password, name }),
     });
     if (!res.ok) {
