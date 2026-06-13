@@ -23,10 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body>
-        <EazoProvider>
+        <AuthProvider>
           <Toaster />
           <AppShell>{children}</AppShell>
-        </EazoProvider>
+        </AuthProvider>
       </body>
     </html>
   );
