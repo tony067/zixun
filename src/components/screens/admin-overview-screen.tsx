@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEazo } from "@eazo/sdk/react";
 import { Users, ClipboardList, Star, TrendingUp, BarChart2, DollarSign } from "lucide-react";
 import { request } from "@/lib/api/request";
 
