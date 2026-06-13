@@ -15,10 +15,17 @@ export function AvatarUploader({
     setError("");
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() ?? "jpg";
-      const path = `avatars/${Date.now()}.${ext}`;
-      const result = null /* standalone: use /api/counselor/avatar-upload instead */;
-      onChange(result.url);
+      const formData = new FormData();
+      formData.append("file", file);
+      const token = typeof window !== "undefined" ? localStorage.getItem("mindpace_token") : "";
+      const res = await fetch("/api/upload/avatar", {
+        method: "POST",
+        headers: token ? { "x-session-token": token } : {},
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "上传失败");
+      onChange(data.url);
     } catch (err) {
       console.error("头像上传失败", err);
       setError("上传失败，请重试");
