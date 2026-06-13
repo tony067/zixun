@@ -169,10 +169,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             );
           })}
 
-          {/* 我的 按钮 */}
+          {/* 我的 按钮：普通用户直接跳个人页，咨询师/管理员才弹切换面板 */}
           <button
             className="flex-1 flex flex-col items-center gap-0.5 py-1"
-            onClick={() => setShowRolePicker(true)}
+            onClick={() => {
+              if (userDbRole === "visitor") {
+                router.push("/profile");
+              } else {
+                setShowRolePicker(true);
+              }
+            }}
           >
             <User
               size={22}
