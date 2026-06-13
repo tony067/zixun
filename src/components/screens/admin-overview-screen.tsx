@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEazo } from "@eazo/sdk/react";
+import { useAuth } from "@/contexts/auth-context";
 import { Users, ClipboardList, Star, TrendingUp, BarChart2, DollarSign } from "lucide-react";
 import { request } from "@/lib/api/request";
 
@@ -35,7 +35,7 @@ export default function AdminOverviewScreen() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
 
-  const user = useEazo((s) => s.auth.user);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
