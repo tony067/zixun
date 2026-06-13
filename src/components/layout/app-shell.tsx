@@ -190,43 +190,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             />
             <span className="text-[10px] font-medium" style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }}>我的</span>
           </button>
-          {tabs.map(tab => {
-            const Icon    = tab.icon;
-            const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
-            return (
-              <Link key={tab.href} href={tab.href}
-                className="flex-1 flex flex-col items-center gap-0.5 py-1"
-              >
-                <Icon
-                  size={22}
-                  style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}
-                  strokeWidth={isActive ? 2.2 : 1.8}
-                />
-                <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>
-                  {tab.label}
-                </span>
-              </Link>
-            );
-          })}
-
-          {/* 我的 按钮：普通用户直接跳个人页，咨询师/管理员才弹切换面板 */}
-          <button
-            className="flex-1 flex flex-col items-center gap-0.5 py-1"
-            onClick={() => {
-              if (userDbRole === "visitor") {
-                router.push("/profile");
-              } else {
-                setShowRolePicker(true);
-              }
-            }}
-          >
-            <User
-              size={22}
-              style={{ color: "#9B8E82" }}
-              strokeWidth={1.8}
-            />
-            <span className="text-[10px] font-medium" style={{ color: "#9B8E82" }}>我的</span>
-          </button>
         </nav>
       )}
 
