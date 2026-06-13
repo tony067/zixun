@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { LogOut, UserRound } from "lucide-react";
+import { LogOut, UserRound, X } from "lucide-react";
 import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 
 type User = { id: string; name?: string; email?: string; avatarUrl?: string };
