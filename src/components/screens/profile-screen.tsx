@@ -67,10 +67,11 @@ export default function ProfileScreen() {
     if (!file || !user) return;
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() ?? "jpg";
-      const key = `avatars/${Date.now()}.${ext}`;
-      const result = null /* standalone: use /api/counselor/avatar-upload instead */;
-      const url = result.url;
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload/avatar", { method: "POST", body: formData });
+      const data = await res.json();
+      const url = data.url;
       setAvatarUrl(url);
       await request("/api/user/profile", { method: "PATCH", body: JSON.stringify({ avatarUrl: url }) });
     } catch (err) {
