@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import { LogOut, UserRound, X } from "lucide-react";
 import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
 
