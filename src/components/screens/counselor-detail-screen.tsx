@@ -1,5 +1,5 @@
-import { auth } from "@eazo/sdk";
 "use client";
+import { auth } from "@eazo/sdk";
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";

@@ -1,5 +1,5 @@
-import { auth } from "@eazo/sdk";
 "use client";
+import { auth } from "@eazo/sdk";
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";

@@ -1,5 +1,5 @@
-import { auth } from "@eazo/sdk";
 "use client";
+import { auth } from "@eazo/sdk";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
