@@ -207,7 +207,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </button>
               </div>
               <div className="px-5 pb-4 space-y-2">
-                {ROLE_ITEMS.map(item => {
+                {visibleRoleItems.map(item => {
                   const isActive = item.role === role;
                   return (
                     <button
