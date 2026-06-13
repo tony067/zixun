@@ -149,47 +149,76 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="fixed bottom-0 left-0 right-0 z-30 flex items-center px-2 pt-2 pb-[calc(env(safe-area-inset-bottom)+8px)]"
           style={{ background: "rgba(245,241,232,0.96)", backdropFilter: "blur(12px)", borderTop: "1px solid #EBE7DF" }}
         >
-          {/* 已登录：显示对应角色的 tabs */}
-          {user && tabs.map((tab) => {
-            const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
+          {(() => {
+            // 未登录：只显示首页 + 我的（点我的跳登录）
+            if (!user) {
+              return (
+                <>
+                  <Link href="/" className="flex-1 flex flex-col items-center gap-0.5 py-1">
+                    <Home size={22} style={{ color: pathname === "/" ? "#9CB48A" : "#9B8E82" }} strokeWidth={pathname === "/" ? 2.2 : 1.8} />
+                    <span className="text-[10px] font-medium" style={{ color: pathname === "/" ? "#9CB48A" : "#9B8E82" }}>首页</span>
+                  </Link>
+                  <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => router.push("/login")}>
+                    <User size={22} style={{ color: "#9B8E82" }} strokeWidth={1.8} />
+                    <span className="text-[10px] font-medium" style={{ color: "#9B8E82" }}>我的</span>
+                  </button>
+                </>
+              );
+            }
+
+            // 咨询师：直接显示咨询师4个按钮，无切换入口
+            if (userDbRole === "counselor") {
+              return COUNSELOR_TABS.map(tab => {
+                const isActive = pathname === tab.href || pathname.startsWith(tab.href);
+                return (
+                  <Link key={tab.href} href={tab.href} className="flex-1 flex flex-col items-center gap-0.5 py-1">
+                    <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
+                    <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>{tab.label}</span>
+                  </Link>
+                );
+              });
+            }
+
+            // 管理员：显示当前角色的tabs + 最右边「切换」按钮
+            if (userDbRole === "admin") {
+              return (
+                <>
+                  {tabs.map(tab => {
+                    const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
+                    return (
+                      <Link key={tab.href} href={tab.href} className="flex-1 flex flex-col items-center gap-0.5 py-1">
+                        <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
+                        <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>{tab.label}</span>
+                      </Link>
+                    );
+                  })}
+                  <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => setShowRolePicker(true)}>
+                    <ChevronRight size={22} style={{ color: "#9B8E82" }} strokeWidth={1.8} className="rotate-90" />
+                    <span className="text-[10px] font-medium" style={{ color: "#9B8E82" }}>切换</span>
+                  </button>
+                </>
+              );
+            }
+
+            // 来访者（visitor）：首页、消息、我的，无切换入口
             return (
-              <Link key={tab.href} href={tab.href} className="flex-1 flex flex-col items-center gap-0.5 py-1">
-                <tab.icon
-                  size={22}
-                  style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}
-                  strokeWidth={isActive ? 2.2 : 1.8}
-                />
-                <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>
-                  {tab.label}
-                </span>
-              </Link>
+              <>
+                {CLIENT_TABS.map(tab => {
+                  const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
+                  return (
+                    <Link key={tab.href} href={tab.href} className="flex-1 flex flex-col items-center gap-0.5 py-1">
+                      <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
+                      <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>{tab.label}</span>
+                    </Link>
+                  );
+                })}
+                <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => router.push("/profile")}>
+                  <User size={22} style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }} strokeWidth={pathname === "/profile" ? 2.2 : 1.8} />
+                  <span className="text-[10px] font-medium" style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }}>我的</span>
+                </button>
+              </>
             );
-          })}
-
-          {/* 未登录：只显示首页 */}
-          {!user && (
-            <Link href="/" className="flex-1 flex flex-col items-center gap-0.5 py-1">
-              <Home size={22} style={{ color: pathname === "/" ? "#9CB48A" : "#9B8E82" }} strokeWidth={pathname === "/" ? 2.2 : 1.8} />
-              <span className="text-[10px] font-medium" style={{ color: pathname === "/" ? "#9CB48A" : "#9B8E82" }}>首页</span>
-            </Link>
-          )}
-
-          {/* 我的 按钮：普通用户直接跳个人页，咨询师/管理员弹切换面板，未登录跳登录页 */}
-          <button
-            className="flex-1 flex flex-col items-center gap-0.5 py-1"
-            onClick={() => {
-              if (!user) { router.push("/login"); return; }
-              if (userDbRole === "visitor") { router.push("/profile"); return; }
-              setShowRolePicker(true);
-            }}
-          >
-            <User
-              size={22}
-              style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }}
-              strokeWidth={pathname === "/profile" ? 2.2 : 1.8}
-            />
-            <span className="text-[10px] font-medium" style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }}>我的</span>
-          </button>
+          })()}
         </nav>
       )}
 
