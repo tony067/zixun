@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
-    "@eazo/sdk": "0.17.1",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.9.6",
+    "nanoid": "^5.1.5",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
