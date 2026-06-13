@@ -1,13 +1,6 @@
 import { NextResponse } from "next/server";
 
-// Eazo handles authentication — this route is not used
-export async function POST() {
-  return NextResponse.json({ error: "Use Eazo authentication" }, { status: 404 });
-}
-
-function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password + (process.env.JWT_SECRET ?? "mindpace")).digest("hex");
-}
+// Eazo 处理认证 — 此路由不使用
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();

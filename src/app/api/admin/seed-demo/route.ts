@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
         tagline: "温和、专业、以人为本",
         specialties: ["ADHD", "焦虑", "情绪管理", "自我认知"],
         workingGroups: ["成人", "青少年", "神经多样性人群"],
-        orientations: ["认知行为疗法", "人本主义"],
         counselorTypes: ["心理咨询师"],
         pricePerSession: 600,
         sessionDuration: 50,
