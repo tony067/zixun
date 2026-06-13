@@ -24,8 +24,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN">
       <body>
         <EazoProvider>
-          <AuthInit />
-          <LoginModal />
           <Toaster />
           <AppShell>{children}</AppShell>
         </EazoProvider>
