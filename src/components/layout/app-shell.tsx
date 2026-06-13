@@ -14,7 +14,6 @@ import { useAuth } from "@/contexts/auth-context";
 const CLIENT_TABS = [
   { href: "/",            icon: Home,          label: "首页" },
   { href: "/messages",    icon: MessageCircle, label: "消息" },
-  { href: "/profile",     icon: User,          label: "我的" },
 ];
 
 const COUNSELOR_TABS = [
