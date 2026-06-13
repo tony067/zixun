@@ -92,7 +92,7 @@ export function StandaloneAuthProvider({ children }: { children: React.ReactNode
     setUser(null);
   }, []);
 
-  const getSessionHeader = useCallback(() => {
+  const getSessionHeader = useCallback((): Record<string, string> => {
     const t = localStorage.getItem("mindpace_token");
     return t ? { "x-session-token": t } : {};
   }, []);
