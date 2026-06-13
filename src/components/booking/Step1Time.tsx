@@ -83,7 +83,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
     return (
       <div className="mb-4">
         <p className="text-sm font-medium mb-2" style={{ color: "#5A4E44" }}>
-          {PERIOD_ICON[period]} {label}
+          <span className="inline-flex items-center gap-1.5">{PERIOD_SVG[period]} {label}</span>
         </p>
         <div className="flex flex-wrap gap-2">
           {items.map(s => {
