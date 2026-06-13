@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 import { auth } from "@/lib/eazo-shim";
 import { useRouter } from "next/navigation";
 import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight, Camera, Pencil, Check, X } from "lucide-react";
@@ -32,7 +32,7 @@ function fmt(iso: string) {
 }
 
 export default function ProfileScreen() {
-  const { user } = useStandaloneAuth();
+  const { user } = useEazo();
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
 

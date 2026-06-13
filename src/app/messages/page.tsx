@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle, ChevronRight } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 import { request } from "@/lib/api/request";
 
 type Conv = {
@@ -35,7 +35,7 @@ function Avatar({ name, size = 44 }: { name: string; size?: number }) {
 }
 
 export default function MessagesPage() {
-  const { user } = useStandaloneAuth();
+  const { user } = useEazo();
   const pathname = usePathname();
   const role = pathname.startsWith("/counselor") ? "counselor" : pathname.startsWith("/admin") ? "admin" : "client";
   const router = useRouter();

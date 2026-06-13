@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, ChevronDown, Clock, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 
 type Counselor = {
   id: string; displayName: string; title: string; bio: string;
@@ -296,7 +296,7 @@ function Skeleton() {
 
 /* ══ 主屏幕 ══ */
 export function ExploreScreen() {
-  const { user: user } = useStandaloneAuth();
+  const { user: user } = useEazo();
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 import { request } from "@/lib/api/request";
 
 /**
  * 独立版本：登录后同步用户 profile 到数据库
  */
 export function UserSyncEffect() {
-  const { user } = useStandaloneAuth();
+  const { user } = useEazo();
 
   useEffect(() => {
     if (!user) return;

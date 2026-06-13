@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 
 export function NotificationsToggle() {
-  const { user } = useStandaloneAuth();
+  const { user } = useEazo();
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {

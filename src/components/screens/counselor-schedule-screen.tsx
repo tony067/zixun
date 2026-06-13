@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, CalendarDays, AlignLeft, Plus, Trash2, Check, Lock, Repeat, BarChart2, Users, TrendingUp, Clock } from "lucide-react";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 import { request } from "@/lib/api/request";
 
 type Rule = {
@@ -387,7 +387,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
-  const { user: user } = useStandaloneAuth();
+  const { user: user } = useEazo();
   const [tab, setTab] = useState<"rules" | "calendar" | "stats" | "clients">("rules");
   const [rules, setRules] = useState<Rule[]>([]);
   const [saving, setSaving] = useState(false);

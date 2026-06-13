@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 import { request } from "@/lib/api/request";
 
 type Conv = {
@@ -35,7 +35,7 @@ function Avatar({ name, size = 44 }: { name: string; size?: number }) {
 }
 
 export default function CounselorMessagesPage() {
-  const { user } = useStandaloneAuth();
+  const { user } = useEazo();
   const router = useRouter();
   const [convs, setConvs] = useState<Conv[]>([]);
   const [loading, setLoading] = useState(true);

@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Clock, MapPin, Share2, MessageCircle, Bookmark, CalendarDays } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 
 // ── 可预约时间弹窗组件 ──
 function AvailableTimesButton({ counselorId }: { counselorId: string }) {
@@ -170,7 +170,7 @@ function MultiPara({ text }: { text: string }) {
 
 export function CounselorDetailScreen({ counselorId }: { counselorId: string }) {
   const router = useRouter();
-  const { user } = useStandaloneAuth();
+  const { user } = useEazo();
   const [c, setC] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);

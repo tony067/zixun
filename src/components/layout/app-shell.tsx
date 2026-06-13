@@ -9,7 +9,7 @@ import {
   LayoutDashboard, ClipboardList, ShieldCheck, Users,
   ChevronRight,
 } from "lucide-react";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 
 const CLIENT_TABS = [
   { href: "/",            icon: Home,          label: "首页" },
@@ -108,7 +108,7 @@ const ROLE_ITEMS = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
-  const { user, login } = useStandaloneAuth();
+  const { user, login } = useEazo();
 
   const role = detectRole(pathname);
   const tabs = role === "counselor" ? COUNSELOR_TABS

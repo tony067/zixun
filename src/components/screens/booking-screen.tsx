@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 import { request } from "@/lib/api/request";
 import { StepBar } from "@/components/booking/StepBar";
 import { Step1Time } from "@/components/booking/Step1Time";
@@ -22,7 +22,7 @@ type Counselor = {
 
 export function BookingScreen({ counselorId }: { counselorId: string }) {
   const router = useRouter();
-  const { user: user } = useStandaloneAuth();
+  const { user: user } = useEazo();
   const [counselor, setCounselor] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState(true);
 

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, Video, ChevronRight, MessageCircle } from "lucide-react";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 import { request } from "@/lib/api/request";
 
 type Booking = {
@@ -101,7 +101,7 @@ function BookingCard({ b }: { b: Booking }) {
 }
 
 export default function MyBookingsScreen() {
-  const { user: user } = useStandaloneAuth();
+  const { user: user } = useEazo();
   const [tab, setTab] = useState(TABS[0].key);
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);

@@ -3,12 +3,12 @@
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { LogOut, UserRound, X } from "lucide-react";
-import { useStandaloneAuth } from "@/components/providers/standalone-auth-provider";
+import { useEazo } from "@eazo/sdk/react";
 
 type User = { id: string; name?: string; email?: string; avatarUrl?: string };
 
 export function UserBadge() {
-  const { user, loading, logout } = useStandaloneAuth();
+  const { user, loading, logout } = useEazo();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
