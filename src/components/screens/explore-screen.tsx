@@ -296,7 +296,7 @@ function Skeleton() {
 
 /* ══ 主屏幕 ══ */
 export function ExploreScreen() {
-  const { user: user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

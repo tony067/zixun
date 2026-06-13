@@ -22,7 +22,7 @@ type Counselor = {
 
 export function BookingScreen({ counselorId }: { counselorId: string }) {
   const router = useRouter();
-  const { user: user } = useEazo();
+  const user = useEazo((s) => s.auth.user);
   const [counselor, setCounselor] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState(true);
 
