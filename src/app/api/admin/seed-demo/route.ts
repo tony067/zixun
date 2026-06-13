@@ -45,47 +45,45 @@ export async function POST(req: NextRequest) {
       .where(eq(bookings.counselorId, counselorId));
 
     if (existingBookings.length === 0 && userId && counselorId) {
-      await db.insert(bookings).values([
-        {
-          id: `demo_bk_001_${Date.now()}`,
-          clientId: userId,
-          counselorId,
-          status: "pending",
-          scheduledAt: d1,
-          sessionMode: "视频咨询",
-          sessionDuration: 50,
-          sessionNumber: 1,
-          applicationForm: { name: "邱婧", phone: "138xxxxxxxx", reason: "希望通过咨询更好地了解自己" },
-          agreementSigned: true,
-          createdAt: now,
-        },
-        {
-          id: `demo_bk_002_${Date.now() + 1}`,
-          clientId: userId,
-          counselorId,
-          status: "confirmed",
-          scheduledAt: d2,
-          sessionMode: "视频咨询",
-          sessionDuration: 50,
-          sessionNumber: 2,
-          applicationForm: { name: "邱婧", reason: "第二次咨询" },
-          agreementSigned: true,
-          createdAt: new Date(now.getTime() - 86400000 * 3),
-        },
-        {
-          id: `demo_bk_003_${Date.now() + 2}`,
-          clientId: userId,
-          counselorId,
-          status: "completed",
-          scheduledAt: d3,
-          sessionMode: "视频咨询",
-          sessionDuration: 50,
-          sessionNumber: 1,
-          applicationForm: { name: "邱婧", reason: "初次咨询" },
-          agreementSigned: true,
-          createdAt: new Date(now.getTime() - 86400000 * 10),
-        },
-      ]);
+      await db.insert(bookings).values({
+        id: `demo_bk_001_${Date.now()}`,
+        clientId: userId,
+        counselorId,
+        status: "pending",
+        scheduledAt: d1,
+        sessionMode: "视频咨询",
+        sessionDuration: 50,
+        sessionNumber: 1,
+        applicationForm: { name: "邱婧", phone: "138xxxxxxxx", reason: "希望通过咨询更好地了解自己" },
+        agreementSigned: true,
+        createdAt: now,
+      });
+      await db.insert(bookings).values({
+        id: `demo_bk_002_${Date.now() + 1}`,
+        clientId: userId,
+        counselorId,
+        status: "confirmed",
+        scheduledAt: d2,
+        sessionMode: "视频咨询",
+        sessionDuration: 50,
+        sessionNumber: 2,
+        applicationForm: { name: "邱婧", reason: "第二次咨询" },
+        agreementSigned: true,
+        createdAt: new Date(now.getTime() - 86400000 * 3),
+      });
+      await db.insert(bookings).values({
+        id: `demo_bk_003_${Date.now() + 2}`,
+        clientId: userId,
+        counselorId,
+        status: "completed",
+        scheduledAt: d3,
+        sessionMode: "视频咨询",
+        sessionDuration: 50,
+        sessionNumber: 1,
+        applicationForm: { name: "邱婧", reason: "初次咨询" },
+        agreementSigned: true,
+        createdAt: new Date(now.getTime() - 86400000 * 10),
+      });
     }
 
     return NextResponse.json({
