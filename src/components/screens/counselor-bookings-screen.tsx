@@ -17,18 +17,19 @@ type Booking = {
 
 // 4个平铺Tab，去掉「已取消」
 const STATUS_OPTIONS = [
-  { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation"], dot: "#D97706" },
+  { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation","pending"], dot: "#D97706" },
   { key: "pending_payment",      label: "待支付", statuses: ["confirmed","pending_payment"], dot: "#2563EB" },
   { key: "upcoming",             label: "待咨询", statuses: ["paid"], dot: "#059669" },
   { key: "completed",            label: "已咨询", statuses: ["completed"], dot: "#6B7280" },
 ];
 
 const STATUS_LABEL: Record<string, string> = {
-  pending_confirmation: "待确认", confirmed: "待支付", pending_payment: "待支付",
+  pending_confirmation: "待确认", pending: "待确认", confirmed: "待支付", pending_payment: "待支付",
   paid: "待咨询", completed: "已咨询", cancelled: "已取消", rejected: "已拒绝",
 };
 const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
   pending_confirmation: { color: "#D97706", bg: "#FEF3C7" },
+  pending:              { color: "#D97706", bg: "#FEF3C7" },
   confirmed:            { color: "#2563EB", bg: "#DBEAFE" },
   pending_payment:      { color: "#2563EB", bg: "#DBEAFE" },
   paid:                 { color: "#059669", bg: "#D1FAE5" },
@@ -91,7 +92,7 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
       <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: "var(--color-border)" }}>
         <span className="text-base font-bold" style={{ color: "var(--color-text-primary)" }}>¥{b.priceAmount}</span>
         <div className="flex gap-2">
-          {b.status === "pending_confirmation" && (<>
+          {(b.status === "pending_confirmation" || b.status === "pending") && (<>
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "rejected")}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
               style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
