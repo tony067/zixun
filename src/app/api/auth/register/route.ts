@@ -1,8 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db/client";
-import { sql } from "drizzle-orm";
-import { signToken } from "@/lib/auth";
-import * as crypto from "crypto";
+import { NextResponse } from "next/server";
+
+// Eazo 处理注册 — 此路由不使用
+export async function POST() {
+  return NextResponse.json({ error: "Use Eazo authentication" }, { status: 404 });
+}
+
+// 以下仅保留编译用占位，不执行
+const _x = null;
 import { v4 as uuidv4 } from "uuid";
 
 function hashPassword(password: string): string {
