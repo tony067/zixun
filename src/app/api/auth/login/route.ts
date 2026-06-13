@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
+import { sql } from "drizzle-orm";
 import { signToken } from "@/lib/auth";
 import * as crypto from "crypto";
 
 function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password + process.env.JWT_SECRET).digest("hex");
+  return crypto.createHash("sha256").update(password + (process.env.JWT_SECRET ?? "mindpace")).digest("hex");
 }
 
 export async function POST(req: NextRequest) {
@@ -14,12 +15,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "邮箱和密码不能为空" }, { status: 400 });
   }
 
-  const result = await db.execute(
-    "SELECT id, email, name, avatar_url, password_hash FROM users WHERE email = $1",
-    [email.toLowerCase()]
-  );
+  const rows = await db.execute(
+    sql`SELECT id, email, name, avatar_url, password_hash FROM users WHERE email = ${email.toLowerCase()}`
+  ) as unknown as Array<{ id: string; email: string; name: string; avatar_url: string; password_hash: string }>;
 
-  const user = (result as { rows: Array<{ id: string; email: string; name: string; avatar_url: string; password_hash: string }> }).rows[0];
+  const user = rows[0];
 
   if (!user) {
     return NextResponse.json({ error: "邮箱或密码不正确" }, { status: 401 });
