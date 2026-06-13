@@ -380,7 +380,7 @@ export function ExploreScreen() {
               {(user.name ?? user.email ?? "?")[0].toUpperCase()}
             </div>
           ) : (
-            <button onClick={() => auth.login()}
+            <button onClick={() => router.push("/login")}
               className="w-8 h-8 rounded-full text-[13px] font-semibold"
               style={{ background: "#9CB48A", color: "white", display:"flex", alignItems:"center", justifyContent:"center" }}>
               登录
