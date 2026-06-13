@@ -19,10 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@eazo/sdk": ["./src/lib/eazo-shim.ts"],
-      "@eazo/sdk/react": ["./src/lib/eazo-shim.ts"],
-      "@eazo/sdk/server": ["./src/lib/auth/index.ts"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
