@@ -2,7 +2,10 @@
  * MindPace 通知触发器 - 独立版本
  * 使用数据库存储通知，不依赖 Eazo 平台
  */
-import { db } from "@/lib/db/client";
+import postgres from "postgres";
+import { config } from "dotenv";
+config({ path: ".env" });
+const sql = postgres(process.env.DATABASE_URL ?? "postgresql://localhost:5432/mindpace_db");
 
 type NotifyPayload = {
   userId: string;
@@ -13,15 +16,11 @@ type NotifyPayload = {
 
 export async function notifyUser({ userId, title, body, data = {} }: NotifyPayload) {
   try {
-    // 独立版本：将通知存入数据库，用户下次登录时读取
-    await db.execute(
-      `INSERT INTO notifications (user_id, title, body, data, created_at, is_read)
-       VALUES ($1, $2, $3, $4, NOW(), false)
-       ON CONFLICT DO NOTHING`,
-      [userId, title, body, JSON.stringify(data)]
-    );
+    await sql`
+      INSERT INTO notifications (user_id, title, body, data, created_at, is_read)
+      VALUES (${userId}, ${title}, ${body}, ${JSON.stringify(data)}, NOW(), false)
+    `;
   } catch (e) {
-    // 通知失败不影响主流程
     console.error("[notify] failed:", e);
   }
 }
