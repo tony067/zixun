@@ -3,39 +3,6 @@
 export {};
 
 const AuthContext = createContext<AuthState>({
-  user: null,
-  token: null,
-  loading: true,
-  login: async () => {},
-  register: async () => {},
-  logout: () => {},
-  getSessionHeader: () => ({}),
-});
-
-export function StandaloneAuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<StandaloneUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("mindpace_token");
-    if (stored) {
-      setToken(stored);
-      // 解析 JWT payload
-      try {
-        const payload = JSON.parse(atob(stored.split(".")[1]));
-        setUser({
-          id: payload.sub,
-          email: payload.email,
-          name: payload.name,
-          avatarUrl: payload.avatarUrl,
-        });
-      } catch {
-        localStorage.removeItem("mindpace_token");
-      }
-    }
-    setLoading(false);
-  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await fetch("/api/auth/login", {
