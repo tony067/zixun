@@ -39,8 +39,10 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (!user) return;
-    request("/api/bookings/my").then(r => r.json()).then((d: { bookings?: Booking[] }) => {
-      setBookings(d.bookings ?? []);
+    request("/api/bookings/my").then(r => r.json()).then((d: Booking[] | { bookings?: Booking[] }) => {
+      // API 直接返回数组
+      const list = Array.isArray(d) ? d : (d.bookings ?? []);
+      setBookings(list);
     }).catch(() => {});
   }, [user]);
 
