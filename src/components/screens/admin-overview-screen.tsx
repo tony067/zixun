@@ -34,12 +34,15 @@ export default function AdminOverviewScreen() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
 
+  const user = useEazo((s) => s.auth.user);
+
   useEffect(() => {
+    if (!user) return;
     request("/api/admin/stats")
       .then(r => r.json())
       .then(d => { if (!d.error) setStats(d); })
       .catch(() => {});
-  }, []);
+  }, [user]);
 
   const fmt = (n: number) => n >= 10000 ? `${(n / 10000).toFixed(1)}万` : n.toLocaleString();
   const fmtMoney = (n: number) => n >= 10000 ? `¥${(n / 10000).toFixed(1)}万` : `¥${n.toLocaleString()}`;
