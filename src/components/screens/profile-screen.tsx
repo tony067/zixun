@@ -166,10 +166,12 @@ export default function ProfileScreen() {
           <div>
             {activeBookings.map((b) => {
               const st = STATUS_BADGE[b.status] ?? { label:b.status, color:"#9B8E82", bg:"#F5F0EA" };
+              const isPending = b.status === "pending" || b.status === "pending_confirmation";
               return (
-                <button key={b.id} onClick={() => router.push(`/my-bookings/${b.id}`)}
-                  className="w-full flex items-center gap-3 px-4 py-3 border-b last:border-0 text-left"
-                  style={{ borderColor:"#F5F0EA" }}>
+                <div key={b.id} className="border-b last:border-0" style={{ borderColor:"#F5F0EA" }}>
+                  <button onClick={() => router.push(`/my-bookings/${b.id}`)}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left"
+                    style={{ borderColor:"#F5F0EA" }}>
                   <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-none"
                     style={{ background:"var(--color-primary)" }}>
                     {b.counselor?.displayName?.[0] ?? "师"}
