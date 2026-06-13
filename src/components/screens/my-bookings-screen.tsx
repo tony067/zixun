@@ -70,7 +70,7 @@ function BookingCard({ b }: { b: Booking }) {
           </div>
         </div>
       </div>
-      {b.status === "pending_confirmation" && (
+      {(b.status === "pending_confirmation" || b.status === "pending") && (
         <button className="w-full mt-3 py-2.5 rounded-xl text-sm font-semibold border"
           style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}>取消预约</button>
       )}
