@@ -1,6 +1,4 @@
 "use client";
-import { auth } from "@eazo/sdk";
-
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ChevronDown, Clock, X } from "lucide-react";
