@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useEazo } from "@eazo/sdk/react";
+import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 
 /**
- * 独立版本：登录后同步用户 profile 到数据库
+ * 登录后同步用户 profile 到数据库
  */
 export function UserSyncEffect() {
-  const user = useEazo((s) => s.auth.user);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
