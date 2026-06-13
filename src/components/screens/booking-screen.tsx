@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEazo } from "@eazo/sdk/react";
+import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 import { StepBar } from "@/components/booking/StepBar";
 import { Step1Time } from "@/components/booking/Step1Time";
