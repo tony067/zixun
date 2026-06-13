@@ -166,10 +166,15 @@ export default function MyBookingsScreen() {
                 color: tab === t.key ? "white" : "#9B8E82",
               }}>
               {t.label}
-              {counts[t.key] > 0 && tab !== t.key && (
-                <span className="absolute -top-1.5 -right-0.5 w-4 h-4 rounded-full text-[10px] flex items-center justify-center text-white"
-                  style={{ background: "#E07B54" }}>{counts[t.key]}</span>
-              )}
+              {(() => {
+                const count = counts[t.key] ?? 0;
+                const seen = seenCounts[t.key] ?? 0;
+                const unread = Math.max(0, count - seen);
+                return unread > 0 && tab !== t.key ? (
+                  <span className="absolute -top-1.5 -right-0.5 w-4 h-4 rounded-full text-[10px] flex items-center justify-center text-white"
+                    style={{ background: "#E07B54" }}>{unread}</span>
+                ) : null;
+              })()}
             </button>
           ))}
         </div>
