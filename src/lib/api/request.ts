@@ -1,18 +1,15 @@
 /**
- * Drop-in replacement for `fetch` that automatically injects the Eazo session token.
+ * Drop-in replacement for `fetch`
+ * 自动从 localStorage 读取 JWT token 并注入 Authorization header
+ * 替换原来依赖 @eazo/sdk 的 auth.getToken() 实现
  */
-import { auth } from "@eazo/sdk";
+import { getStoredToken } from "@/contexts/auth-context";
 
 export async function request(
   input: RequestInfo | URL,
   init: RequestInit = {},
 ): Promise<Response> {
-  let token: string | null = null;
-  try {
-    token = await auth.getToken();
-  } catch {
-    // not authenticated or SDK not ready
-  }
+  const token = getStoredToken();
 
   const hasBody = init.body != null;
   return fetch(input, {
@@ -20,7 +17,7 @@ export async function request(
     headers: {
       ...(hasBody ? { "Content-Type": "application/json" } : {}),
       ...init.headers,
-      ...(token ? { "x-eazo-session": token } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 }
