@@ -47,7 +47,7 @@ export function UserBadge() {
       <button onClick={() => setOpen(!open)} className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
           style={{ background: "var(--color-primary, #6B8F5E)" }}>
-          {user.name?.[0] || user.email[0].toUpperCase()}
+          {user.name?.[0] || user.email?.[0]?.toUpperCase() || "U"}
         </div>
       </button>
       {open && (
