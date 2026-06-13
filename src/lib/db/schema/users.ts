@@ -8,6 +8,8 @@ export const users = pgTable(
     email: varchar("email", { length: 256 }).unique(),
     name: text("name"),
     avatarUrl: text("avatar_url"),
+    /** bcrypt hash，独立部署注册/登录使用；Eazo 平台迁入的老用户此字段为 null */
+    passwordHash: text("password_hash"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
