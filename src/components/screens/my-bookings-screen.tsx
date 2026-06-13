@@ -104,7 +104,7 @@ function BookingCard({ b }: { b: Booking }) {
 }
 
 export default function MyBookingsScreen() {
-  const user = useEazo((s) => s.auth.user);
+  const { user } = useAuth();
   const [tab, setTab] = useState(TABS[0].key);
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
