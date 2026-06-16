@@ -126,7 +126,9 @@ export default function AdminOverviewScreen() {
       <div className="px-5">
         <h2 className="text-sm font-semibold mb-3" style={{ color: "#5A4E44" }}>最近动态</h2>
         <div className="rounded-2xl overflow-hidden border" style={{ background: "white", borderColor: "#EBE7DF" }}>
-          {RECENT_ACTIONS.map((a, i) => (
+          {recentActions.length === 0 ? (
+            <p className="text-sm text-center py-8" style={{ color: "#C4BDB5" }}>暂无动态</p>
+          ) : recentActions.map((a, i) => (
             <button key={i} onClick={() => router.push(a.href)}
               className="w-full flex items-start gap-3 px-4 py-3.5 border-b last:border-0 text-left active:bg-gray-50"
               style={{ borderColor: "#F0EBE4" }}>
