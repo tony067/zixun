@@ -21,11 +21,7 @@ const SHORTCUTS = [
 type RecentAction = {
   time: string; text: string; href: string;
   type: "counselor" | "order" | "user"; targetId?: string;
-};
-
-const RECENT_ACTIONS: RecentAction[] = [
-  { time: "10分钟前", text: "新咨询师入驻申请等待审核", href: "/admin/counselors", type: "counselor" },
-  { time: "30分钟前", text: "来访者 #u_221 完成注册", href: "/admin/users", type: "user" },
+}; text: "来访者 #u_221 完成注册", href: "/admin/users", type: "user" },
   { time: "1小时前", text: "订单 #bk_002 等待来访支付", href: "/admin/orders/bk_002", type: "order", targetId: "bk_002" },
   { time: "2小时前", text: "咨询师档案审核通过上线", href: "/admin/counselors", type: "counselor" },
   { time: "3小时前", text: "订单 #bk_003 咨询已完成", href: "/admin/orders/bk_003", type: "order", targetId: "bk_003" },
