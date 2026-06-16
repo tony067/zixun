@@ -30,6 +30,7 @@ type RecentAction = {
 export default function AdminOverviewScreen() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
+  const [recentActions, setRecentActions] = useState<RecentAction[]>([]);
 
   const { user } = useAuth();
 
@@ -38,6 +39,10 @@ export default function AdminOverviewScreen() {
     request("/api/admin/stats")
       .then(r => r.json())
       .then(d => { if (!d.error) setStats(d); })
+      .catch(() => {});
+    request("/api/admin/recent-actions")
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d)) setRecentActions(d); })
       .catch(() => {});
   }, [user]);
 
