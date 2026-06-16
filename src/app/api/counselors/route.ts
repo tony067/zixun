@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCounselors, seedCounselors } from "@/lib/db/queries/counselors";
+import { getCounselors } from "@/lib/db/queries/counselors";
 
 export async function GET(req: NextRequest) {
   try {
-    await seedCounselors(); // idempotent — onConflictDoNothing
     const sp = req.nextUrl.searchParams;
     const list = await getCounselors({
       specialty: sp.get("specialty") ?? undefined,
