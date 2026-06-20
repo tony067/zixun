@@ -562,6 +562,14 @@ export function CounselorScheduleScreen() {
                 <button
                   disabled={addingDay}
                   onClick={async () => {
+                    // 去重：同一天同一时间段不能重复添加
+                    const duplicate = rules.some(r =>
+                      r.isSingle && r.singleDate === selectedDate && r.startTime === dayStartTime && r.durationMinutes === dayDuration
+                    );
+                    if (duplicate) {
+                      alert(`该天 ${dayStartTime} 已存在相同时间段，无需重复添加`);
+                      return;
+                    }
                     setAddingDay(true);
                     try {
                       await request("/api/counselor/schedule", {
