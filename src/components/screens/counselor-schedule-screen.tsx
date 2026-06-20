@@ -569,8 +569,8 @@ export function CounselorScheduleScreen() {
                         body: JSON.stringify({
                           type: "available",
                           isSingle: true,
-                          date: selectedDate,
-                          startTime: dayStartTime,
+                          singleDate: selectedDate,
+                          singleTime: dayStartTime,
                           durationMinutes: dayDuration,
                         }),
                       });
