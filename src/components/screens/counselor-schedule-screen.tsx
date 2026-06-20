@@ -620,6 +620,14 @@ function StatsPanel() {
             </div>
             <p className="text-xs mt-1.5" style={{ color: "#C4BDB5" }}>{s.desc} →</p>
           </button>
+        ))}
+      </div>,0.06)", border: "1px solid #EBE7DF" }}>
+            <div className="flex items-baseline gap-1">
+              <p className="text-2xl font-bold" style={{ color: "#2C2420" }}>{s.value}</p>
+              <p className="text-sm" style={{ color: "#9B8E82" }}>{s.unit}</p>
+            </div>
+            <p className="text-xs mt-1.5" style={{ color: "#C4BDB5" }}>{s.desc} →</p>
+          </button>
         ))}</svg>}
               {s.icon === "Clock" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
               {s.icon === "Users" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3"/><path d="M20 20c0-2.21-1.79-4-4-4"/><circle cx="9" cy="8" r="3"/><path d="M3 20c0-2.76 2.24-5 6-5h0c3.76 0 6 2.24 6 5"/></svg>}
