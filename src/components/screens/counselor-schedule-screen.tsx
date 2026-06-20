@@ -10,6 +10,7 @@ type Rule = {
   id: string; type: "available" | "blocked" | "fixed";
   mode: "recurring" | "single";
   weekdays?: number[] | string; date?: string; isSingle?: boolean;
+  singleDate?: string; singleTime?: string;
   startTime: string; durationMinutes: number;
   validFrom?: string; validUntil?: string;
   fixedClientId?: string; blockNote?: string;
