@@ -5,8 +5,8 @@ import { bookings } from "@/lib/db/schema/scheduling";
 import { counselors } from "@/lib/db/schema/counselors";
 
 export async function GET(req: NextRequest) {
-  const r = requireAuth(req);
-  if (!r.ok) return NextResponse.json({ error: "not logged in" }, { status: 401 });
+  const r = await requireAuth(req);
+  if (!r.ok) return r.response;
   const userId = r.user.id;
 
   const myBookings = await db.select({ id: bookings.id, clientId: bookings.clientId, status: bookings.status })
