@@ -627,23 +627,6 @@ function StatsPanel() {
 }
 
 function ClientsPanel() {
-  const router = useRouter();><path d="M3 20c0-2.76 2.24-5 6-5h0c3.76 0 6 2.24 6 5"/></svg>}
-              {s.icon === "TrendingUp" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><polyline points="22,7 13.5,15.5 8.5,10.5 2,17"/><polyline points="16,7 22,7 22,13"/></svg>}
-              <p className="text-xs" style={{ color: "#9B8E82" }}>{s.label}</p>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <p className="text-2xl font-bold" style={{ color: "#2C2420" }}>{s.value}</p>
-              <p className="text-sm" style={{ color: "#9B8E82" }}>{s.unit}</p>
-            </div>
-            <p className="text-xs mt-1.5" style={{ color: "#C4BDB5" }}>{s.desc} →</p>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ClientsPanel() {
   const router = useRouter();
   const { user } = useAuth();
   const [clients, setClients] = useState<{ id: string; name: string; sessions: number; completed: number; status: string }[]>([]);
