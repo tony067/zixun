@@ -103,7 +103,12 @@ function MonthCalendar({ rules, onDayClick }: { rules: Rule[], onDayClick: (date
           const style = status ? STATUS_STYLE[status] : null;
           return (
             <div key={day} className="flex flex-col items-center">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium"
+              <button
+                onClick={() => {
+                  const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+                  onDayClick(dateStr);
+                }}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium active:opacity-70"
                 style={{
                   background: style?.bg ?? (isToday ? "#EBE7DF" : "transparent"),
                   color: style?.text ?? "#2C2420",
