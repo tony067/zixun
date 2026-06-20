@@ -688,32 +688,4 @@ function ClientsPanel() {
       ))}
     </div>
   );
-}`/counselor/clients/${c.id}`)}
-          className="w-full rounded-2xl p-4 text-left"
-          style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base text-white flex-none"
-                style={{ background: COLORS[i % COLORS.length] }}>
-                {c.name.slice(0,1)}
-              </div>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>{c.name}</p>
-                <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>
-                  共 {c.sessions} 次 · 已完成 {c.completed} 次
-                </p>
-              </div>
-            </div>
-            <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${c.status === "active" ? "text-green-700 bg-green-50" : "text-gray-500 bg-gray-100"}`}>
-              {c.status === "active" ? "进行中" : "暂停"}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 text-xs" style={{ color: "#9B8E82" }}>
-            <CalendarDays className="w-3.5 h-3.5" />
-            <span>下次咨询: {c.next}</span>
-          </div>
-        </motion.button>
-      ))}
-    </div>
-  );
 }
