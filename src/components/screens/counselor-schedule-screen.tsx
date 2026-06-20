@@ -398,6 +398,12 @@ export function CounselorScheduleScreen() {
   const [rules, setRules] = useState<Rule[]>([]);
   const [saving, setSaving] = useState(false);
 
+  // 日历点击日期相关状态
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [dayStartTime, setDayStartTime] = useState("09:00");
+  const [dayDuration, setDayDuration] = useState(50);
+  const [addingDay, setAddingDay] = useState(false);
+
   const loadRules = useCallback(async () => {
     if (!user) return;
     try {
