@@ -79,14 +79,6 @@ function timeAgo(date: Date | string | null): string {
   const d = Math.floor(hr / 24);
   return `${d}天前`;
 }
-        time: timeAgo(c.createdAt),
-        text: `咨询师「${c.displayName}」提交入驻申请`,
-        href: "/admin/counselors",
-        type: "counselor",
-        targetId: c.id,
-        _ts: c.createdAt,
-      });
-    }
 
     // 最近5条订单
     const recentBookings = await db
