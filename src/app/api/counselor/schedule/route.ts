@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
     fixedClientId: body.fixedClientId || null,
     blockNote: body.blockNote || null,
     isSingle,
-    singleDate: isSingle ? (body.date || null) : null,
+    singleDate: isSingle ? (body.singleDate || body.date || null) : null,
+    singleTime: isSingle ? (body.singleTime || body.startTime || null) : null,
     isActive: true,
   });
   return NextResponse.json(rule, { status: 201 });
