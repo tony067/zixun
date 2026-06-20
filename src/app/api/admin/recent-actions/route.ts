@@ -79,9 +79,6 @@ function timeAgo(date: Date | string | null): string {
   const d = Math.floor(hr / 24);
   return `${d}天前`;
 }
-
-    for (const c of pendingCounselors) {
-      actions.push({
         time: timeAgo(c.createdAt),
         text: `咨询师「${c.displayName}」提交入驻申请`,
         href: "/admin/counselors",
