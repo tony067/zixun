@@ -80,34 +80,6 @@ function timeAgo(date: Date | string | null): string {
   return `${d}天前`;
 }
 
-        rejected: "订单已拒绝",
-      };
-      actions.push({
-        time: timeAgo(b.createdAt),
-        text: `订单 #${b.id.slice(-6)} ${statusText[b.status] ?? b.status}`,
-        href: `/admin/orders/${b.id}`,
-        type: "order",
-        targetId: b.id,
-        _ts: b.createdAt,
-      });
-    }
-
-    // 按时间排序，取最新10条
-    actions.sort((a, b) => new Date(b._ts ?? 0).getTime() - new Date(a._ts ?? 0).getTime());
-    const result = actions.slice(0, 10).map(({ _ts, ...rest }) => rest);
-
-    return NextResponse.json(result);
-  } catch (e) {
-    console.error("[recent-actions]", e);
-    return NextResponse.json([]);
-  }
-}
-
-function timeAgo(date: Date | string | null): string {
-  if (!date) return "";
-  const diff = Date.now() - new Date(date).getTime();
-  const min = Math.floor(diff / 60000);
-  if (min < 1) return "刚刚";
   if (min < 60) return `${min}分钟前`;
   const hr = Math.floor(min / 60);
   if (hr < 24) return `${hr}小时前`;
