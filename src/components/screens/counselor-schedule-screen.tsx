@@ -635,17 +635,60 @@ function StatsPanel() {
 
 function ClientsPanel() {
   const router = useRouter();
-  const MOCK = [
-    { id: "client_a", name: "张小明", sessions: 8, completed: 6, next: "周二 14:00", status: "active" },
-    { id: "client_b", name: "李晓芸", sessions: 3, completed: 3, next: "周四 10:00", status: "active" },
-    { id: "client_c", name: "王浩然", sessions: 12, completed: 12, next: "—",         status: "paused" },
-  ];
+  const { user } = useAuth();
+  const [clients, setClients] = useState<{ id: string; name: string; sessions: number; completed: number; status: string }[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    request("/api/counselor/bookings").then(r => r.json()).then(data => {
+      if (!Array.isArray(data)) return;
+      // 按来访者聚合
+      const map: Record<string, { id: string; name: string; sessions: number; completed: number; status: string }> = {};
+      for (const b of data) {
+        const cid = b.clientId ?? b.client_id ?? "";
+        const name = b.clientName ?? b.client_name ?? "来访者";
+        if (!map[cid]) map[cid] = { id: cid, name, sessions: 0, completed: 0, status: "active" };
+        map[cid].sessions++;
+        if (b.status === "completed") map[cid].completed++;
+      }
+      setClients(Object.values(map));
+    }).catch(() => {});
+  }, [user]);
+
   const COLORS = ["#9CB48A","#C4A882","#89B4C8"];
   return (
     <div className="px-5 py-4 space-y-3">
-      {MOCK.map((c, i) => (
+      {clients.length === 0 && (
+        <p className="text-sm text-center py-8" style={{ color: "#C4BDB5" }}>暂无来访档案</p>
+      )}
+      {clients.map((c, i) => (
         <motion.button key={c.id} whileTap={{ scale: 0.98 }}
           onClick={() => router.push(`/counselor/clients/${c.id}`)}
+          className="w-full rounded-2xl p-4 text-left"
+          style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-none"
+                style={{ background: COLORS[i % COLORS.length] }}>
+                {c.name.slice(0,1)}
+              </div>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>{c.name}</p>
+                <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>
+                  共 {c.sessions} 次 · 已完成 {c.completed} 次
+                </p>
+              </div>
+            </div>
+            <span className="text-xs px-2.5 py-1 rounded-full font-medium"
+              style={{ background: c.status === "active" ? "#E8F5E0" : "#F5F1E8", color: c.status === "active" ? "#3A6228" : "#9B8E82" }}>
+              {c.status === "active" ? "进行中" : "暂停"}
+            </span>
+          </div>
+        </motion.button>
+      ))}
+    </div>
+  );
+}`/counselor/clients/${c.id}`)}
           className="w-full rounded-2xl p-4 text-left"
           style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
           <div className="flex items-center justify-between mb-2">
