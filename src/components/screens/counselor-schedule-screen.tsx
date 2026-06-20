@@ -473,11 +473,119 @@ export function CounselorScheduleScreen() {
           {tab === "rules"
             ? <RulesPanel rules={rules} onAdd={handleAdd} onDelete={handleDelete} saving={saving} />
             : tab === "calendar"
-            ? <MonthCalendar rules={rules} />
+            ? <MonthCalendar rules={rules} onDayClick={(d) => { setSelectedDate(d); setDayStartTime("09:00"); setDayDuration(50); }} />
             : tab === "stats"
             ? <StatsPanel />
             : <ClientsPanel />}
         </motion.div>
+      </AnimatePresence>
+
+      {/* 点击日期弹出的底部面板 */}
+      <AnimatePresence>
+        {selectedDate && (
+          <>
+            <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setSelectedDate(null)} />
+            <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-hidden"
+              style={{ background: "#FDFBF7" }}
+              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
+              <div className="px-5 pt-5 pb-2 flex items-center justify-between">
+                <span className="text-base font-bold" style={{ color: "#2C2420" }}>
+                  {selectedDate} 档期
+                </span>
+                <button onClick={() => setSelectedDate(null)}>
+                  <ChevronRight size={20} className="rotate-90" style={{ color: "#9B8E82" }} />
+                </button>
+              </div>
+
+              {/* 该天已有的档期 */}
+              <div className="px-5 pb-2">
+                {rules.filter(r => {
+                  if (!r.isActive) return false;
+                  if (r.isSingle) return r.singleDate === selectedDate;
+                  const d = new Date(selectedDate);
+                  const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
+                  const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
+                    : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
+                  return wds.includes(wd);
+                }).length === 0 ? (
+                  <p className="text-sm py-2" style={{ color: "#9B8E82" }}>该天暂无档期规则，可在下方添加单次档期</p>
+                ) : (
+                  rules.filter(r => {
+                    if (!r.isActive) return false;
+                    if (r.isSingle) return r.singleDate === selectedDate;
+                    const d = new Date(selectedDate);
+                    const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
+                    const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
+                      : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
+                    return wds.includes(wd);
+                  }).map((r, i) => (
+                    <div key={i} className="flex items-center justify-between py-2 border-b" style={{ borderColor: "#EBE7DF" }}>
+                      <span className="text-sm" style={{ color: "#2C2420" }}>
+                        {r.isSingle ? `${r.singleTime} · ${r.durationMinutes}分钟` : `${r.startTime} · ${r.durationMinutes}分钟 · 循环`}
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full" style={{
+                        background: r.type === "available" ? "#D1FAE5" : r.type === "blocked" ? "#FEE2E2" : "#FEF3C7",
+                        color: r.type === "available" ? "#065F46" : r.type === "blocked" ? "#991B1B" : "#92400E"
+                      }}>
+                        {r.type === "available" ? "可预约" : r.type === "blocked" ? "已屏蔽" : "固定"}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* 新增单次档期 */}
+              <div className="px-5 pb-4 pt-2">
+                <p className="text-xs font-semibold mb-3" style={{ color: "#7D736A" }}>新增该天单次可预约档期</p>
+                <div className="flex gap-3 mb-3">
+                  <div className="flex-1">
+                    <label className="text-xs" style={{ color: "#9B8E82" }}>开始时间</label>
+                    <select value={dayStartTime} onChange={e => setDayStartTime(e.target.value)}
+                      className="w-full mt-1 px-3 py-2 rounded-xl text-sm outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
+                      {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs" style={{ color: "#9B8E82" }}>时长（分钟）</label>
+                    <select value={dayDuration} onChange={e => setDayDuration(Number(e.target.value))}
+                      className="w-full mt-1 px-3 py-2 rounded-xl text-sm outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
+                      {[25, 50, 60, 90, 120].map(d => <option key={d} value={d}>{d}分钟</option>)}
+                    </select>
+                  </div>
+                </div>
+                <button
+                  disabled={addingDay}
+                  onClick={async () => {
+                    setAddingDay(true);
+                    try {
+                      await request("/api/counselor/schedule", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          type: "available",
+                          isSingle: true,
+                          singleDate: selectedDate,
+                          singleTime: dayStartTime,
+                          durationMinutes: dayDuration,
+                        }),
+                      });
+                      await loadRules();
+                      setSelectedDate(null);
+                    } finally { setAddingDay(false); }
+                  }}
+                  className="w-full py-3 rounded-2xl text-sm font-semibold text-white"
+                  style={{ background: addingDay ? "#C0B8B0" : "#9CB48A" }}>
+                  {addingDay ? "保存中…" : "添加这个时间段"}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
       </AnimatePresence>
     </div>
   );
