@@ -47,7 +47,7 @@ function MonthCalendar({ rules, onDayClick }: { rules: Rule[], onDayClick: (date
         : typeof r.weekdays === "string" && r.weekdays
           ? r.weekdays.split(",").map(Number)
           : [];
-      if (r.isSingle) return (r as any).singleDate === dateStr;
+      if (r.isSingle) return r.date === dateStr;
       // recurring
       const from = r.validFrom ? new Date(r.validFrom) : null;
       const until = r.validUntil ? new Date(r.validUntil) : null;
@@ -569,8 +569,8 @@ export function CounselorScheduleScreen() {
                         body: JSON.stringify({
                           type: "available",
                           isSingle: true,
-                          singleDate: selectedDate,
-                          singleTime: dayStartTime,
+                          date: selectedDate,
+                          startTime: dayStartTime,
                           durationMinutes: dayDuration,
                         }),
                       });
