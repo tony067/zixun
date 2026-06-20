@@ -80,9 +80,3 @@ function timeAgo(date: Date | string | null): string {
   return `${d}天前`;
 }
 
-  if (min < 60) return `${min}分钟前`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}小时前`;
-  const d = Math.floor(hr / 24);
-  return `${d}天前`;
-}
