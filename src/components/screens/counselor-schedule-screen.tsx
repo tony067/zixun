@@ -20,7 +20,7 @@ const WEEKDAY_LABELS = ["一","二","三","四","五","六","日"];
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2,"0")}:00`);
 
 // ── 月视图日历 ────────────────────────────────────────────────────────────────
-function MonthCalendar({ rules }: { rules: Rule[] }) {
+function MonthCalendar({ rules, onDayClick }: { rules: Rule[], onDayClick: (dateStr: string) => void }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
