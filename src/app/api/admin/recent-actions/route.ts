@@ -80,20 +80,6 @@ function timeAgo(date: Date | string | null): string {
   return `${d}天前`;
 }
 
-    // 最近5条订单
-    const recentBookings = await db
-      .select({ id: bookings.id, status: bookings.status, createdAt: bookings.createdAt })
-      .from(bookings)
-      .orderBy(require("drizzle-orm").desc(bookings.createdAt))
-      .limit(5);
-
-    for (const b of recentBookings) {
-      const statusText: Record<string, string> = {
-        pending_confirmation: "等待咨询师确认",
-        pending_payment: "等待来访支付",
-        paid: "已支付待咨询",
-        completed: "咨询已完成",
-        cancelled: "订单已取消",
         rejected: "订单已拒绝",
       };
       actions.push({
