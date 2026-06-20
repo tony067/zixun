@@ -504,7 +504,7 @@ export function CounselorScheduleScreen() {
               <div className="px-5 pb-2">
                 {rules.filter(r => {
                   if (!r.isActive) return false;
-                  if (r.isSingle) return r.singleDate === selectedDate;
+                  if (r.isSingle) return r.date === selectedDate;
                   const d = new Date(selectedDate);
                   const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
                   const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
@@ -515,7 +515,7 @@ export function CounselorScheduleScreen() {
                 ) : (
                   rules.filter(r => {
                     if (!r.isActive) return false;
-                    if (r.isSingle) return r.singleDate === selectedDate;
+                    if (r.isSingle) return r.date === selectedDate;
                     const d = new Date(selectedDate);
                     const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
                     const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
@@ -524,7 +524,7 @@ export function CounselorScheduleScreen() {
                   }).map((r, i) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b" style={{ borderColor: "#EBE7DF" }}>
                       <span className="text-sm" style={{ color: "#2C2420" }}>
-                        {r.isSingle ? `${r.singleTime} · ${r.durationMinutes}分钟` : `${r.startTime} · ${r.durationMinutes}分钟 · 循环`}
+                        {r.isSingle ? `${r.startTime} · ${r.durationMinutes}分钟` : `${r.startTime} · ${r.durationMinutes}分钟 · 循环`}
                       </span>
                       <span className="text-xs px-2 py-0.5 rounded-full" style={{
                         background: r.type === "available" ? "#D1FAE5" : r.type === "blocked" ? "#FEE2E2" : "#FEF3C7",
