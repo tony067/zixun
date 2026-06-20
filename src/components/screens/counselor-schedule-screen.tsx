@@ -116,7 +116,7 @@ function MonthCalendar({ rules, onDayClick }: { rules: Rule[], onDayClick: (date
                   border: isToday && !style ? "2px solid #9CB48A" : "none",
                 }}>
                 {day}
-              </div>
+              </button>
             </div>
           );
         })}
