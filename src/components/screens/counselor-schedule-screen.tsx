@@ -47,7 +47,7 @@ function MonthCalendar({ rules, onDayClick }: { rules: Rule[], onDayClick: (date
         : typeof r.weekdays === "string" && r.weekdays
           ? r.weekdays.split(",").map(Number)
           : [];
-      if (r.isSingle) return r.date === dateStr;
+      if (r.isSingle) return r.singleDate === dateStr;
       // recurring
       const from = r.validFrom ? new Date(r.validFrom) : null;
       const until = r.validUntil ? new Date(r.validUntil) : null;
@@ -504,7 +504,7 @@ export function CounselorScheduleScreen() {
               <div className="px-5 pb-2">
                 {rules.filter(r => {
                   if (!r.isActive) return false;
-                  if (r.isSingle) return r.date === selectedDate;
+                  if (r.isSingle) return r.singleDate === selectedDate;
                   const d = new Date(selectedDate);
                   const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
                   const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
@@ -515,7 +515,7 @@ export function CounselorScheduleScreen() {
                 ) : (
                   rules.filter(r => {
                     if (!r.isActive) return false;
-                    if (r.isSingle) return r.date === selectedDate;
+                    if (r.isSingle) return r.singleDate === selectedDate;
                     const d = new Date(selectedDate);
                     const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
                     const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
