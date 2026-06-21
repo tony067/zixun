@@ -159,16 +159,7 @@ function MonthCalendar({ rules, onDayClick, onSlotClick }: {
 
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
-function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
-
-  function getDayStatus(day: number): "available" | "blocked" | "fixed" | "mixed" | null {
-    const date = new Date(year, month, day);
-    const jsDay = date.getDay();
-    const weekday = jsDay === 0 ? 6 : jsDay - 1;
-    const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-    const matched = rules.filter(r => {
-      if (!r.isActive) return false;
-      // weekdays 可能是 "0,2,4" 字符串或数字数组，统一解析
+function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {，统一解析
       const wdArr: number[] = Array.isArray(r.weekdays)
         ? r.weekdays
         : typeof r.weekdays === "string" && r.weekdays
