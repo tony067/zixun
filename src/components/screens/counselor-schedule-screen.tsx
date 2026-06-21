@@ -161,13 +161,10 @@ function MonthCalendar({ rules, onDayClick, onSlotClick }: {
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {，统一解析
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
-function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) { className="px-4 pt-4 pb-6"
-      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={e => {
-        const diff = e.changedTouches[0].clientX - touchStartX.current;
-        if (diff > 50) prevMonth();
-        else if (diff < -50) nextMonth();
-      }}>
+function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
+  const typeColors = {
+    available: { bg: "#E4F0DC", text: "#3A6228", icon: <Check className="w-3 h-3" /> },
+    blocked:   { bg: "#FEE2E2", text: "#991B1B", icon: <Lock className="w-3 h-3" /> },
       <div className="flex items-center justify-between mb-5">
         <motion.button whileTap={{ scale: 0.9 }}
           onClick={prevMonth}
