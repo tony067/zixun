@@ -165,7 +165,7 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
             <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "#EBE7DF", color: "#7D736A" }}>单次</span>
           )}
         </div>
-        <p className="text-sm font-medium text-[#2C2420]">{dayStr} · {rule.startTime}（{rule.durationMinutes} 分钟）</p>
+        <p className="text-sm font-medium text-[#2C2420]">{dayStr} · {timeStr}（{rule.durationMinutes} 分钟）</p>
         {!rule.isSingle && rule.validFrom && (
           <p className="text-xs text-[#9B8E82] mt-0.5">{rule.validFrom} 起{rule.validUntil ? ` 至 ${rule.validUntil}` : "（长期）"}</p>
         )}
