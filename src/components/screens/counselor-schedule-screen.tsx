@@ -20,11 +20,144 @@ type Rule = {
 const WEEKDAY_LABELS = ["一","二","三","四","五","六","日"];
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2,"0")}:00`);
 
-// ── 月视图日历 ────────────────────────────────────────────────────────────────
-function MonthCalendar({ rules, onDayClick }: { rules: Rule[], onDayClick: (dateStr: string) => void }) {
+// ── 月视图日历（展开式，每天显示时间格）─────────────────────────────────────
+function MonthCalendar({ rules, onDayClick, onSlotClick }: {
+  rules: Rule[];
+  onDayClick: (dateStr: string) => void;
+  onSlotClick: (rule: Rule, dateStr: string) => void;
+}) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
+
+  // 只允许未来3个月（含本月）
+  const minYear = today.getFullYear();
+  const minMonth = today.getMonth();
+  const maxDate = new Date(today.getFullYear(), today.getMonth() + 3, 0);
+  const maxYear = maxDate.getFullYear();
+  const maxMonth = maxDate.getMonth();
+
+  const canPrev = !(year === minYear && month === minMonth);
+  const canNext = !(year === maxYear && month === maxMonth);
+
+  const prevMonth = () => {
+    if (!canPrev) return;
+    if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1);
+  };
+  const nextMonth = () => {
+    if (!canNext) return;
+    if (month === 11) { setMonth(0); setYear(y => y + 1); } else setMonth(m => m + 1);
+  };
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const firstDayMon = firstDay === 0 ? 6 : firstDay - 1;
+  const monthName = new Date(year, month, 1).toLocaleDateString("zh-CN", { year: "numeric", month: "long" });
+
+  // 获取某天匹配的所有规则（含循环和单次）
+  function getDaySlots(day: number): Rule[] {
+    const date = new Date(year, month, day);
+    const jsDay = date.getDay();
+    const weekday = jsDay === 0 ? 6 : jsDay - 1;
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    return rules.filter(r => {
+      if (!r.isActive) return false;
+      if (r.isSingle) return r.singleDate === dateStr;
+      const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
+        : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
+      return wds.includes(weekday);
+    }).sort((a, b) => {
+      const ta = (a.isSingle ? a.singleTime : a.startTime) ?? "";
+      const tb = (b.isSingle ? b.singleTime : b.startTime) ?? "";
+      return ta.localeCompare(tb);
+    });
+  }
+
+  const TYPE_COLOR: Record<string, { bg: string; text: string; label: string }> = {
+    available: { bg: "#9CB48A", text: "white", label: "可预约" },
+    blocked:   { bg: "#E8A0A0", text: "white", label: "屏蔽" },
+    fixed:     { bg: "#F4C97A", text: "#2C2420", label: "固定" },
+  };
+
+  return (
+    <div className="px-4 pb-4">
+      {/* 月份导航 */}
+      <div className="flex items-center justify-between mb-4">
+        <motion.button whileTap={{ scale: 0.9 }} onClick={prevMonth}
+          className="w-8 h-8 rounded-xl flex items-center justify-center"
+          style={{ background: canPrev ? "#EBE7DF" : "transparent", opacity: canPrev ? 1 : 0.3 }}>
+          <ChevronRight size={16} className="rotate-180 text-[#6B5E52]" />
+        </motion.button>
+        <span className="text-sm font-bold" style={{ color: "#2C2420" }}>{monthName}</span>
+        <motion.button whileTap={{ scale: 0.9 }} onClick={nextMonth}
+          className="w-8 h-8 rounded-xl flex items-center justify-center"
+          style={{ background: canNext ? "#EBE7DF" : "transparent", opacity: canNext ? 1 : 0.3 }}>
+          <ChevronRight size={16} className="text-[#6B5E52]" />
+        </motion.button>
+      </div>
+
+      {/* 星期标题 */}
+      <div className="grid grid-cols-7 mb-2">
+        {WEEKDAY_LABELS.map(d => (
+          <div key={d} className="text-center text-[11px] font-semibold" style={{ color: "#9B8E82" }}>{d}</div>
+        ))}
+      </div>
+
+      {/* 日期格 */}
+      <div className="grid grid-cols-7 gap-1">
+        {Array.from({ length: firstDayMon }).map((_, i) => <div key={`e${i}`} />)}
+        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+          const slots = getDaySlots(day);
+          const isToday = year === today.getFullYear() && month === today.getMonth() && day === today.getDate();
+          const isPast = new Date(year, month, day) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+          return (
+            <div key={day} className="rounded-xl overflow-hidden" style={{ border: isToday ? "2px solid #9CB48A" : "1px solid #EBE7DF", background: isPast ? "#FAF8F4" : "white", opacity: isPast ? 0.6 : 1 }}>
+              {/* 日期数字 + 点击新增 */}
+              <button onClick={() => !isPast && onDayClick(dateStr)}
+                className="w-full flex items-center justify-center py-1"
+                style={{ background: isToday ? "#F0F7EC" : "transparent" }}>
+                <span className="text-xs font-bold" style={{ color: isToday ? "#3A6228" : "#2C2420" }}>{day}</span>
+              </button>
+              {/* 时间格列表 */}
+              <div className="px-0.5 pb-0.5 space-y-0.5">
+                {slots.map((r, i) => {
+                  const time = r.isSingle ? r.singleTime : r.startTime;
+                  const color = TYPE_COLOR[r.type] ?? TYPE_COLOR.available;
+                  return (
+                    <button key={i} onClick={() => onSlotClick(r, dateStr)}
+                      className="w-full text-left rounded-md px-1 py-0.5 text-[9px] leading-tight font-medium truncate"
+                      style={{ background: color.bg, color: color.text }}>
+                      {time}{r.isSingle ? "" : " ↺"}
+                    </button>
+                  );
+                })}
+                {!isPast && (
+                  <button onClick={() => onDayClick(dateStr)}
+                    className="w-full text-center rounded-md py-0.5 text-[9px]"
+                    style={{ color: "#C4BDB5" }}>＋</button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 图例 */}
+      <div className="flex gap-4 mt-4 justify-center">
+        {Object.entries(TYPE_COLOR).map(([k, v]) => (
+          <div key={k} className="flex items-center gap-1">
+            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: v.bg }} />
+            <span className="text-[10px]" style={{ color: "#9B8E82" }}>{v.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
   const touchStartX = useRef(0);
 
   const prevMonth = () => { if (month === 0) { setMonth(11); setYear(y => y-1); } else setMonth(m => m-1); };
