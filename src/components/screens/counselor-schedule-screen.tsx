@@ -427,6 +427,9 @@ export function CounselorScheduleScreen() {
 
   // 日历点击日期相关状态
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  // 时间格修改弹窗
+  const [editingSlot, setEditingSlot] = useState<{ rule: Rule; dateStr: string } | null>(null);
+  const [editType, setEditType] = useState<"available" | "blocked" | "fixed">("available");
   const [dayType, setDayType] = useState<"available" | "blocked" | "fixed">("available");
   const [dayStartTime, setDayStartTime] = useState("09:00");
   const [dayDuration, setDayDuration] = useState(50);
