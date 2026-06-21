@@ -647,60 +647,6 @@ export function CounselorScheduleScreen() {
                 )}
               </div>
 
-              {/* 新增单次档期 */}
-              <div className="px-5 pb-4 pt-2">
-                <p className="text-xs font-semibold mb-3" style={{ color: "#7D736A" }}>新增该天单次可预约档期</p>
-                <div className="flex gap-3 mb-3">
-                  <div className="flex-1">
-                    <label className="text-xs" style={{ color: "#9B8E82" }}>开始时间</label>
-                    <select value={dayStartTime} onChange={e => setDayStartTime(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 rounded-xl text-sm outline-none"
-                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
-                      {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
-                    </select>
-                  </div>
-                  <div className="flex-1">
-                    <label className="text-xs" style={{ color: "#9B8E82" }}>时长（分钟）</label>
-                    <select value={dayDuration} onChange={e => setDayDuration(Number(e.target.value))}
-                      className="w-full mt-1 px-3 py-2 rounded-xl text-sm outline-none"
-                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
-                      {[25, 50, 60, 90, 120].map(d => <option key={d} value={d}>{d}分钟</option>)}
-                    </select>
-                  </div>
-                </div>
-                <button
-                  disabled={addingDay}
-                  onClick={async () => {
-                    // 去重：同一天同一时间段不能重复添加
-                    const duplicate = rules.some(r =>
-                      r.isSingle && r.singleDate === selectedDate && r.startTime === dayStartTime && r.durationMinutes === dayDuration
-                    );
-                    if (duplicate) {
-                      alert(`该天 ${dayStartTime} 已存在相同时间段，无需重复添加`);
-                      return;
-                    }
-                    setAddingDay(true);
-                    try {
-                      await request("/api/counselor/schedule", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          type: "available",
-                          isSingle: true,
-                          singleDate: selectedDate,
-                          singleTime: dayStartTime,
-                          durationMinutes: dayDuration,
-                        }),
-                      });
-                      await loadRules();
-                      setSelectedDate(null);
-                    } finally { setAddingDay(false); }
-                  }}
-                  className="w-full py-3 rounded-2xl text-sm font-semibold text-white"
-                  style={{ background: addingDay ? "#C0B8B0" : "#9CB48A" }}>
-                  {addingDay ? "保存中…" : "添加这个时间段"}
-                </button>
-              </div>
             </motion.div>
           </>
         )}
