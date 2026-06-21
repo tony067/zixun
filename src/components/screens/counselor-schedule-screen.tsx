@@ -546,7 +546,10 @@ export function CounselorScheduleScreen() {
                           });
                           await loadRules();
                         }} className="ml-3 text-xs px-2.5 py-1 rounded-lg flex-shrink-0"
-                        style={{ background: "#FEE2E2", color: "#EF4444" }}>删除</button>
+                          style={{ background: "#FEE2E2", color: "#EF4444" }}>删除</button>
+                      ) : (
+                        <span className="ml-3 text-xs flex-shrink-0" style={{ color: "#C4BDB5" }}>循环规则↑</span>
+                      )}
                     </div>
                   ))
                 )}
