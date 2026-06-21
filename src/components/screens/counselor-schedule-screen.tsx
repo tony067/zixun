@@ -831,22 +831,7 @@ export function CounselorScheduleScreen() {
 
       {/* 时间格修改弹窗 */}
       <AnimatePresence>
-              onClick={() => setSelectedDate(null)} />
-            <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-hidden"
-              style={{ background: "#FDFBF7" }}
-              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
-              <div className="px-5 pt-5 pb-2 flex items-center justify-between">
-                <span className="text-base font-bold" style={{ color: "#2C2420" }}>
-                  {selectedDate} 档期
-                </span>
-                <button onClick={() => setSelectedDate(null)}>
-                  <ChevronRight size={20} className="rotate-90" style={{ color: "#9B8E82" }} />
-                </button>
-              </div>
-
-              {/* 该天已有的档期 */}
-              <div className="px-5 pb-2 max-h-48 overflow-y-auto">
+        {editingSlot && (
                 {rules.filter(r => {
                   if (!r.isActive) return false;
                   if (r.isSingle) return r.singleDate === selectedDate;
