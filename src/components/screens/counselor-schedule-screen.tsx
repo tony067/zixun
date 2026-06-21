@@ -624,22 +624,6 @@ export function CounselorScheduleScreen() {
                   {addingDay ? "保存中…" : "添加这个时间段"}
                 </button>
               </div>
-                    return wds.includes(wd);
-                  }).map((r, i) => (
-                    <div key={i} className="flex items-center justify-between py-2 border-b" style={{ borderColor: "#EBE7DF" }}>
-                      <span className="text-sm" style={{ color: "#2C2420" }}>
-                        {r.isSingle ? `${r.startTime} · ${r.durationMinutes}分钟` : `${r.startTime} · ${r.durationMinutes}分钟 · 循环`}
-                      </span>
-                      <span className="text-xs px-2 py-0.5 rounded-full" style={{
-                        background: r.type === "available" ? "#D1FAE5" : r.type === "blocked" ? "#FEE2E2" : "#FEF3C7",
-                        color: r.type === "available" ? "#065F46" : r.type === "blocked" ? "#991B1B" : "#92400E"
-                      }}>
-                        {r.type === "available" ? "可预约" : r.type === "blocked" ? "已屏蔽" : "固定"}
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
 
             </motion.div>
           </>
