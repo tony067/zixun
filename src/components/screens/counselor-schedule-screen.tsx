@@ -168,26 +168,7 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
     fixed:     { bg: "#FEF3C7", text: "#92400E", icon: <Repeat className="w-3 h-3" /> },
   };
       <div className="grid grid-cols-7 gap-y-1.5">
-        {Array.from({ length: firstDayMon }).map((_, i) => <div key={`e${i}`} />)}
-        {Array.from({ length: daysInMonth }).map((_, i) => {
-          const day = i + 1;
-          const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-          const status = getDayStatus(day);
-          const style = status ? STATUS_STYLE[status] : null;
-          return (
-            <div key={day} className="flex flex-col items-center">
-              <button
-                onClick={() => {
-                  const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-                  onDayClick(dateStr);
-                }}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium active:opacity-70"
-                style={{
-                  background: style?.bg ?? (isToday ? "#EBE7DF" : "transparent"),
-                  color: style?.text ?? "#2C2420",
-                  fontWeight: isToday ? 700 : 500,
-                  border: isToday && !style ? "2px solid #9CB48A" : "none",
-                }}>
+  const c = typeColors[rule.type];>
                 {day}
               </button>
             </div>
