@@ -165,24 +165,8 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
   const typeColors = {
     available: { bg: "#E4F0DC", text: "#3A6228", icon: <Check className="w-3 h-3" /> },
     blocked:   { bg: "#FEE2E2", text: "#991B1B", icon: <Lock className="w-3 h-3" /> },
-      <div className="flex items-center justify-between mb-5">
-        <motion.button whileTap={{ scale: 0.9 }}
-          onClick={prevMonth}
-          className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
-          <ChevronLeft className="w-4 h-4 text-[#6B5E52]" />
-        </motion.button>
-        <span className="text-base font-bold text-[#2C2420]">{monthName}</span>
-        <motion.button whileTap={{ scale: 0.9 }}
-          onClick={nextMonth}
-          className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
-          <ChevronRight className="w-4 h-4 text-[#6B5E52]" />
-        </motion.button>
-      </div>
-      <div className="grid grid-cols-7 mb-2">
-        {WEEKDAY_LABELS.map(d => (
-          <div key={d} className="text-center text-[11px] font-semibold text-[#9B8E82]">{d}</div>
-        ))}
-      </div>
+    fixed:     { bg: "#FEF3C7", text: "#92400E", icon: <Repeat className="w-3 h-3" /> },
+  };
       <div className="grid grid-cols-7 gap-y-1.5">
         {Array.from({ length: firstDayMon }).map((_, i) => <div key={`e${i}`} />)}
         {Array.from({ length: daysInMonth }).map((_, i) => {
