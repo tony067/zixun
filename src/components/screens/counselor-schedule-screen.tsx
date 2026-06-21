@@ -402,8 +402,11 @@ export function CounselorScheduleScreen() {
 
   // 日历点击日期相关状态
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [dayType, setDayType] = useState<"available" | "blocked" | "fixed">("available");
   const [dayStartTime, setDayStartTime] = useState("09:00");
   const [dayDuration, setDayDuration] = useState(50);
+  const [dayBlockNote, setDayBlockNote] = useState("");
+  const [dayFixedClientId, setDayFixedClientId] = useState("");
   const [addingDay, setAddingDay] = useState(false);
 
   const loadRules = useCallback(async () => {
