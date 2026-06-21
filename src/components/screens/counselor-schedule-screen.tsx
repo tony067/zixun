@@ -405,7 +405,6 @@ export function CounselorScheduleScreen() {
   const [dayType, setDayType] = useState<"available" | "blocked" | "fixed">("available");
   const [dayStartTime, setDayStartTime] = useState("09:00");
   const [dayDuration, setDayDuration] = useState(50);
-  const [dayBlockNote, setDayBlockNote] = useState("");
   const [dayFixedClientId, setDayFixedClientId] = useState("");
   const [addingDay, setAddingDay] = useState(false);
 
@@ -506,7 +505,7 @@ export function CounselorScheduleScreen() {
               </div>
 
               {/* 该天已有的档期 */}
-              <div className="px-5 pb-2 max-h-40 overflow-y-auto">
+              <div className="px-5 pb-2 max-h-48 overflow-y-auto">
                 {rules.filter(r => {
                   if (!r.isActive) return false;
                   if (r.isSingle) return r.singleDate === selectedDate;
@@ -527,19 +526,26 @@ export function CounselorScheduleScreen() {
                       : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
                     return wds.includes(wd);
                   }).map((r, i) => (
-                    <div key={i} className="flex items-center justify-between py-2 border-b" style={{ borderColor: "#EBE7DF" }}>
-                      <span className="text-sm" style={{ color: "#2C2420" }}>
-                        {r.isSingle ? `${r.singleTime} · ${r.durationMinutes}分钟` : `${r.startTime} · ${r.durationMinutes}分钟 · 循环`}
-                        <span className="ml-1.5 text-xs" style={{ color: r.type === "blocked" ? "#EF4444" : r.type === "fixed" ? "#F59E0B" : "#9CB48A" }}>
-                          {r.type === "blocked" ? "屏蔽" : r.type === "fixed" ? "固定" : "可预约"}
+                    <div key={i} className="flex items-center justify-between py-2.5 border-b" style={{ borderColor: "#EBE7DF" }}>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm" style={{ color: "#2C2420" }}>
+                          {r.isSingle ? r.singleTime : r.startTime} · {r.durationMinutes}分钟
+                          {!r.isSingle && <span className="ml-1 text-xs" style={{ color: "#C4BDB5" }}>循环</span>}
+                        </p>
+                        <span className="text-xs" style={{ color: r.type === "blocked" ? "#EF4444" : r.type === "fixed" ? "#F59E0B" : "#9CB48A" }}>
+                          {r.type === "blocked" ? "屏蔽时段" : r.type === "fixed" ? "固定档期" : "可预约"}
                         </span>
-                      </span>
-                      {r.isSingle && (
-                        <button onClick={async () => {
-                          await request("/api/counselor/schedule", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: r.id }) });
-                          await loadRules();
-                        }} className="text-xs px-2 py-0.5 rounded-lg" style={{ background: "#FEE2E2", color: "#EF4444" }}>删除</button>
-                      )}
+                      </div>
+                      <button onClick={async () => {
+                        if (!confirm(`确认删除该条档期规则？`)) return;
+                        await request("/api/counselor/schedule", {
+                          method: "DELETE",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ id: r.id }),
+                        });
+                        await loadRules();
+                      }} className="ml-3 text-xs px-2.5 py-1 rounded-lg flex-shrink-0"
+                        style={{ background: "#FEE2E2", color: "#EF4444" }}>删除</button>
                     </div>
                   ))
                 )}
@@ -577,16 +583,6 @@ export function CounselorScheduleScreen() {
                     </select>
                   </div>
                 </div>
-                {/* 屏蔽备注 */}
-                {dayType === "blocked" && (
-                  <div>
-                    <p className="text-xs mb-1" style={{ color: "#9B8E82" }}>屏蔽原因（选填）</p>
-                    <input value={dayBlockNote} onChange={e => setDayBlockNote(e.target.value)}
-                      placeholder="如：出差、休假…"
-                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
-                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
-                  </div>
-                )}
                 {/* 固定来访 */}
                 {dayType === "fixed" && (
                   <div>
@@ -615,12 +611,10 @@ export function CounselorScheduleScreen() {
                           singleDate: selectedDate,
                           singleTime: dayStartTime,
                           durationMinutes: dayDuration,
-                          blockNote: dayType === "blocked" ? dayBlockNote : undefined,
                           fixedClientId: dayType === "fixed" ? dayFixedClientId : undefined,
                         }),
                       });
                       await loadRules();
-                      setDayBlockNote("");
                       setDayFixedClientId("");
                       setSelectedDate(null);
                     } finally { setAddingDay(false); }
