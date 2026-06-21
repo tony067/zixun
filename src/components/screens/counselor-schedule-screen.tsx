@@ -829,9 +829,8 @@ export function CounselorScheduleScreen() {
         )}
       </AnimatePresence>
 
-          <>
-            <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      {/* 时间格修改弹窗 */}
+      <AnimatePresence>
               onClick={() => setSelectedDate(null)} />
             <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-hidden"
               style={{ background: "#FDFBF7" }}
