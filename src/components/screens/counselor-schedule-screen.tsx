@@ -160,34 +160,8 @@ function MonthCalendar({ rules, onDayClick, onSlotClick }: {
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {，统一解析
-      const wdArr: number[] = Array.isArray(r.weekdays)
-        ? r.weekdays
-        : typeof r.weekdays === "string" && r.weekdays
-          ? r.weekdays.split(",").map(Number)
-          : [];
-      if (r.isSingle) return r.singleDate === dateStr;
-      // recurring
-      const from = r.validFrom ? new Date(r.validFrom) : null;
-      const until = r.validUntil ? new Date(r.validUntil) : null;
-      if (from && date < from) return false;
-      if (until && date > until) return false;
-      return wdArr.includes(weekday);
-    });
-    if (matched.length === 0) return null;
-    const types = [...new Set(matched.map(r => r.type))];
-    if (types.length > 1) return "mixed";
-    return types[0];
-  }
-
-  const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-    available: { bg: "#9CB48A", text: "white", label: "可预约" },
-    blocked:   { bg: "#E8A0A0", text: "white", label: "已屏蔽" },
-    fixed:     { bg: "#F4C97A", text: "#2C2420", label: "固定档期" },
-    mixed:     { bg: "#B0C4DE", text: "white", label: "混合" },
-  };
-
-  return (
-    <div className="px-4 pt-4 pb-6"
+// ── 规则卡片 ──────────────────────────────────────────────────────────────────
+function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) { className="px-4 pt-4 pb-6"
       onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={e => {
         const diff = e.changedTouches[0].clientX - touchStartX.current;
