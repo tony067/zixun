@@ -167,19 +167,8 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
     blocked:   { bg: "#FEE2E2", text: "#991B1B", icon: <Lock className="w-3 h-3" /> },
     fixed:     { bg: "#FEF3C7", text: "#92400E", icon: <Repeat className="w-3 h-3" /> },
   };
-      <div className="grid grid-cols-7 gap-y-1.5">
-  const c = typeColors[rule.type];>
-                {day}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-      <div className="flex flex-wrap gap-x-4 gap-y-2 mt-6">
-        {Object.entries(STATUS_STYLE).map(([k, v]) => (
-          <div key={k} className="flex items-center gap-1.5">
-            <div className="w-3.5 h-3.5 rounded-full" style={{ background: v.bg }} />
-            <span className="text-xs text-[#7D736A]">{v.label}</span>
+  const c = typeColors[rule.type];
+  const wdArr: number[] = Array.isArray(rule.weekdays)D736A]">{v.label}</span>
           </div>
         ))}
       </div>
