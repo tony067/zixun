@@ -668,6 +668,132 @@ export function CounselorScheduleScreen() {
           </>
         )}
       </AnimatePresence>
+
+      {/* 时间格修改弹窗 */}
+      <AnimatePresence>
+        {editingSlot && (
+          <>
+            <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setEditingSlot(null)} />
+            <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-hidden"
+              style={{ background: "#FDFBF7" }}
+              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
+              <div className="px-5 pt-5 pb-2 flex items-center justify-between">
+                <div>
+                  <p className="text-base font-bold" style={{ color: "#2C2420" }}>
+                    {editingSlot.dateStr} · {editingSlot.rule.isSingle ? editingSlot.rule.singleTime : editingSlot.rule.startTime}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>
+                    {editingSlot.rule.durationMinutes}分钟 · {editingSlot.rule.isSingle ? "单次" : "循环规则"}
+                  </p>
+                </div>
+                <button onClick={() => setEditingSlot(null)}>
+                  <ChevronRight size={20} className="rotate-90" style={{ color: "#9B8E82" }} />
+                </button>
+              </div>
+
+              <div className="px-5 pb-6 space-y-3 pt-3">
+                {/* 改类型 */}
+                <p className="text-xs font-semibold" style={{ color: "#9B8E82" }}>修改为</p>
+                <div className="flex gap-2">
+                  {(["available", "blocked", "fixed"] as const).map(t => (
+                    <button key={t} onClick={() => setEditType(t)}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
+                      style={{ background: editType === t ? (t === "blocked" ? "#EF4444" : t === "fixed" ? "#F59E0B" : "#9CB48A") : "#EBE7DF", color: editType === t ? "white" : "#7D736A" }}>
+                      {t === "available" ? "可预约" : t === "blocked" ? "屏蔽时段" : "固定档期"}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={async () => {
+                    const r = editingSlot.rule;
+                    // 先删原条目，再新增同时间同日期的新类型
+                    await request("/api/counselor/schedule", {
+                      method: "DELETE",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ id: r.id }),
+                    });
+                    await request("/api/counselor/schedule", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        type: editType,
+                        isSingle: true,
+                        singleDate: editingSlot.dateStr,
+                        singleTime: r.isSingle ? r.singleTime : r.startTime,
+                        durationMinutes: r.durationMinutes,
+                      }),
+                    });
+                    await loadRules();
+                    setEditingSlot(null);
+                  }}
+                  className="w-full py-3 rounded-2xl text-sm font-semibold text-white"
+                  style={{ background: "#9CB48A" }}>
+                  保存修改
+                </button>
+
+                {/* 删除 */}
+                <div className="space-y-2">
+                  {editingSlot.rule.isSingle ? (
+                    <button onClick={async () => {
+                      if (!confirm("确认删除这个单次档期？")) return;
+                      await request("/api/counselor/schedule", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ id: editingSlot.rule.id }),
+                      });
+                      await loadRules();
+                      setEditingSlot(null);
+                    }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+                      style={{ background: "#FEE2E2", color: "#EF4444" }}>
+                      删除这个档期
+                    </button>
+                  ) : (
+                    <>
+                      <button onClick={async () => {
+                        if (!confirm("仅删除这一天的档期，循环规则继续生效")) return;
+                        // 把这一天加一条屏蔽规则来覆盖循环
+                        await request("/api/counselor/schedule", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            type: "blocked",
+                            isSingle: true,
+                            singleDate: editingSlot.dateStr,
+                            singleTime: editingSlot.rule.startTime,
+                            durationMinutes: editingSlot.rule.durationMinutes,
+                          }),
+                        });
+                        await loadRules();
+                        setEditingSlot(null);
+                      }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+                        style={{ background: "#FEF3C7", color: "#92400E" }}>
+                        仅屏蔽这一天
+                      </button>
+                      <button onClick={async () => {
+                        if (!confirm("确认删除整条循环规则？所有按此规则生成的档期都会消失")) return;
+                        await request("/api/counselor/schedule", {
+                          method: "DELETE",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ id: editingSlot.rule.id }),
+                        });
+                        await loadRules();
+                        setEditingSlot(null);
+                      }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+                        style={{ background: "#FEE2E2", color: "#EF4444" }}>
+                        删除整条循环规则
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
