@@ -832,14 +832,6 @@ export function CounselorScheduleScreen() {
       {/* 时间格修改弹窗 */}
       <AnimatePresence>
         {editingSlot && (
-                {rules.filter(r => {
-                  if (!r.isActive) return false;
-                  if (r.isSingle) return r.singleDate === selectedDate;
-                  const d = new Date(selectedDate);
-                  const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
-                  const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
-                    : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
-                  return wds.includes(wd);
                 }).length === 0 ? (
                   <p className="text-sm py-2" style={{ color: "#9B8E82" }}>该天暂无档期规则</p>
                 ) : (
