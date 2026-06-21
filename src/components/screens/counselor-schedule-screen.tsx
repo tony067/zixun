@@ -506,7 +506,7 @@ export function CounselorScheduleScreen() {
               </div>
 
               {/* 该天已有的档期 */}
-              <div className="px-5 pb-2">
+              <div className="px-5 pb-2 max-h-40 overflow-y-auto">
                 {rules.filter(r => {
                   if (!r.isActive) return false;
                   if (r.isSingle) return r.singleDate === selectedDate;
@@ -516,7 +516,7 @@ export function CounselorScheduleScreen() {
                     : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
                   return wds.includes(wd);
                 }).length === 0 ? (
-                  <p className="text-sm py-2" style={{ color: "#9B8E82" }}>该天暂无档期规则，可在下方添加单次档期</p>
+                  <p className="text-sm py-2" style={{ color: "#9B8E82" }}>该天暂无档期规则</p>
                 ) : (
                   rules.filter(r => {
                     if (!r.isActive) return false;
@@ -525,6 +525,111 @@ export function CounselorScheduleScreen() {
                     const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
                     const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
                       : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
+                    return wds.includes(wd);
+                  }).map((r, i) => (
+                    <div key={i} className="flex items-center justify-between py-2 border-b" style={{ borderColor: "#EBE7DF" }}>
+                      <span className="text-sm" style={{ color: "#2C2420" }}>
+                        {r.isSingle ? `${r.singleTime} · ${r.durationMinutes}分钟` : `${r.startTime} · ${r.durationMinutes}分钟 · 循环`}
+                        <span className="ml-1.5 text-xs" style={{ color: r.type === "blocked" ? "#EF4444" : r.type === "fixed" ? "#F59E0B" : "#9CB48A" }}>
+                          {r.type === "blocked" ? "屏蔽" : r.type === "fixed" ? "固定" : "可预约"}
+                        </span>
+                      </span>
+                      {r.isSingle && (
+                        <button onClick={async () => {
+                          await request("/api/counselor/schedule", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: r.id }) });
+                          await loadRules();
+                        }} className="text-xs px-2 py-0.5 rounded-lg" style={{ background: "#FEE2E2", color: "#EF4444" }}>删除</button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* 新增单次档期 — 完整表单 */}
+              <div className="px-5 pt-3 pb-6 space-y-3 border-t" style={{ borderColor: "#EBE7DF" }}>
+                <p className="text-xs font-semibold" style={{ color: "#9B8E82" }}>新增该天单次档期</p>
+                {/* 档期类型 */}
+                <div className="flex gap-2">
+                  {(["available", "blocked", "fixed"] as const).map(t => (
+                    <button key={t} onClick={() => setDayType(t)}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
+                      style={{ background: dayType === t ? (t === "blocked" ? "#EF4444" : t === "fixed" ? "#F59E0B" : "#9CB48A") : "#EBE7DF", color: dayType === t ? "white" : "#7D736A" }}>
+                      {t === "available" ? "可预约" : t === "blocked" ? "屏蔽时段" : "固定档期"}
+                    </button>
+                  ))}
+                </div>
+                {/* 时间 + 时长 */}
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <p className="text-xs mb-1" style={{ color: "#9B8E82" }}>开始时间</p>
+                    <select value={dayStartTime} onChange={e => setDayStartTime(e.target.value)}
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
+                      {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs mb-1" style={{ color: "#9B8E82" }}>时长（分钟）</p>
+                    <select value={dayDuration} onChange={e => setDayDuration(Number(e.target.value))}
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
+                      {[25, 50, 60, 90, 120].map(d => <option key={d} value={d}>{d}分钟</option>)}
+                    </select>
+                  </div>
+                </div>
+                {/* 屏蔽备注 */}
+                {dayType === "blocked" && (
+                  <div>
+                    <p className="text-xs mb-1" style={{ color: "#9B8E82" }}>屏蔽原因（选填）</p>
+                    <input value={dayBlockNote} onChange={e => setDayBlockNote(e.target.value)}
+                      placeholder="如：出差、休假…"
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                  </div>
+                )}
+                {/* 固定来访 */}
+                {dayType === "fixed" && (
+                  <div>
+                    <p className="text-xs mb-1" style={{ color: "#9B8E82" }}>指定来访者 ID（选填）</p>
+                    <input value={dayFixedClientId} onChange={e => setDayFixedClientId(e.target.value)}
+                      placeholder="来访者用户 ID"
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                  </div>
+                )}
+                <button
+                  disabled={addingDay}
+                  onClick={async () => {
+                    const duplicate = rules.some(r =>
+                      r.isSingle && r.singleDate === selectedDate && r.singleTime === dayStartTime && r.durationMinutes === dayDuration && r.type === dayType
+                    );
+                    if (duplicate) { alert(`该天 ${dayStartTime} 已存在相同档期`); return; }
+                    setAddingDay(true);
+                    try {
+                      await request("/api/counselor/schedule", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          type: dayType,
+                          isSingle: true,
+                          singleDate: selectedDate,
+                          singleTime: dayStartTime,
+                          durationMinutes: dayDuration,
+                          blockNote: dayType === "blocked" ? dayBlockNote : undefined,
+                          fixedClientId: dayType === "fixed" ? dayFixedClientId : undefined,
+                        }),
+                      });
+                      await loadRules();
+                      setDayBlockNote("");
+                      setDayFixedClientId("");
+                      setSelectedDate(null);
+                    } finally { setAddingDay(false); }
+                  }}
+                  className="w-full py-3 rounded-2xl text-sm font-semibold text-white"
+                  style={{ background: addingDay ? "#C0B8B0" : "#9CB48A" }}>
+                  {addingDay ? "保存中…" : "添加这个时间段"}
+                </button>
+              </div>
                     return wds.includes(wd);
                   }).map((r, i) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b" style={{ borderColor: "#EBE7DF" }}>
