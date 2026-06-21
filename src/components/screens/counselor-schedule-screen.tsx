@@ -159,7 +159,6 @@ function MonthCalendar({ rules, onDayClick, onSlotClick }: {
 
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
-function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {，统一解析
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
   const typeColors = {
