@@ -536,15 +536,16 @@ export function CounselorScheduleScreen() {
                           {r.type === "blocked" ? "屏蔽时段" : r.type === "fixed" ? "固定档期" : "可预约"}
                         </span>
                       </div>
-                      <button onClick={async () => {
-                        if (!confirm(`确认删除该条档期规则？`)) return;
-                        await request("/api/counselor/schedule", {
-                          method: "DELETE",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ id: r.id }),
-                        });
-                        await loadRules();
-                      }} className="ml-3 text-xs px-2.5 py-1 rounded-lg flex-shrink-0"
+                      {r.isSingle ? (
+                        <button onClick={async () => {
+                          if (!confirm(`确认删除该条单次档期？`)) return;
+                          await request("/api/counselor/schedule", {
+                            method: "DELETE",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: r.id }),
+                          });
+                          await loadRules();
+                        }} className="ml-3 text-xs px-2.5 py-1 rounded-lg flex-shrink-0"
                         style={{ background: "#FEE2E2", color: "#EF4444" }}>删除</button>
                     </div>
                   ))
