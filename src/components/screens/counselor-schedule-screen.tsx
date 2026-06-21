@@ -668,6 +668,171 @@ export function CounselorScheduleScreen() {
             <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setSelectedDate(null)} />
+            <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-y-auto"
+              style={{ background: "#FDFBF7", maxHeight: "80vh" }}
+              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
+
+              {/* 标题 */}
+              <div className="px-5 pt-5 pb-3 flex items-center justify-between sticky top-0" style={{ background: "#FDFBF7" }}>
+                <div>
+                  <p className="text-base font-bold" style={{ color: "#2C2420" }}>{selectedDate}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>点击已有时间段可修改或删除</p>
+                </div>
+                <button onClick={() => setSelectedDate(null)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
+                  <ChevronRight size={16} className="rotate-90" style={{ color: "#6B5E52" }} />
+                </button>
+              </div>
+
+              {/* 当天已有档期列表 */}
+              <div className="px-5 pb-2">
+                {(() => {
+                  const daySlots = rules.filter(r => {
+                    if (!r.isActive) return false;
+                    if (r.isSingle) return r.singleDate === selectedDate;
+                    const d = new Date(selectedDate);
+                    const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
+                    const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
+                      : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
+                    return wds.includes(wd);
+                  }).sort((a, b) => {
+                    const ta = (a.isSingle ? a.singleTime : a.startTime) ?? "";
+                    const tb = (b.isSingle ? b.singleTime : b.startTime) ?? "";
+                    return ta.localeCompare(tb);
+                  });
+
+                  if (daySlots.length === 0) return (
+                    <p className="text-sm py-3 text-center" style={{ color: "#C4BDB5" }}>该天暂无档期，可在下方新增</p>
+                  );
+
+                  const TYPE_STYLE: Record<string, { bg: string; text: string; label: string }> = {
+                    available: { bg: "#E4F0DC", text: "#3A6228", label: "可预约" },
+                    blocked:   { bg: "#FEE2E2", text: "#991B1B", label: "屏蔽时段" },
+                    fixed:     { bg: "#FEF3C7", text: "#92400E", label: "固定档期" },
+                  };
+
+                  return (
+                    <div className="space-y-2">
+                      {daySlots.map((r, i) => {
+                        const time = r.isSingle ? r.singleTime : r.startTime;
+                        const s = TYPE_STYLE[r.type] ?? TYPE_STYLE.available;
+                        return (
+                          <button key={i} onClick={() => {
+                            setEditingSlot({ rule: r, dateStr: selectedDate! });
+                            setEditType(r.type as "available" | "blocked" | "fixed");
+                            setSelectedDate(null);
+                          }}
+                            className="w-full flex items-center justify-between rounded-2xl px-4 py-3 text-left active:scale-[0.99]"
+                            style={{ background: "white", border: "1px solid #EBE7DF" }}>
+                            <div>
+                              <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>
+                                {time} · {r.durationMinutes}分钟
+                              </p>
+                              <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>
+                                {r.isSingle ? "单次" : "循环规则"} · <span style={{ color: s.text }}>{s.label}</span>
+                              </p>
+                            </div>
+                            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: s.bg, color: s.text }}>
+                              点击修改
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* 分割线 */}
+              <div className="mx-5 my-3" style={{ height: 1, background: "#EBE7DF" }} />
+
+              {/* 新增时间段 */}
+              <div className="px-5 pb-6 space-y-3">
+                <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>新增时间段</p>
+
+                {/* 类型选择 */}
+                <div className="flex gap-2">
+                  {(["available", "blocked", "fixed"] as const).map(t => (
+                    <button key={t} onClick={() => setDayType(t)}
+                      className="flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all"
+                      style={{
+                        background: dayType === t ? (t === "blocked" ? "#EF4444" : t === "fixed" ? "#F59E0B" : "#9CB48A") : "#EBE7DF",
+                        color: dayType === t ? "white" : "#7D736A",
+                      }}>
+                      {t === "available" ? "可预约" : t === "blocked" ? "屏蔽时段" : "固定档期"}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 时间 + 时长 */}
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <p className="text-xs mb-1.5" style={{ color: "#9B8E82" }}>开始时间</p>
+                    <select value={dayStartTime} onChange={e => setDayStartTime(e.target.value)}
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
+                      {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs mb-1.5" style={{ color: "#9B8E82" }}>时长</p>
+                    <select value={dayDuration} onChange={e => setDayDuration(Number(e.target.value))}
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
+                      {[25, 50, 60, 90, 120].map(d => <option key={d} value={d}>{d}分钟</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* 固定档期：指定来访 */}
+                {dayType === "fixed" && (
+                  <div>
+                    <p className="text-xs mb-1.5" style={{ color: "#9B8E82" }}>指定来访者 ID（选填）</p>
+                    <input value={dayFixedClientId} onChange={e => setDayFixedClientId(e.target.value)}
+                      placeholder="来访者用户 ID"
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                  </div>
+                )}
+
+                <button disabled={addingDay}
+                  onClick={async () => {
+                    const dup = rules.some(r =>
+                      r.isSingle && r.singleDate === selectedDate &&
+                      r.singleTime === dayStartTime && r.durationMinutes === dayDuration && r.type === dayType
+                    );
+                    if (dup) { alert(`该天 ${dayStartTime} 已存在相同档期`); return; }
+                    setAddingDay(true);
+                    try {
+                      await request("/api/counselor/schedule", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          type: dayType, isSingle: true,
+                          singleDate: selectedDate, singleTime: dayStartTime,
+                          durationMinutes: dayDuration,
+                          fixedClientId: dayType === "fixed" ? dayFixedClientId : undefined,
+                        }),
+                      });
+                      await loadRules();
+                      setDayFixedClientId("");
+                      setSelectedDate(null);
+                    } finally { setAddingDay(false); }
+                  }}
+                  className="w-full py-3 rounded-2xl text-sm font-semibold text-white"
+                  style={{ background: addingDay ? "#C0B8B0" : "#9CB48A" }}>
+                  {addingDay ? "保存中…" : "保存"}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+          <>
+            <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setSelectedDate(null)} />
             <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-hidden"
               style={{ background: "#FDFBF7" }}
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
