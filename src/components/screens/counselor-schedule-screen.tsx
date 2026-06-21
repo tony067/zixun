@@ -435,7 +435,11 @@ export function CounselorScheduleScreen() {
   };
 
   const handleDelete = async (id: string) => {
-    await request("/api/counselor/schedule", { method: "DELETE" });
+    await request("/api/counselor/schedule", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
     await loadRules();
   };
 
