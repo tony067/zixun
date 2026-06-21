@@ -147,9 +147,10 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
     : typeof rule.weekdays === "string" && rule.weekdays
       ? rule.weekdays.split(",").map(Number)
       : [];
-  const dayStr = (!rule.isSingle || !rule.isSingle)
-    ? (wdArr.map(d => `周${WEEKDAY_LABELS[d]}`).join("、") || "")
-    : (rule.date ?? "");
+  const dayStr = rule.isSingle
+    ? (rule.singleDate ?? "")
+    : (wdArr.map(d => `周${WEEKDAY_LABELS[d]}`).join("、") || "");
+  const timeStr = rule.isSingle ? (rule.singleTime ?? rule.startTime) : rule.startTime;
   return (
     <div className="rounded-2xl p-4 flex items-start justify-between gap-3"
       style={{ background: "#FDFAF5", border: "1px solid #EBE7DF" }}>
