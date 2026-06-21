@@ -509,7 +509,10 @@ export function CounselorScheduleScreen() {
           {tab === "rules"
             ? <RulesPanel rules={rules} onAdd={handleAdd} onDelete={handleDelete} saving={saving} />
             : tab === "calendar"
-            ? <MonthCalendar rules={rules} onDayClick={(d) => { setSelectedDate(d); setDayStartTime("09:00"); setDayDuration(50); }} />
+            ? <MonthCalendar rules={rules}
+                onDayClick={(d) => { setSelectedDate(d); setDayType("available"); setDayStartTime("09:00"); setDayDuration(50); }}
+                onSlotClick={(r, d) => { setEditingSlot({ rule: r, dateStr: d }); setEditType(r.type as "available" | "blocked" | "fixed"); }}
+              />
             : tab === "stats"
             ? <StatsPanel />
             : <ClientsPanel />}
