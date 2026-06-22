@@ -172,16 +172,8 @@ function MonthCalendar({ rules, onDayClick }: {
 }
 
 
+// ── 规则卡片 ──────────────────────────────────────────────────────────────────
 
-  // 只允许未来3个月（含本月）
-  const minYear = today.getFullYear();
-  const minMonth = today.getMonth();
-  const maxDate = new Date(today.getFullYear(), today.getMonth() + 3, 0);
-  const maxYear = maxDate.getFullYear();
-  const maxMonth = maxDate.getMonth();
-
-  const canPrev = !(year === minYear && month === minMonth);
-  const canNext = !(year === maxYear && month === maxMonth);
 
   const prevMonth = () => {
     if (!canPrev) return;
