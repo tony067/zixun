@@ -1175,10 +1175,19 @@ function StatsPanel() {
           </>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
 
-      {/* 时间格修改弹窗 */}
-      <AnimatePresence>
-        {editingSlot && (
+function StatsPanel() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [stats, setStats] = useState<{ monthBookings: number; monthHours: number; totalClients: number; totalHours: number } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    request("/api/counselor/stats").then(r => r.json()).then(d => { if (!d.error) setStats(d); }).catch(() => {});
+  }, [user]);
           <>
             <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
