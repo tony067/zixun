@@ -1055,7 +1055,6 @@ export function CounselorScheduleScreen() {
 
 function StatsPanel() {
   const router = useRouter();
-                  <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>点击已有时间段可修改或删除</p>
                 </div>
                 <button onClick={() => setSelectedDate(null)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
                   <ChevronRight size={16} className="rotate-90" style={{ color: "#6B5E52" }} />
