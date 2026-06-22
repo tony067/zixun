@@ -240,7 +240,7 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
               className="mx-4 mt-3 rounded-2xl overflow-hidden"
-              style={{ background: "white", border: "1px solid #EBE7DF", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+              style={{ background: "#FDFBF7", border: "1px solid #EBE7DF", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
 
               {/* 日期标题 */}
               <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid #F0EDE8" }}>
