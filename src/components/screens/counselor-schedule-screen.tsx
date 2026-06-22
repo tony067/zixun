@@ -175,28 +175,19 @@ function MonthCalendar({ rules, onDayClick }: {
 
 
 
-// ── 规则卡片 ──────────────────────────────────────────────────────────────────
+
+
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
   const typeColors = {
     available: { bg: "#E4F0DC", text: "#3A6228", icon: <Check className="w-3 h-3" /> },
     blocked:   { bg: "#FEE2E2", text: "#991B1B", icon: <Lock className="w-3 h-3" /> },
-      </div>
-
-      {/* 星期标题 */}
-      <div className="grid grid-cols-7 mb-2">
-        {WEEKDAY_LABELS.map(d => (
-          <div key={d} className="text-center text-[11px] font-semibold" style={{ color: "#9B8E82" }}>{d}</div>
-        ))}
-      </div>
-
-      {/* 日期格 */}
-      <div className="grid grid-cols-7 gap-1">
-        {Array.from({ length: firstDayMon }).map((_, i) => <div key={`e${i}`} />)}
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
-          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-          const slots = getDaySlots(day);
+    fixed:     { bg: "#FEF3C7", text: "#92400E", icon: <Repeat className="w-3 h-3" /> },
+  };
+  const c = typeColors[rule.type];
+  const wdArr: number[] = Array.isArray(rule.weekdays)
+    ? rule.weekdays
           const isToday = year === today.getFullYear() && month === today.getMonth() && day === today.getDate();
           const isPast = new Date(year, month, day) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
