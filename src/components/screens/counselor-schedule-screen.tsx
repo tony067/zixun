@@ -297,10 +297,8 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
                                 <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "#FEE2E2", color: "#DC2626" }}>已屏蔽</span>
                               )}
                             </div>
-                            {/* 类型标签 */}
-                            <span className="text-[11px]" style={{ color: "#9B8E82" }}>
-                              {slot.type === "available" ? "可预约" : slot.type === "blocked" ? "屏蔽" : "固定"}
-                            </span>
+                            {/* 右侧箭头提示可点击 */}
+                            <ChevronRight size={14} style={{ color: "#C4BDB5", flexShrink: 0 }} />
                           </button>
                         ))}
                       </div>
