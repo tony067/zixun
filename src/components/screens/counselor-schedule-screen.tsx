@@ -173,15 +173,7 @@ function MonthCalendar({ rules, onDayClick }: {
 
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
-
-
-  const prevMonth = () => {
-    if (!canPrev) return;
-    if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1);
-  };
-  const nextMonth = () => {
-    if (!canNext) return;
-    if (month === 11) { setMonth(0); setYear(y => y + 1); } else setMonth(m => m + 1);
+function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
   };
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
