@@ -183,38 +183,7 @@ function MonthCalendar({ rules, onDayClick }: {
 
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
-function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
-  const typeColors = {.text }}>
-                      {time}{r.isSingle ? "" : " ↺"}
-                    </button>
-                  );
-                })}
-                {!isPast && (
-                  <button onClick={() => onDayClick(dateStr)}
-                    className="w-full text-center rounded-md py-0.5 text-[9px]"
-                    style={{ color: "#C4BDB5" }}>＋</button>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
 
-      {/* 图例 */}
-      <div className="flex gap-4 mt-4 justify-center">
-        {Object.entries(TYPE_COLOR).map(([k, v]) => (
-          <div key={k} className="flex items-center gap-1">
-            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: v.bg }} />
-            <span className="text-[10px]" style={{ color: "#9B8E82" }}>{v.label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-
-// ── 规则卡片 ──────────────────────────────────────────────────────────────────
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
   const typeColors = {
