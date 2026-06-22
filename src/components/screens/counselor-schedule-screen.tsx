@@ -267,15 +267,22 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
                         {g.slots.map((slot, i) => (
                           <button key={i}
                             onClick={() => onSlotEdit(slot, expandedDate)}
-                            className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-left active:scale-[0.99] transition-all"
+                            className="w-full flex items-center justify-between rounded-2xl px-3 py-3 text-left active:scale-[0.99] transition-all"
                             style={{
-                              background: slot.type === "blocked" ? "#FEF2F2" : slot.type === "fixed" ? "#FFFBEB" : "#F0F7EC",
-                              border: `1px solid ${slot.type === "blocked" ? "#FCA5A5" : slot.type === "fixed" ? "#FCD34D" : "#86EFAC"}`,
+                              background: "#F5F1E8",
                               opacity: slot.overriddenByBlock ? 0.85 : 1,
                             }}>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2.5">
+                              {/* 类型小胶囊 — 和档期规则一致 */}
+                              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{
+                                background: slot.type === "blocked" ? "#FEE2E2" : slot.type === "fixed" ? "#FEF3C7" : "#9CB48A",
+                                color: slot.type === "blocked" ? "#EF4444" : slot.type === "fixed" ? "#D97706" : "white",
+                              }}>
+                                {slot.type === "available" ? "可预约" : slot.type === "blocked" ? "已屏蔽" : "固定"}
+                              </span>
                               {/* 时间 */}
                               <span className="text-sm font-bold" style={{
+                                textDecoration: slot.overriddenByBlock ? "line-through" : "none",
                                 color: slot.type === "blocked" ? "#DC2626" : slot.type === "fixed" ? "#D97706" : "#15803D",
                                 textDecoration: slot.overriddenByBlock ? "line-through" : "none",
                               }}>
