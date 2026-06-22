@@ -182,13 +182,9 @@ function MonthCalendar({ rules, onDayClick }: {
 
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
+
+// ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
-              </button>
-              {/* 时间格列表 */}
-              <div className="px-0.5 pb-0.5 space-y-0.5">
-                {slots.map((r, i) => {
-                  const time = r.isSingle ? r.singleTime : r.startTime;
-                  const color = TYPE_COLOR[r.type] ?? TYPE_COLOR.available;
                   return (
                     <button key={i} onClick={() => onSlotClick(r, dateStr)}
                       className="w-full text-left rounded-md px-1 py-0.5 text-[9px] leading-tight font-medium truncate"
