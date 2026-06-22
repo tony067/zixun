@@ -713,9 +713,6 @@ export function CounselorScheduleScreen() {
       {/* 时间格修改弹窗 */}
       <AnimatePresence>
         {editingSlot && (
-      {/* 时间格修改弹窗 */}
-      <AnimatePresence>
-        {editingSlot && (
           <>
             <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
