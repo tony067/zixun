@@ -172,28 +172,10 @@ function MonthCalendar({ rules, onDayClick }: {
 }
 
 
+
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
-  };
-
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDay = new Date(year, month, 1).getDay();
-  const firstDayMon = firstDay === 0 ? 6 : firstDay - 1;
-  const monthName = new Date(year, month, 1).toLocaleDateString("zh-CN", { year: "numeric", month: "long" });
-
-  // 获取某天匹配的所有规则（含循环和单次）
-  function getDaySlots(day: number): Rule[] {
-    const date = new Date(year, month, day);
-    const jsDay = date.getDay();
-    const weekday = jsDay === 0 ? 6 : jsDay - 1;
-    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    return rules.filter(r => {
-      if (!r.isActive) return false;
-      if (r.isSingle) return r.singleDate === dateStr;
-      const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
-        : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
-      return wds.includes(weekday);
-    }).sort((a, b) => {
+  const typeColors = { {
       const ta = (a.isSingle ? a.singleTime : a.startTime) ?? "";
       const tb = (b.isSingle ? b.singleTime : b.startTime) ?? "";
       return ta.localeCompare(tb);
