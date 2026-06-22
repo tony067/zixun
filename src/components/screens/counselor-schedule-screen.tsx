@@ -182,7 +182,6 @@ function MonthCalendar({ rules, onDayClick }: {
 
 
 
-// ── 规则卡片 ──────────────────────────────────────────────────────────────────
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
