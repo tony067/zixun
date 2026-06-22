@@ -180,16 +180,9 @@ function MonthCalendar({ rules, onDayClick }: {
 
 
 
-// ── 规则卡片 ──────────────────────────────────────────────────────────────────
-// ── 规则设置面板 ──────────────────────────────────────────────────────────────
 
-          return (
-            <div key={day} className="rounded-xl overflow-hidden" style={{ border: isToday ? "2px solid #9CB48A" : "1px solid #EBE7DF", background: isPast ? "#FAF8F4" : "white", opacity: isPast ? 0.6 : 1 }}>
-              {/* 日期数字 + 点击新增 */}
-              <button onClick={() => !isPast && onDayClick(dateStr)}
-                className="w-full flex items-center justify-center py-1"
-                style={{ background: isToday ? "#F0F7EC" : "transparent" }}>
-                <span className="text-xs font-bold" style={{ color: isToday ? "#3A6228" : "#2C2420" }}>{day}</span>
+// ── 规则卡片 ──────────────────────────────────────────────────────────────────
+function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
               </button>
               {/* 时间格列表 */}
               <div className="px-0.5 pb-0.5 space-y-0.5">
