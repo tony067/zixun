@@ -1095,11 +1095,7 @@ function StatsPanel() {
   );
 }
 
-function StatsPanel() {
 
-              {/* 新增时间段 */}
-              <div className="px-5 pb-6 space-y-3">
-                <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>新增时间段</p>
 
                 {/* 类型选择 */}
                 <div className="flex gap-2">
