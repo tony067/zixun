@@ -1059,14 +1059,11 @@ function StatsPanel() {
   const [stats, setStats] = useState<{ monthBookings: number; monthHours: number; totalClients: number; totalHours: number } | null>(null);
 
   useEffect(() => {
-                  const daySlots = rules.filter(r => {
-                    if (!r.isActive) return false;
-                    if (r.isSingle) return r.singleDate === selectedDate;
-                    const d = new Date(selectedDate);
-                    const wd = d.getDay() === 0 ? 6 : d.getDay() - 1;
-                    const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
-                      : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
-                    return wds.includes(wd);
+    if (!user) return;
+    request("/api/counselor/stats").then(r => r.json()).then(d => { if (!d.error) setStats(d); }).catch(() => {});
+  }, [user]);
+
+  const STATS = [
                   }).sort((a, b) => {
                     const ta = (a.isSingle ? a.singleTime : a.startTime) ?? "";
                     const tb = (b.isSingle ? b.singleTime : b.startTime) ?? "";
