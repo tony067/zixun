@@ -1056,7 +1056,7 @@ export function CounselorScheduleScreen() {
 function StatsPanel() {
   const router = useRouter();
   const { user } = useAuth();
-                  <ChevronRight size={16} className="rotate-90" style={{ color: "#6B5E52" }} />
+  const [stats, setStats] = useState<{ monthBookings: number; monthHours: number; totalClients: number; totalHours: number } | null>(null);
                 </button>
               </div>
 
