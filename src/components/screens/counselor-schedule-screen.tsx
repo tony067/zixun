@@ -1054,15 +1054,7 @@ export function CounselorScheduleScreen() {
 }
 
 function StatsPanel() {
-            <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-y-auto"
-              style={{ background: "#FDFBF7", maxHeight: "80vh" }}
-              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
-
-              {/* 标题 */}
-              <div className="px-5 pt-5 pb-3 flex items-center justify-between sticky top-0" style={{ background: "#FDFBF7" }}>
-                <div>
-                  <p className="text-base font-bold" style={{ color: "#2C2420" }}>{selectedDate}</p>
+  const router = useRouter();
                   <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>点击已有时间段可修改或删除</p>
                 </div>
                 <button onClick={() => setSelectedDate(null)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
