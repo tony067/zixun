@@ -283,7 +283,10 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
                               {/* 时间 */}
                               <span className="text-sm font-bold" style={{
                                 textDecoration: slot.overriddenByBlock ? "line-through" : "none",
-                                color: slot.type === "blocked" ? "#DC2626" : slot.type === "fixed" ? "#D97706" : "#15803D",
+                                color: slot.type === "blocked" ? "#DC2626" : slot.type === "fixed" ? "#D97706" : "#2C2420",
+                              }}>
+                                {slot.startTime} — {slot.endTime}
+                              </span>=== "fixed" ? "#D97706" : "#15803D",
                                 textDecoration: slot.overriddenByBlock ? "line-through" : "none",
                               }}>
                                 {slot.startTime} — {slot.endTime}
