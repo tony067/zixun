@@ -174,24 +174,10 @@ function MonthCalendar({ rules, onDayClick }: {
 
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
+
+// ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
-  const typeColors = { {
-      const ta = (a.isSingle ? a.singleTime : a.startTime) ?? "";
-      const tb = (b.isSingle ? b.singleTime : b.startTime) ?? "";
-      return ta.localeCompare(tb);
-    });
-  }
-
-  const TYPE_COLOR: Record<string, { bg: string; text: string; label: string }> = {
-    available: { bg: "#9CB48A", text: "white", label: "可预约" },
-    blocked:   { bg: "#E8A0A0", text: "white", label: "屏蔽" },
-    fixed:     { bg: "#F4C97A", text: "#2C2420", label: "固定" },
-  };
-
-  return (
-    <div className="px-4 pb-4">
-      {/* 月份导航 */}
-      <div className="flex items-center justify-between mb-4">
+  const typeColors = {
         <motion.button whileTap={{ scale: 0.9 }} onClick={prevMonth}
           className="w-8 h-8 rounded-xl flex items-center justify-center"
           style={{ background: canPrev ? "#EBE7DF" : "transparent", opacity: canPrev ? 1 : 0.3 }}>
