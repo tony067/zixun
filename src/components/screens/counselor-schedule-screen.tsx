@@ -1064,15 +1064,7 @@ function StatsPanel() {
   }, [user]);
 
   const STATS = [
-                  }).sort((a, b) => {
-                    const ta = (a.isSingle ? a.singleTime : a.startTime) ?? "";
-                    const tb = (b.isSingle ? b.singleTime : b.startTime) ?? "";
-                    return ta.localeCompare(tb);
-                  });
-
-                  if (daySlots.length === 0) return (
-                    <p className="text-sm py-3 text-center" style={{ color: "#C4BDB5" }}>该天暂无档期，可在下方新增</p>
-                  );
+    { icon: "CalendarDays", label: "本月接单", value: stats?.monthBookings ?? "—", unit: "个", desc: "本月新增预约订单", href: "/counselor/bookings" },
 
                   const TYPE_STYLE: Record<string, { bg: string; text: string; label: string }> = {
                     available: { bg: "#E4F0DC", text: "#3A6228", label: "可预约" },
