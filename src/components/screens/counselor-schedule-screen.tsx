@@ -1055,8 +1055,7 @@ export function CounselorScheduleScreen() {
 
 function StatsPanel() {
   const router = useRouter();
-                </div>
-                <button onClick={() => setSelectedDate(null)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
+  const { user } = useAuth();
                   <ChevronRight size={16} className="rotate-90" style={{ color: "#6B5E52" }} />
                 </button>
               </div>
