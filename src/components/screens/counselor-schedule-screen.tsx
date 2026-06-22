@@ -1069,12 +1069,7 @@ function StatsPanel() {
     { icon: "Users", label: "接待来访", value: stats?.totalClients ?? "—", unit: "个", desc: "累计接待来访人数", href: "/counselor/schedule?tab=clients" },
     { icon: "TrendingUp", label: "累计完成时长", value: stats?.totalHours ?? "—", unit: "小时", desc: "累计完成咨询时长", href: "/counselor/bookings" },
   ];
-                    available: { bg: "#E4F0DC", text: "#3A6228", label: "可预约" },
-                    blocked:   { bg: "#FEE2E2", text: "#991B1B", label: "屏蔽时段" },
-                    fixed:     { bg: "#FEF3C7", text: "#92400E", label: "固定档期" },
-                  };
-
-                  return (
+  return (
                     <div className="space-y-2">
                       {daySlots.map((r, i) => {
                         const time = r.isSingle ? r.singleTime : r.startTime;
