@@ -1070,15 +1070,11 @@ function StatsPanel() {
     { icon: "TrendingUp", label: "累计完成时长", value: stats?.totalHours ?? "—", unit: "小时", desc: "累计完成咨询时长", href: "/counselor/bookings" },
   ];
   return (
-                    <div className="space-y-2">
-                      {daySlots.map((r, i) => {
-                        const time = r.isSingle ? r.singleTime : r.startTime;
-                        const s = TYPE_STYLE[r.type] ?? TYPE_STYLE.available;
-                        return (
-                          <button key={i} onClick={() => {
-                            setEditingSlot({ rule: r, dateStr: selectedDate! });
-                            setEditType(r.type as "available" | "blocked" | "fixed");
-                            setSelectedDate(null);
+    <div className="px-5 py-4">
+      <div className="grid grid-cols-2 gap-3">
+        {STATS.map(s => (
+          <button key={s.label} onClick={() => router.push(s.href)}
+            className="rounded-2xl p-4 text-left"
                           }}
                             className="w-full flex items-center justify-between rounded-2xl px-4 py-3 text-left active:scale-[0.99]"
                             style={{ background: "white", border: "1px solid #EBE7DF" }}>
