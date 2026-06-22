@@ -755,6 +755,10 @@ export function CounselorScheduleScreen() {
   const [dayDuration, setDayDuration] = useState(50);
   const [dayFixedClientId, setDayFixedClientId] = useState("");
   const [addingDay, setAddingDay] = useState(false);
+  // 下拉平铺状态
+  const [expandedDate, setExpandedDate] = useState<string | null>(null);
+  const [editingSlotDisplay, setEditingSlotDisplay] = useState<{ slot: SlotDisplay; dateStr: string } | null>(null);
+  const [addingDateModal, setAddingDateModal] = useState<string | null>(null);
 
   const loadRules = useCallback(async () => {
     if (!user) return;
