@@ -834,7 +834,28 @@ export function CounselorScheduleScreen() {
             ? <RulesPanel rules={rules} onAdd={handleAdd} onDelete={handleDelete} saving={saving} />
             : tab === "calendar"
             ? <MonthCalendar rules={rules}
-                onDayClick={(d) => { setSelectedDate(d); setDayType("available"); setDayStartTime("09:00"); setDayDuration(50); }}
+                expandedDate={expandedDate}
+                onDayClick={(d) => setExpandedDate(expandedDate === d ? null : d)}
+                onSlotEdit={(slot, dateStr) => setEditingSlotDisplay({ slot, dateStr })}
+                onSlotDelete={async (slot) => {
+                  if (!confirm("确认删除该时间段？")) return;
+                  await request("/api/counselor/schedule", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: slot.ruleId }),
+                  });
+                  await loadRules();
+                }}
+                onRecurringDelete={async (slot) => {
+                  if (!confirm("确认删除整条循环规则？")) return;
+                  await request("/api/counselor/schedule", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: slot.recurringId }),
+                  });
+                  await loadRules();
+                }}
+                onAddClick={(d) => { setAddingDateModal(d); setDayType("available"); setDayStartTime("09:00"); setDayDuration(50); }}
               />
             : tab === "stats"
             ? <StatsPanel />
