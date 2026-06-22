@@ -174,12 +174,14 @@ function MonthCalendar({ rules, onDayClick }: {
 
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
+
+// ── 规则卡片 ──────────────────────────────────────────────────────────────────
 function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
   const typeColors = {
     available: { bg: "#E4F0DC", text: "#3A6228", icon: <Check className="w-3 h-3" /> },
-          <ChevronRight size={16} className="rotate-180 text-[#6B5E52]" />
-        </motion.button>
-        <span className="text-sm font-bold" style={{ color: "#2C2420" }}>{monthName}</span>
+    blocked:   { bg: "#FEE2E2", text: "#991B1B", icon: <Lock className="w-3 h-3" /> },
+    fixed:     { bg: "#FEF3C7", text: "#92400E", icon: <Repeat className="w-3 h-3" /> },
+  };
         <motion.button whileTap={{ scale: 0.9 }} onClick={nextMonth}
           className="w-8 h-8 rounded-xl flex items-center justify-center"
           style={{ background: canNext ? "#EBE7DF" : "transparent", opacity: canNext ? 1 : 0.3 }}>
