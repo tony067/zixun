@@ -1057,12 +1057,8 @@ function StatsPanel() {
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<{ monthBookings: number; monthHours: number; totalClients: number; totalHours: number } | null>(null);
-                </button>
-              </div>
 
-              {/* 当天已有档期列表 */}
-              <div className="px-5 pb-2">
-                {(() => {
+  useEffect(() => {
                   const daySlots = rules.filter(r => {
                     if (!r.isActive) return false;
                     if (r.isSingle) return r.singleDate === selectedDate;
