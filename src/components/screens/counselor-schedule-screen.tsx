@@ -286,10 +286,6 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
                                 color: slot.type === "blocked" ? "#DC2626" : slot.type === "fixed" ? "#D97706" : "#2C2420",
                               }}>
                                 {slot.startTime} — {slot.endTime}
-                              </span>=== "fixed" ? "#D97706" : "#15803D",
-                                textDecoration: slot.overriddenByBlock ? "line-through" : "none",
-                              }}>
-                                {slot.startTime} — {slot.endTime}
                               </span>
                               {/* 循环图标 */}
                               {slot.isRecurring && (
