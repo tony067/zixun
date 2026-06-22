@@ -931,7 +931,7 @@ function StatsPanel() {
         {STATS.map(s => (
           <button key={s.label} onClick={() => router.push(s.href)}
             className="rounded-2xl p-4 text-left"
-            style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid #EBE7DF" }}>
+            style={{ background: "#FDFBF7", boxShadow: "0 1px 6px rgba(0,0,0,0.04)", border: "1px solid #EBE7DF" }}>
             <div className="flex items-center gap-2 mb-2">
               {s.icon === "CalendarDays" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>}
               {s.icon === "Clock" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
@@ -983,7 +983,7 @@ function ClientsPanel() {
         <motion.button key={c.id} whileTap={{ scale: 0.98 }}
           onClick={() => router.push(`/counselor/clients/${c.id}`)}
           className="w-full rounded-2xl p-4 text-left"
-          style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+          style={{ background: "#FDFBF7", boxShadow: "0 1px 6px rgba(0,0,0,0.04)" }}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-none"
