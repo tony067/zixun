@@ -20,14 +20,310 @@ type Rule = {
 const WEEKDAY_LABELS = ["一","二","三","四","五","六","日"];
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2,"0")}:00`);
 
-// ── 月视图日历（圆点指示风格，点击日期查看详情）────────────────────────────
-function MonthCalendar({ rules, onDayClick }: {
+// ── 工具函数 ──────────────────────────────────────────────────────────────────
+function timeEnd(start: string, minutes: number): string {
+  const [h, m] = start.split(":").map(Number);
+  const total = h * 60 + (m || 0) + minutes;
+  return `${String(Math.floor(total / 60) % 24).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+function timePeriod(start: string): string {
+  const h = parseInt(start);
+  if (h < 12) return "上午";
+  if (h < 18) return "下午";
+  return "晚上";
+}
+
+// 解析某天所有规则，合并「循环被单次屏蔽」的情况
+type SlotDisplay = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  period: string;
+  type: "available" | "blocked" | "fixed";
+  isRecurring: boolean;
+  overriddenByBlock: boolean; // 循环可预约被单次屏蔽覆盖
+  recurringId?: string;       // 原循环规则 id（用于「删除循环规则」）
+  ruleId: string;             // 操作时用的 id（单次优先）
+};
+
+function getDaySlots(rules: Rule[], dateStr: string): SlotDisplay[] {
+  const date = new Date(dateStr);
+  const jsDay = date.getDay();
+  const weekday = jsDay === 0 ? 6 : jsDay - 1;
+
+  const recurring = rules.filter(r => {
+    if (!r.isActive || r.isSingle) return false;
+    const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
+      : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
+    return wds.includes(weekday);
+  });
+
+  const singles = rules.filter(r => r.isActive && r.isSingle && r.singleDate === dateStr);
+
+  const slots: SlotDisplay[] = [];
+
+  // 处理循环规则
+  for (const r of recurring) {
+    const st = r.startTime;
+    // 检查这个时间点是否被单次规则覆盖
+    const override = singles.find(s => (s.singleTime ?? s.startTime) === st);
+    if (override) {
+      // 循环被单次覆盖，显示单次的状态
+      if (override.type === "blocked") {
+        slots.push({
+          id: override.id, startTime: st,
+          endTime: timeEnd(st, override.durationMinutes),
+          period: timePeriod(st), type: "blocked",
+          isRecurring: true, overriddenByBlock: true,
+          recurringId: r.id, ruleId: override.id,
+        });
+      } else {
+        slots.push({
+          id: override.id, startTime: st,
+          endTime: timeEnd(st, override.durationMinutes),
+          period: timePeriod(st), type: override.type,
+          isRecurring: false, overriddenByBlock: false,
+          ruleId: override.id,
+        });
+      }
+    } else {
+      slots.push({
+        id: r.id, startTime: st,
+        endTime: timeEnd(st, r.durationMinutes),
+        period: timePeriod(st), type: r.type,
+        isRecurring: true, overriddenByBlock: false,
+        recurringId: r.id, ruleId: r.id,
+      });
+    }
+  }
+
+  // 处理单次规则（未被循环覆盖的）
+  for (const s of singles) {
+    const st = s.singleTime ?? s.startTime;
+    const alreadyIn = slots.some(sl => sl.startTime === st);
+    if (!alreadyIn) {
+      slots.push({
+        id: s.id, startTime: st,
+        endTime: timeEnd(st, s.durationMinutes),
+        period: timePeriod(st), type: s.type,
+        isRecurring: false, overriddenByBlock: false,
+        ruleId: s.id,
+      });
+    }
+  }
+
+  return slots.sort((a, b) => a.startTime.localeCompare(b.startTime));
+}
+
+// ── 月视图日历（下拉平铺式）────────────────────────────────────────────────
+function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDelete, onRecurringDelete, onAddClick }: {
   rules: Rule[];
   onDayClick: (dateStr: string) => void;
+  expandedDate: string | null;
+  onSlotEdit: (slot: SlotDisplay, dateStr: string) => void;
+  onSlotDelete: (slot: SlotDisplay) => void;
+  onRecurringDelete: (slot: SlotDisplay) => void;
+  onAddClick: (dateStr: string) => void;
 }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
+
+  const minYear = today.getFullYear();
+  const minMonth = today.getMonth();
+  const maxDate = new Date(today.getFullYear(), today.getMonth() + 3, 0);
+  const maxYear = maxDate.getFullYear();
+  const maxMonth = maxDate.getMonth();
+
+  const canPrev = !(year === minYear && month === minMonth);
+  const canNext = !(year === maxYear && month === maxMonth);
+
+  const prevMonth = () => {
+    if (!canPrev) return;
+    if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1);
+  };
+  const nextMonth = () => {
+    if (!canNext) return;
+    if (month === 11) { setMonth(0); setYear(y => y + 1); } else setMonth(m => m + 1);
+  };
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const firstDayMon = firstDay === 0 ? 6 : firstDay - 1;
+  const monthName = new Date(year, month, 1).toLocaleDateString("zh-CN", { year: "numeric", month: "long" });
+
+  function getDayColor(day: number): string | null {
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const slots = getDaySlots(rules, dateStr);
+    if (slots.length === 0) return null;
+    if (slots.some(s => s.type === "blocked")) return "#E8A0A0";
+    if (slots.some(s => s.type === "fixed")) return "#F4C97A";
+    return "#9CB48A";
+  }
+
+  return (
+    <div className="pb-6">
+      {/* 月份导航 */}
+      <div className="flex items-center justify-between px-4 mb-4">
+        <motion.button whileTap={{ scale: 0.9 }} onClick={prevMonth}
+          className="w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background: canPrev ? "#EBE7DF" : "transparent", opacity: canPrev ? 1 : 0.3 }}>
+          <ChevronRight size={18} className="rotate-180" style={{ color: "#6B5E52" }} />
+        </motion.button>
+        <span className="text-base font-bold" style={{ color: "#2C2420" }}>{monthName}</span>
+        <motion.button whileTap={{ scale: 0.9 }} onClick={nextMonth}
+          className="w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background: canNext ? "#EBE7DF" : "transparent", opacity: canNext ? 1 : 0.3 }}>
+          <ChevronRight size={18} style={{ color: "#6B5E52" }} />
+        </motion.button>
+      </div>
+
+      {/* 星期标题 */}
+      <div className="grid grid-cols-7 px-4 mb-2">
+        {WEEKDAY_LABELS.map(d => (
+          <div key={d} className="text-center text-[11px] font-semibold" style={{ color: "#9B8E82" }}>{d}</div>
+        ))}
+      </div>
+
+      {/* 日期格 */}
+      <div className="grid grid-cols-7 px-4 gap-y-1">
+        {Array.from({ length: firstDayMon }).map((_, i) => <div key={`e${i}`} />)}
+        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+          const isToday = year === today.getFullYear() && month === today.getMonth() && day === today.getDate();
+          const isPast = new Date(year, month, day) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          const isExpanded = expandedDate === dateStr;
+          const color = getDayColor(day);
+
+          return (
+            <div key={day} className="flex flex-col items-center gap-0.5">
+              <button
+                onClick={() => !isPast && onDayClick(dateStr)}
+                disabled={isPast}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium transition-all active:scale-95"
+                style={{
+                  background: isExpanded ? "#3A6228" : color ?? (isToday ? "#EBE7DF" : "transparent"),
+                  color: isExpanded ? "white" : color ? "white" : isToday ? "#3A6228" : isPast ? "#C4BDB5" : "#2C2420",
+                  fontWeight: isToday ? 700 : 500,
+                  border: isToday && !color && !isExpanded ? "2px solid #9CB48A" : "none",
+                }}>
+                {day}
+              </button>
+              {color && !isExpanded && (
+                <div className="w-1 h-1 rounded-full" style={{ background: color }} />
+              )}
+              {!color && <div className="h-1" />}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 展开的时间段列表（在日历下方平铺） */}
+      <AnimatePresence>
+        {expandedDate && expandedDate.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`) && (() => {
+          const slots = getDaySlots(rules, expandedDate);
+          const dayNum = parseInt(expandedDate.split("-")[2]);
+          const displayDate = new Date(expandedDate).toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short" });
+
+          // 按上午/下午/晚上分组
+          const groups: { label: string; slots: SlotDisplay[] }[] = [];
+          const periods = ["上午", "下午", "晚上"];
+          for (const p of periods) {
+            const ps = slots.filter(s => s.period === p);
+            if (ps.length > 0) groups.push({ label: p, slots: ps });
+          }
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="mx-4 mt-3 rounded-2xl overflow-hidden"
+              style={{ background: "white", border: "1px solid #EBE7DF", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+
+              {/* 日期标题 */}
+              <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid #F0EDE8" }}>
+                <span className="text-sm font-bold" style={{ color: "#2C2420" }}>{displayDate}</span>
+                <button onClick={() => onAddClick(expandedDate)}
+                  className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full font-semibold"
+                  style={{ background: "#E4F0DC", color: "#3A6228" }}>
+                  <Plus size={12} />新增时间段
+                </button>
+              </div>
+
+              {/* 时间段列表 */}
+              {slots.length === 0 ? (
+                <div className="px-4 py-6 text-center">
+                  <p className="text-sm" style={{ color: "#C4BDB5" }}>该天暂无档期</p>
+                  <p className="text-xs mt-1" style={{ color: "#D4CFC9" }}>点击右上角新增时间段</p>
+                </div>
+              ) : (
+                <div className="px-4 py-3 space-y-4">
+                  {groups.map(g => (
+                    <div key={g.label}>
+                      <p className="text-[11px] font-semibold mb-2" style={{ color: "#C4BDB5" }}>{g.label}</p>
+                      <div className="space-y-2">
+                        {g.slots.map((slot, i) => (
+                          <button key={i}
+                            onClick={() => onSlotEdit(slot, expandedDate)}
+                            className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-left active:scale-[0.99] transition-all"
+                            style={{
+                              background: slot.type === "blocked" ? "#FEF2F2" : slot.type === "fixed" ? "#FFFBEB" : "#F0F7EC",
+                              border: `1px solid ${slot.type === "blocked" ? "#FCA5A5" : slot.type === "fixed" ? "#FCD34D" : "#86EFAC"}`,
+                              opacity: slot.overriddenByBlock ? 0.85 : 1,
+                            }}>
+                            <div className="flex items-center gap-2">
+                              {/* 时间 */}
+                              <span className="text-sm font-bold" style={{
+                                color: slot.type === "blocked" ? "#DC2626" : slot.type === "fixed" ? "#D97706" : "#15803D",
+                                textDecoration: slot.overriddenByBlock ? "line-through" : "none",
+                              }}>
+                                {slot.startTime} — {slot.endTime}
+                              </span>
+                              {/* 循环图标 */}
+                              {slot.isRecurring && (
+                                <span className="text-[10px]" style={{ color: "#9B8E82" }}>↺</span>
+                              )}
+                              {/* 覆盖提示 */}
+                              {slot.overriddenByBlock && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "#FEE2E2", color: "#DC2626" }}>已屏蔽</span>
+                              )}
+                            </div>
+                            {/* 类型标签 */}
+                            <span className="text-[11px]" style={{ color: "#9B8E82" }}>
+                              {slot.type === "available" ? "可预约" : slot.type === "blocked" ? "屏蔽" : "固定"}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
+
+      {/* 图例 */}
+      <div className="flex gap-5 mt-4 justify-center">
+        {[
+          { color: "#9CB48A", label: "可预约" },
+          { color: "#F4C97A", label: "固定档期" },
+          { color: "#E8A0A0", label: "屏蔽时段" },
+        ].map(({ color, label }) => (
+          <div key={label} className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
+            <span className="text-xs" style={{ color: "#9B8E82" }}>{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
 
   const minYear = today.getFullYear();
   const minMonth = today.getMonth();
