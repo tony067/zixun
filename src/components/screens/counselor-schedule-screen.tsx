@@ -742,11 +742,11 @@ export function CounselorScheduleScreen() {
               <div className="px-5 pb-8 space-y-4 mt-2">
                 {/* 类型 */}
                 <div className="flex gap-2">
-                  {(["available", "blocked", "fixed"] as const).map(t => (
+                  {(["available", "fixed"] as const).map(t => (
                     <button key={t} onClick={() => setDayType(t)}
                       className="flex-1 py-2.5 rounded-xl text-xs font-semibold"
-                      style={{ background: dayType === t ? (t === "blocked" ? "#EF4444" : t === "fixed" ? "#F59E0B" : "#9CB48A") : "#EBE7DF", color: dayType === t ? "white" : "#7D736A" }}>
-                      {t === "available" ? "可预约" : t === "blocked" ? "屏蔽时段" : "固定档期"}
+                      style={{ background: dayType === t ? (t === "fixed" ? "#F59E0B" : "#9CB48A") : "#EBE7DF", color: dayType === t ? "white" : "#7D736A" }}>
+                      {t === "available" ? "可预约" : "固定档期"}
                     </button>
                   ))}
                 </div>
