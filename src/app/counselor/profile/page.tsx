@@ -45,7 +45,11 @@ export default function CounselorProfilePage() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setForm(prev => ({ ...prev, reviewStatus: data.profile?.reviewStatus ?? data.reviewStatus ?? prev.reviewStatus }));
+        setForm(prev => ({
+          ...prev,
+          reviewStatus: data.profile?.reviewStatus ?? data.reviewStatus ?? prev.reviewStatus,
+          isAccepting: data.profile?.isAccepting ?? prev.isAccepting,
+        }));
         showToast(submit ? "已提交审核！" : "草稿已保存 ✓");
       } else {
         showToast(`保存失败：${data.error ?? res.status}`);
