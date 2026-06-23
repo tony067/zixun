@@ -613,7 +613,7 @@ export function CounselorScheduleScreen() {
   const [editingSlot, setEditingSlot] = useState<{ rule: Rule; dateStr: string } | null>(null);
   const [editType, setEditType] = useState<"available" | "blocked" | "fixed">("available");
   const [dayType, setDayType] = useState<"available" | "blocked" | "fixed">("available");
-  const [dayStartTime, setDayStartTime] = useState("09:00");
+  const [daySelectedTimes, setDaySelectedTimes] = useState<Set<string>>(new Set());
   const [dayDuration, setDayDuration] = useState(50);
   const [dayFixedClientId, setDayFixedClientId] = useState("");
   const [addingDay, setAddingDay] = useState(false);
