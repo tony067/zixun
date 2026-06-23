@@ -109,9 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-            <button key={k} onClick={() => setTab(k as "client"|"counselor")}
-              className="px-5 py-1.5 rounded-full text-sm font-medium"
-              style={{ background: tab===k ? "var(--color-primary)" : "#EBE7DF", color: tab===k ? "white" : "#5A4E44" }}>
               {label}
             </button>
           ))}
