@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
     })
     .from(bookings)
     .where(and(...conditions))
-    .orderBy(desc(bookings.scheduledDate));
+    .orderBy(desc(bookings.scheduledAt));
 
   // 批量拉咨询师和来访者姓名
   const counselorIds = [...new Set(rows.map(r => r.counselorId))];
