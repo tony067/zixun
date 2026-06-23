@@ -956,7 +956,7 @@ function StatsPanel() {
     { icon: "CalendarDays", label: "本月接单", value: stats?.monthBookings ?? "—", unit: "个", desc: "本月新增预约订单", href: "/counselor/bookings" },
     { icon: "Clock", label: "本月完成咨询", value: stats?.monthHours ?? "—", unit: "小时", desc: "本月已完成咨询时长", href: "/counselor/bookings" },
     { icon: "Users", label: "接待来访", value: stats?.totalClients ?? "—", unit: "个", desc: "累计接待来访人数", href: "/counselor/schedule?tab=clients" },
-    { icon: "TrendingUp", label: "累计完成时长", value: stats?.totalHours ?? "—", unit: "小时", desc: "累计完成咨询时长", href: "/counselor/bookings" },
+    { icon: "TrendingUp", label: "我的账单", value: "查看", unit: "", desc: "月度收入明细与导出", href: "/counselor/billing" },
   ];
   return (
     <div className="px-5 py-4">
