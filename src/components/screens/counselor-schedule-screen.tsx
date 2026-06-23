@@ -854,8 +854,102 @@ export function CounselorScheduleScreen() {
                 </button>
               </div>
               <div className="px-5 pt-3 pb-8 space-y-2">
-                {/* 循环被屏蔽：恢复这一天 */}
+
+                {/* ① 已屏蔽（循环被单次覆盖）→ 恢复 + 删除循环 */}
                 {editingSlotDisplay.slot.overriddenByBlock && (
+                  <>
+                    <button onClick={async () => {
+                      // 删掉覆盖它的单次屏蔽记录
+                      const block = rules.find(r =>
+                        r.isSingle && r.type === "blocked" &&
+                        r.singleDate === editingSlotDisplay.dateStr &&
+                        (r.singleTime === editingSlotDisplay.slot.startTime || r.singleTime === editingSlotDisplay.slot.singleTime)
+                      );
+                      if (block) {
+                        await request("/api/counselor/schedule", {
+                          method: "DELETE",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ id: block.id }),
+                        });
+                      }
+                      await loadRules();
+                      setEditingSlotDisplay(null);
+                    }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+                      style={{ background: "#E4F0DC", color: "#3A6228" }}>
+                      恢复这次可预约
+                    </button>
+                    <button onClick={async () => {
+                      if (!confirm("确认删除整条循环规则？删除后该规则所有时间都不再开放。")) return;
+                      await request("/api/counselor/schedule", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ id: editingSlotDisplay.slot.recurringId }),
+                      });
+                      await loadRules();
+                      setEditingSlotDisplay(null);
+                    }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+                      style={{ background: "#FEE2E2", color: "#EF4444" }}>
+                      删除循环规则
+                    </button>
+                  </>
+                )}
+
+                {/* ② 循环可预约（未被屏蔽）→ 取消这次 + 删除循环规则 */}
+                {editingSlotDisplay.slot.isRecurring && !editingSlotDisplay.slot.overriddenByBlock && (
+                  <>
+                    <button onClick={async () => {
+                      // 新增一条单次屏蔽记录覆盖这次
+                      await request("/api/counselor/schedule", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          type: "blocked",
+                          isSingle: true,
+                          singleDate: editingSlotDisplay.dateStr,
+                          singleTime: editingSlotDisplay.slot.startTime,
+                          durationMinutes: editingSlotDisplay.slot.durationMinutes ?? 50,
+                        }),
+                      });
+                      await loadRules();
+                      setEditingSlotDisplay(null);
+                    }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+                      style={{ background: "#FEE2E2", color: "#EF4444" }}>
+                      取消这次
+                    </button>
+                    <button onClick={async () => {
+                      if (!confirm("确认删除整条循环规则？删除后该规则所有时间都不再开放。")) return;
+                      await request("/api/counselor/schedule", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ id: editingSlotDisplay.slot.recurringId }),
+                      });
+                      await loadRules();
+                      setEditingSlotDisplay(null);
+                    }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+                      style={{ background: "#F5F1E8", color: "#9B8E82" }}>
+                      删除循环规则
+                    </button>
+                  </>
+                )}
+
+                {/* ③ 单次可预约 → 只有删除 */}
+                {!editingSlotDisplay.slot.isRecurring && !editingSlotDisplay.slot.overriddenByBlock && (
+                  <button onClick={async () => {
+                    if (!confirm("确认删除该时间段？")) return;
+                    await request("/api/counselor/schedule", {
+                      method: "DELETE",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ id: editingSlotDisplay.slot.id }),
+                    });
+                    await loadRules();
+                    setEditingSlotDisplay(null);
+                  }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+                    style={{ background: "#FEE2E2", color: "#EF4444" }}>
+                    删除该时间段
+                  </button>
+                )}
+
+              </div>
                   <button onClick={async () => {
                     await request("/api/counselor/schedule", {
                       method: "DELETE",
