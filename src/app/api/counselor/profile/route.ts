@@ -53,13 +53,13 @@ export async function PUT(request: NextRequest) {
     languages:          fields.languages ?? [],
     sessionDescription: fields.sessionDescription ?? "",
     qualifications:     (fields.qualifications ?? []).map((x: unknown) =>
-                          typeof x === "string" ? x : JSON.stringify(x)),
+                          typeof x === "string" ? x : (x as {value:string}).value ?? JSON.stringify(x)),
     education:          (fields.education ?? []).map((x: unknown) =>
-                          typeof x === "string" ? x : JSON.stringify(x)),
+                          typeof x === "string" ? x : (x as {value:string}).value ?? JSON.stringify(x)),
     trainings:          (fields.trainings ?? []).map((x: unknown) =>
-                          typeof x === "string" ? x : JSON.stringify(x)),
+                          typeof x === "string" ? x : (x as {value:string}).value ?? JSON.stringify(x)),
     workExperiences:    (fields.workExperiences ?? []).map((x: unknown) =>
-                          typeof x === "string" ? x : JSON.stringify(x)),
+                          typeof x === "string" ? x : (x as {value:string}).value ?? JSON.stringify(x)),
     reviewStatus:       newStatus,
   };
 
