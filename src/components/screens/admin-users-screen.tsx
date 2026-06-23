@@ -191,16 +191,74 @@ export default function AdminUsersScreen() {
                 style={{ background: "#EBE7DF", color: "#5A4E44" }}>×</button>
             </div>
 
-            {/* 信息列表 */}
-            <div className="rounded-2xl overflow-hidden mb-4" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+            {/* 基本信息 */}
+            <div className="rounded-2xl p-4 mb-4 space-y-2.5" style={{ background: "white", border: "1px solid #EBE7DF" }}>
               {[
                 ["邮箱", selected.email],
-                ["手机", selected.phone],
-                ["角色", selected.role === "client" ? "来访者" : "咨询师"],
-                ["注册时间", selected.joined],
-                [selected.role === "client" ? "预约次数" : "完成咨询", String(selected.bookings) + (selected.role === "client" ? " 次" : " 次")],
-                ["账号状态", selected.status === "active" ? "正常" : "已封禁"],
+                ["角色", ROLE_LABEL[selected.role] ?? selected.role],
+                ["注册时间", selected.createdAt ? new Date(selected.createdAt).toLocaleDateString("zh-CN") : "-"],
+                ["订单总数", `${selected.bookingCount} 单`],
               ].map(([k, v]) => (
+                <div key={k} className="flex justify-between text-sm">
+                  <span style={{ color: "#9B8E82" }}>{k}</span>
+                  <span className="font-medium" style={{ color: "#2C2420" }}>{v}</span>
+                </div>
+              ))}
+              {selected.role === "counselor" && selected.counselorId && (
+                <button onClick={() => { setSelected(null); router.push(`/admin/billing?counselorId=${selected.counselorId}`); }}
+                  className="w-full mt-1 py-2 rounded-xl text-sm font-medium text-left px-3"
+                  style={{ background: "#F0F7EC", color: "#3A6228" }}>
+                  查看该咨询师账单 →
+                </button>
+              )}
+            </div>
+
+            {/* 订单列表 */}
+            <p className="text-sm font-bold mb-2" style={{ color: "#2C2420" }}>历史订单</p>
+            {detailLoading ? (
+              <p className="text-center py-6 text-sm" style={{ color: "#9B8E82" }}>加载中…</p>
+            ) : !selected.bookings || selected.bookings.length === 0 ? (
+              <p className="text-center py-6 text-sm" style={{ color: "#9B8E82" }}>暂无订单</p>
+            ) : (
+              <div className="space-y-2 mb-4">
+                {selected.bookings.map(b => (
+                  <div key={b.id} className="rounded-2xl px-4 py-3" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: "#2C2420" }}>
+                          {b.scheduledAt ? new Date(b.scheduledAt).toLocaleDateString("zh-CN") : "-"}
+                        </p>
+                        <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{b.counterpartName}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold" style={{ color: "#9CB48A" }}>¥{b.priceAmount}</p>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded mt-1 inline-block"
+                          style={{ background: b.status === "completed" ? "#DCFCE7" : "#F3F4F6",
+                            color: b.status === "completed" ? "#16A34A" : "#6B7280" }}>
+                          {STATUS_LABEL[b.status] ?? b.status}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 封禁按钮 */}
+            <div className="mt-2">
+              <button onClick={toggleBan}
+                className="w-full py-3 rounded-2xl text-sm font-bold"
+                style={{ background: selected.status === "banned" ? "#DCFCE7" : "#FEE2E2",
+                  color: selected.status === "banned" ? "#16A34A" : "#DC2626" }}>
+                {selected.status === "banned" ? "解除封禁" : "封禁该用户"}
+              </button>
+            </div>
+          </div>
+        </div>
+      , document.body)}
+    </div>
+  );
+}
                 <div key={k} className="flex justify-between items-center px-4 py-3 border-b last:border-0"
                   style={{ borderColor: "#F5F0EA" }}>
                   <span className="text-sm" style={{ color: "#9B8E82" }}>{k}</span>
