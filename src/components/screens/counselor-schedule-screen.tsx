@@ -795,7 +795,7 @@ export function CounselorScheduleScreen() {
                     );
                   })}
                 </div>
-                <div className="flex gap-2">
+                <div>
                   <div className="flex-1">
                     <p className="text-xs mb-1.5" style={{ color: "#9B8E82" }}>时长</p>
                     <select value={dayDuration} onChange={e => setDayDuration(Number(e.target.value))}
