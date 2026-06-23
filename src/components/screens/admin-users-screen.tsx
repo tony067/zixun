@@ -109,12 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-  const router = useRouter();
-  const [tab, setTab] = useState<"client" | "counselor">("client");
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<User | null>(null);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
   const [users, setUsers] = useState(MOCK_USERS);
 
   const filtered = users
