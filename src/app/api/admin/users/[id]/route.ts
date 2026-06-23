@@ -129,6 +129,7 @@ export async function GET(
     name:            user.name ?? user.email ?? user.id,
     avatarUrl:       user.avatarUrl,
     role:            user.role ?? "visitor",
+    status:          user.status ?? "active",
     createdAt:       user.createdAt,
     counselorId:     counselorRow[0]?.id ?? null,
     counselorName:   counselorRow[0]?.displayName ?? null,
