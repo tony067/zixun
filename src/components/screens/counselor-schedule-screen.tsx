@@ -619,14 +619,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
+
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
-                      style={{ background: form.durationMinutes === d ? "#9CB48A" : "#F5F0E8", color: form.durationMinutes === d ? "white" : "#6B5E52", border: form.durationMinutes === d ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
-                      {d === "custom" ? "自定义" : `${d}分`}
-                    </button>
-                  ))}
-                </div>
-                {form.durationMinutes === "custom" && (
-                  <input type="number" placeholder="分钟数" value={form.customDuration}
                     onChange={e => set("customDuration", e.target.value)}
                     className="w-full mt-2 px-3 py-2 rounded-xl text-sm"
                     style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
