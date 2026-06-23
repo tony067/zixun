@@ -1,8 +1,113 @@
 "use client";
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Search } from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
+import { request } from "@/lib/api/request";
+
+interface UserRow {
+  id: string;
+  email: string;
+  name: string;
+  avatarUrl: string | null;
+  role: string;
+  bookingCount: number;
+  counselorId: string | null;
+  createdAt: string;
+}
+
+const ROLE_LABEL: Record<string, string> = {
+  visitor: "来访者",
+  counselor: "咨询师",
+  admin: "管理员",
+};
+
+export default function AdminUsersScreen() {
+  const router = useRouter();
+  const [tab, setTab] = useState<"visitor" | "counselor">("visitor");
+  const [search, setSearch] = useState("");
+  const [allUsers, setAllUsers] = useState<UserRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    request("/api/admin/users")
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d)) setAllUsers(d); })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = allUsers
+    .filter(u => u.role === tab)
+    .filter(u => !search || u.name.includes(search) || u.email.includes(search));
+
+  return (
+    <div className="min-h-screen pb-24" style={{ background: "#FAF7F2" }}>
+      {/* 顶栏 */}
+      <div className="sticky top-0 z-10 px-4 pt-12 pb-3"
+        style={{ background: "rgba(250,247,242,0.96)", backdropFilter: "blur(8px)", borderBottom: "1px solid #EBE7DF" }}>
+        <h1 className="text-lg font-bold mb-3" style={{ color: "#2C2420" }}>用户管理</h1>
+        {/* Tab */}
+        <div className="flex gap-2 mb-3">
+          {([["visitor","来访者"],["counselor","咨询师"]] as const).map(([k, label]) => (
+            <button key={k} onClick={() => setTab(k)}
+              className="px-5 py-1.5 rounded-full text-sm font-medium transition-all"
+              style={{
+                background: tab === k ? "#9CB48A" : "#EBE7DF",
+                color: tab === k ? "white" : "#5A4E44",
+              }}>
+              {label}
+              <span className="ml-1.5 text-xs opacity-70">
+                {allUsers.filter(u => u.role === k).length}
+              </span>
+            </button>
+          ))}
+        </div>
+        {/* 搜索 */}
+        <div className="flex items-center gap-2 px-3 py-2 rounded-2xl"
+          style={{ background: "white", border: "1px solid #EBE7DF" }}>
+          <Search className="w-4 h-4 flex-none" style={{ color: "#9B8E82" }} />
+          <input value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="搜索姓名或邮箱…"
+            className="flex-1 bg-transparent text-sm outline-none"
+            style={{ color: "#2C2420" }} />
+        </div>
+      </div>
+
+      <div className="px-4 pt-3 space-y-2">
+        {loading ? (
+          <div className="text-center py-12 text-sm" style={{ color: "#9B8E82" }}>加载中…</div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-12 text-sm" style={{ color: "#9B8E82" }}>
+            {search ? "没有找到匹配用户" : `暂无${ROLE_LABEL[tab]}数据`}
+          </div>
+        ) : filtered.map(u => (
+          <button key={u.id}
+            onClick={() => router.push(`/admin/users/${u.id}`)}
+            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left"
+            style={{ background: "#FDFBF7", border: "1px solid #EBE7DF" }}>
+            <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-bold"
+              style={{ background: "#EBE7DF", color: "#6B5E52" }}>
+              {u.name?.[0] ?? "?"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate" style={{ color: "#2C2420" }}>{u.name}</p>
+              <p className="text-xs truncate mt-0.5" style={{ color: "#9B8E82" }}>{u.email}</p>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <p className="text-xs font-medium" style={{ color: "#9CB48A" }}>
+                {tab === "counselor" ? `接单 ${u.bookingCount}` : `预约 ${u.bookingCount}`}
+              </p>
+              <p className="text-[10px] mt-0.5" style={{ color: "#C4BDB5" }}>
+                {u.createdAt ? new Date(u.createdAt).toLocaleDateString("zh-CN") : ""}
+              </p>
+            </div>
+            <ChevronRight size={16} style={{ color: "#C4BDB5" }} />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const MOCK_USERS = [
   { id: "u001", name: "张婧", email: "zhang@example.com", role: "client", bookings: 3, joined: "2026-03-12", status: "active", phone: "138****1234" },
