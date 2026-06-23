@@ -109,9 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-
-  return (
-    <div className="min-h-screen pb-24" style={{ background: "var(--color-bg)" }}>
       {/* 顶栏 */}
       <div className="sticky top-0 z-10 px-4 pt-12 pb-3"
         style={{ background: "rgba(245,240,232,0.96)", backdropFilter: "blur(8px)", borderBottom: "1px solid #EBE7DF" }}>
