@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       email: user.email ?? "",
       name: user.name,
       avatarUrl: user.avatarUrl,
+      role: user.role ?? "visitor",
     });
 
     return NextResponse.json({

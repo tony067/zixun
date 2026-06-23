@@ -12,6 +12,7 @@ export interface User {
   email: string;
   name?: string | null;
   avatarUrl?: string | null;
+  role?: string | null;
 }
 
 export interface AuthResult {
@@ -50,6 +51,7 @@ export async function requireAuth(req: NextRequest): Promise<AuthResult | AuthEr
       email: payload.email,
       name: payload.name,
       avatarUrl: payload.avatarUrl,
+      role: payload.role,
     },
   };
 }

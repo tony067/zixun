@@ -9,6 +9,7 @@ export interface JwtPayload {
   email: string;
   name?: string | null;
   avatarUrl?: string | null;
+  role?: string | null;
 }
 
 function getSecret(): Uint8Array {
@@ -37,6 +38,7 @@ export async function verifyToken(token: string): Promise<JwtPayload | null> {
       email: payload.email as string,
       name: (payload.name as string | undefined) ?? null,
       avatarUrl: (payload.avatarUrl as string | undefined) ?? null,
+      role: (payload.role as string | undefined) ?? null,
     };
   } catch {
     return null;
