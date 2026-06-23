@@ -15,7 +15,8 @@ type Stats = {
 const SHORTCUTS = [
   { label: "审核申请", sub: "咨询师入驻审核", href: "/admin/counselors", color: "#E8A87C", badgeKey: "pendingCounselors" },
   { label: "订单管理", sub: "查看全部订单", href: "/admin/orders", color: "#8BB5C8", badgeKey: "monthOrders" },
-  { label: "用户管理", sub: "来访与咨询师", href: "/admin/users", color: "#9CB48A", badgeKey: null },
+  { label: "账单导出", sub: "月度收入明细", href: "/admin/billing", color: "#9CB48A", badgeKey: null },
+  { label: "用户管理", sub: "来访与咨询师", href: "/admin/users", color: "#C4A0C0", badgeKey: null },
 ];
 
 type RecentAction = {
