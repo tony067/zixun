@@ -822,9 +822,12 @@ export function CounselorScheduleScreen() {
                               })}
                                 className="py-2 rounded-xl text-[10px] font-semibold leading-tight"
                                 style={{
-                                  background: sel ? (dayType === "fixed" ? "#F59E0B" : "#9CB48A") : "#F0EDE8",
-                                  color: sel ? "white" : "#7D736A",
+                                  background: sel ? (dayType === "fixed" ? "#F59E0B" : "#9CB48A") : conflicted ? "#E8E4DF" : "#F0EDE8",
+                                  color: sel ? "white" : conflicted ? "#C4BDB5" : "#7D736A",
                                   border: sel ? "none" : "1px solid #EBE7DF",
+                                  opacity: conflicted ? 0.5 : 1,
+                                  cursor: conflicted ? "not-allowed" : "pointer",
+                                  textDecoration: conflicted ? "line-through" : "none",
                                 }}>
                                 {h}–{end}
                               </button>
