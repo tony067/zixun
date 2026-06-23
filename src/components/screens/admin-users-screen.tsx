@@ -109,14 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-          <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.55)" }} />
-          <div className="relative rounded-t-3xl px-5 pt-5 pb-10"
-            style={{ background: "var(--color-bg)", zIndex: 1, maxHeight: "80vh", overflowY: "auto" }}
-            onClick={e => e.stopPropagation()}>
-            {/* 头部 */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center text-base font-bold text-white"
                   style={{ background: selected.status === "banned" ? "#D1D5DB" : "var(--color-primary)" }}>
                   {selected.name[0]}
                 </div>
