@@ -12,6 +12,8 @@ export const users = pgTable(
     passwordHash: text("password_hash"),
     /** 用户角色：visitor（来访者）| counselor（咨询师）| admin（管理员） */
     role: varchar("role", { length: 32 }).default("visitor"),
+    /** 账号状态：active（正常）| banned（封禁） */
+    status: varchar("status", { length: 32 }).default("active"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
