@@ -438,14 +438,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
       )}
       {rules.filter(r => !r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
 
-      {/* 单次安排入口提示 — 不在此列出，引导去日历查看 */}
-      {rules.filter(r => r.isSingle).length > 0 && (
-        <div>
-          <button onClick={() => setShowSingles(v => !v)}
-            className="w-full flex items-center justify-between py-2.5 px-4 rounded-2xl"
-            style={{ background: "#F5F1E8" }}>
-            <span className="text-sm font-medium" style={{ color: "#2C2420" }}>
-              单次安排（{rules.filter(r => r.isSingle).length} 条）
+      <AnimatePresence>> r.isSingle).length} 条）
             </span>
             <ChevronRight size={16}
               style={{ color: "#9B8E82", transition: "transform 0.2s",
