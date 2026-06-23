@@ -959,15 +959,9 @@ export function CounselorScheduleScreen() {
 }
 }
 
-function StatsPanel() {-full py-3 rounded-2xl text-sm font-semibold"
-                      style={{ background: "#FEF3C7", color: "#D97706" }}>
-                      仅屏蔽这一天
-                    </button>
-                    <button onClick={async () => {
-                      if (!confirm("确认删除整条循环规则？所有关联日期都会失效。")) return;
-                      await request("/api/counselor/schedule", {
-                        method: "DELETE",
-                        headers: { "Content-Type": "application/json" },
+
+function StatsPanel() {
+  const router = useRouter();
                         body: JSON.stringify({ id: editingSlotDisplay.slot.recurringId }),
                       });
                       await loadRules();
