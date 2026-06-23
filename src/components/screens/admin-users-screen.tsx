@@ -109,9 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-              {label}
-            </button>
-          ))}
         </div>
         {/* 搜索 */}
         <div className="flex items-center gap-2 px-3 py-2 rounded-2xl" style={{ background: "white", border: "1px solid #EBE7DF" }}>
