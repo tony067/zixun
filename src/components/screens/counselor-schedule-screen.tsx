@@ -628,16 +628,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
-// ── 主屏幕 ────────────────────────────────────────────────────────────────────
-
-            <div className="flex gap-2 pt-1">
-              <button onClick={() => setShowForm(false)}
-                className="flex-1 h-11 rounded-2xl text-sm text-[#7D736A]"
-                style={{ border: "1px solid #EBE7DF", background: "#F5F0E8" }}>取消</button>
-              <motion.button whileTap={{ scale: 0.97 }} onClick={submit}
-                disabled={!canSubmit || saving}
-                className="flex-1 h-11 rounded-2xl text-sm font-semibold text-white"
-                style={{ background: canSubmit && !saving ? "#9CB48A" : "#C0B8B0" }}>
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
