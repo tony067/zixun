@@ -950,27 +950,10 @@ export function CounselorScheduleScreen() {
                 )}
 
               </div>
-                  <button onClick={async () => {
-                    await request("/api/counselor/schedule", {
-                      method: "DELETE",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ id: editingSlotDisplay.slot.ruleId }),
-                    });
-                    await loadRules();
-                    setEditingSlotDisplay(null);
-                  }} className="w-full py-3 rounded-2xl text-sm font-semibold"
-                    style={{ background: "#E4F0DC", color: "#3A6228" }}>
-                    恢复该时间段（移除屏蔽）
-                  </button>
-                )}
-                {/* 单次规则：直接删除 */}
-                {!editingSlotDisplay.slot.isRecurring && (
-                  <button onClick={async () => {
-                    if (!confirm("确认删除该时间段？")) return;
-                    await request("/api/counselor/schedule", {
-                      method: "DELETE",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ id: editingSlotDisplay.slot.ruleId }),
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
                     });
                     await loadRules();
                     setEditingSlotDisplay(null);
