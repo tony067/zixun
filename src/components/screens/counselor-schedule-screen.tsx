@@ -612,10 +612,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
-
-
-// ── 主屏幕 ────────────────────────────────────────────────────────────────────
-export function CounselorScheduleScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState<"rules" | "calendar" | "stats" | "clients">("rules");
