@@ -756,16 +756,46 @@ export function CounselorScheduleScreen() {
                     </button>
                   ))}
                 </div>
-                {/* 时间 + 时长 */}
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <p className="text-xs mb-1.5" style={{ color: "#9B8E82" }}>开始时间</p>
-                    <select value={dayStartTime} onChange={e => setDayStartTime(e.target.value)}
-                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
-                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
-                      {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
-                    </select>
+                {/* 时间多选格子 */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-medium" style={{ color: "#9B8E82" }}>选择时间段（可多选）</p>
+                    {daySelectedTimes.size > 0 && (
+                      <span className="text-xs" style={{ color: "#9CB48A" }}>已选 {daySelectedTimes.size} 个</span>
+                    )}
                   </div>
+                  {(["早上", "下午", "晚上"] as const).map((label, gi) => {
+                    const ranges = [[6,12],[12,18],[18,23]];
+                    const [from, to] = ranges[gi];
+                    const times = HOUR_OPTIONS.filter(h => { const hh = parseInt(h); return hh >= from && hh < to; });
+                    return (
+                      <div key={label} className="mb-3">
+                        <p className="text-[10px] mb-1.5" style={{ color: "#C4BDB5" }}>{label}</p>
+                        <div className="grid grid-cols-4 gap-1.5">
+                          {times.map(h => {
+                            const sel = daySelectedTimes.has(h);
+                            return (
+                              <button key={h} onClick={() => setDaySelectedTimes(prev => {
+                                const next = new Set(prev);
+                                if (next.has(h)) next.delete(h); else next.add(h);
+                                return next;
+                              })}
+                                className="py-2 rounded-xl text-xs font-semibold"
+                                style={{
+                                  background: sel ? (dayType === "fixed" ? "#F59E0B" : "#9CB48A") : "#F0EDE8",
+                                  color: sel ? "white" : "#7D736A",
+                                  border: sel ? "none" : "1px solid #EBE7DF",
+                                }}>
+                                {h}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex gap-2">
                   <div className="flex-1">
                     <p className="text-xs mb-1.5" style={{ color: "#9B8E82" }}>时长</p>
                     <select value={dayDuration} onChange={e => setDayDuration(Number(e.target.value))}
@@ -784,21 +814,26 @@ export function CounselorScheduleScreen() {
                       style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
                   </div>
                 )}
-                <button disabled={addingDay} onClick={async () => {
+                <button disabled={addingDay || daySelectedTimes.size === 0} onClick={async () => {
+                  if (daySelectedTimes.size === 0) return;
                   setAddingDay(true);
                   try {
-                    await request("/api/counselor/schedule", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        type: dayType, isSingle: true,
-                        singleDate: addingDateModal, singleTime: dayStartTime,
-                        durationMinutes: dayDuration,
-                        fixedClientId: dayType === "fixed" ? dayFixedClientId : undefined,
-                      }),
-                    });
+                    // 批量保存：每个选中时间各一条记录
+                    await Promise.all(Array.from(daySelectedTimes).map(t =>
+                      request("/api/counselor/schedule", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          type: dayType, isSingle: true,
+                          singleDate: addingDateModal, singleTime: t,
+                          durationMinutes: dayDuration,
+                          fixedClientId: dayType === "fixed" ? dayFixedClientId : undefined,
+                        }),
+                      })
+                    ));
                     await loadRules();
                     setDayFixedClientId("");
+                    setDaySelectedTimes(new Set());
                     setAddingDateModal(null);
                   } finally { setAddingDay(false); }
                 }} className="w-full py-3 rounded-2xl text-sm font-semibold text-white"
