@@ -109,9 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-  const [users, setUsers] = useState(MOCK_USERS);
-
-  const filtered = users
     .filter(u => u.role === tab)
     .filter(u => !search || u.name.includes(search) || u.email.includes(search));
 
