@@ -711,12 +711,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
                 disabled={!canSubmit || saving}
                 className="flex-1 h-11 rounded-2xl text-sm font-semibold text-white"
                 style={{ background: canSubmit && !saving ? "#9CB48A" : "#C0B8B0" }}>
-                {saving ? "保存中…" : "保存规则"}
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
