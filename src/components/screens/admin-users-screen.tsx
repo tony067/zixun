@@ -109,14 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-          <p className="text-center py-12 text-sm" style={{ color: "#9B8E82" }}>没有符合条件的用户</p>
-        )}
-      </div>
-
-      {/* 用户详情弹窗 → 改为底部完整面板 */}
-      {mounted && selected && createPortal(
-        <div style={{ position:"fixed", inset:0, zIndex:99999, display:"flex", flexDirection:"column", justifyContent:"flex-end" }}
-          onClick={() => setSelected(null)}>
           <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.55)" }} />
           <div className="relative rounded-t-3xl px-5 pt-5 pb-10"
             style={{ background: "var(--color-bg)", zIndex: 1, maxHeight: "80vh", overflowY: "auto" }}
