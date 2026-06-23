@@ -6,6 +6,41 @@ import { bookings } from "@/lib/db/schema/scheduling";
 import { counselors } from "@/lib/db/schema/counselors";
 import { eq, desc } from "drizzle-orm";
 
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) return auth.response;
+  if (auth.user.role !== "admin") {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  const { id } = await params;
+  const body = await req.json().catch(() => ({}));
+
+  // 支持修改 role 和 status
+  const updates: Record<string, unknown> = {};
+  if (body.role !== undefined) updates.role = body.role;
+  if (body.status !== undefined) updates.status = body.status;
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: "no fields to update" }, { status: 400 });
+  }
+
+  const updated = await db
+    .update(users)
+    .set({ ...updates, updatedAt: new Date() })
+    .where(eq(users.id, id))
+    .returning();
+
+  if (!updated[0]) {
+    return NextResponse.json({ error: "not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({ ok: true, role: updated[0].role, status: updated[0].status });
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
