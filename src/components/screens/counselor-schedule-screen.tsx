@@ -465,8 +465,153 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
               style={{ background: "#FDFBF7", maxHeight: "85vh" }}
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}>
-              <div className="px-5 pt-5 pb-2 flex items-center justify-between sticky top-0" style={{ background: "#FDFBF7" }}
-            style={{ border: "1.5px solid #9CB48A", background: "#FDFAF5" }}>
+              <div className="px-5 pt-5 pb-2 flex items-center justify-between sticky top-0" style={{ background: "#FDFBF7" }}>
+                <p className="text-base font-bold" style={{ color: "#2C2420" }}>新增档期规则</p>
+                <button onClick={() => setShowForm(false)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
+                  <ChevronRight size={16} className="rotate-90" style={{ color: "#6B5E52" }} />
+                </button>
+              </div>
+              <div className="px-5 pb-10 space-y-4">
+                <div>
+                  <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>规则类型</p>
+                  <div className="flex gap-2">
+                    {(["recurring","single"] as const).map(m => (
+                      <button key={m} onClick={() => set("mode", m)}
+                        className="flex-1 py-2.5 rounded-xl text-xs font-semibold"
+                        style={{ background: form.mode === m ? "#9CB48A" : "#F5F0E8",
+                          color: form.mode === m ? "white" : "#6B5E52",
+                          border: form.mode === m ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
+                        {m === "recurring" ? "🔁 循环（每周）" : "📅 单次（指定日期）"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {form.mode === "recurring" && (
+                  <div>
+                    <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>每周哪几天（可多选）</p>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {WEEKDAY_LABELS.map((d, i) => (
+                        <button key={i} onClick={() => toggleDay(i)}
+                          className="w-9 h-9 rounded-full text-xs font-semibold"
+                          style={{ background: form.weekdays.includes(i) ? "#9CB48A" : "#F5F0E8",
+                            color: form.weekdays.includes(i) ? "white" : "#6B5E52",
+                            border: form.weekdays.includes(i) ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {form.mode === "single" && (
+                  <div>
+                    <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>指定日期</p>
+                    <input type="date" value={form.date} onChange={e => set("date", e.target.value)}
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>开始时间</p>
+                    <select value={form.startTime} onChange={e => set("startTime", e.target.value)}
+                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                      style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
+                      {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>时长</p>
+                    <div className="flex gap-1.5">
+                      {[50, 90].map(d => (
+                        <button key={d} onClick={() => set("durationMinutes", d)}
+                          className="flex-1 py-2.5 rounded-xl text-xs font-semibold"
+                          style={{ background: form.durationMinutes === d ? "#9CB48A" : "#F5F0E8",
+                            color: form.durationMinutes === d ? "white" : "#6B5E52",
+                            border: form.durationMinutes === d ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
+                          {d}分
+                        </button>
+                      ))}
+                      <button onClick={() => set("durationMinutes", "custom")}
+                        className="flex-1 py-2.5 rounded-xl text-xs font-semibold"
+                        style={{ background: form.durationMinutes === "custom" ? "#9CB48A" : "#F5F0E8",
+                          color: form.durationMinutes === "custom" ? "white" : "#6B5E52",
+                          border: form.durationMinutes === "custom" ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
+                        自定义
+                      </button>
+                    </div>
+                    {form.durationMinutes === "custom" && (
+                      <input type="number" value={form.customDuration}
+                        onChange={e => set("customDuration", e.target.value)}
+                        placeholder="输入分钟数" className="w-full mt-2 text-sm px-3 py-2 rounded-xl outline-none"
+                        style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>档期类型</p>
+                  <div className="flex gap-2">
+                    {([["available","可预约"],["fixed","固定档期"]] as const).map(([id, label]) => (
+                      <button key={id} onClick={() => set("type", id as "available" | "fixed")}
+                        className="flex-1 py-2.5 rounded-xl text-xs font-semibold"
+                        style={{ background: form.type === id ? (id === "fixed" ? "#F59E0B" : "#9CB48A") : "#F5F0E8",
+                          color: form.type === id ? "white" : "#6B5E52",
+                          border: form.type === id ? `1px solid ${id === "fixed" ? "#F59E0B" : "#9CB48A"}` : "1px solid #EBE7DF" }}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {form.mode === "recurring" && (
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>开始生效</p>
+                      <input type="date" value={form.validFrom} onChange={e => set("validFrom", e.target.value)}
+                        className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                        style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>截止（空=长期）</p>
+                      <input type="date" value={form.validUntil} onChange={e => set("validUntil", e.target.value)}
+                        className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                        style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                    </div>
+                  </div>
+                )}
+                {canSubmit && (
+                  <div className="px-3 py-2.5 rounded-xl text-xs" style={{ background: "#E4F0DC", color: "#6B5E52" }}>
+                    {form.mode === "recurring"
+                      ? `每 ${form.weekdays.map(d => `周${WEEKDAY_LABELS[d]}`).join("、")} 的 ${form.startTime}，每次 ${actualDur} 分钟`
+                      : `${form.date} ${form.startTime}，时长 ${actualDur} 分钟`}
+                  </div>
+                )}
+                <div className="flex gap-3 pt-2">
+                  <button onClick={() => setShowForm(false)}
+                    className="flex-1 h-12 rounded-2xl text-sm font-medium"
+                    style={{ background: "#EBE7DF", color: "#7D736A" }}>取消</button>
+                  <motion.button whileTap={{ scale: 0.97 }} onClick={submit}
+                    disabled={!canSubmit || saving}
+                    className="flex-1 h-12 rounded-2xl text-sm font-semibold text-white"
+                    style={{ background: canSubmit && !saving ? "#9CB48A" : "#C0B8B0" }}>
+                    {saving ? "保存中…" : "保存规则"}
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {!showForm && (
+        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setShowForm(true)}
+          className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-medium"
+          style={{ border: "2px dashed #C0B8B0", color: "#7D736A" }}>
+          <Plus className="w-4 h-4" /> 新增规则
+        </motion.button>
+      )}
+    </div>
+  );
+}
             <p className="text-sm font-bold text-[#2C2420]">新增档期规则</p>
 
             {/* 循环 vs 单次 */}
