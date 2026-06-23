@@ -962,27 +962,6 @@ export function CounselorScheduleScreen() {
 
 function StatsPanel() {
   const router = useRouter();
-                        body: JSON.stringify({ id: editingSlotDisplay.slot.recurringId }),
-                      });
-                      await loadRules();
-                      setEditingSlotDisplay(null);
-                    }} className="w-full py-3 rounded-2xl text-sm font-semibold"
-                      style={{ background: "#FEE2E2", color: "#EF4444" }}>
-                      删除循环规则
-                    </button>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function StatsPanel() {
-  const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<{ monthBookings: number; monthHours: number; totalClients: number; totalHours: number } | null>(null);
 
