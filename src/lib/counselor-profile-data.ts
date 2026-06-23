@@ -39,6 +39,7 @@ export interface ProfileForm {
 
 export const EMPTY_PROFILE: ProfileForm = {
   reviewStatus: "draft", reviewNote: "",
+  isAccepting: false,
   avatarUrl: "", displayName: "",
   counselorTypes: [], isSupervisor: false,
   location: "", totalHours: "",
