@@ -109,8 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-    .filter(u => u.role === tab)
-    .filter(u => !search || u.name.includes(search) || u.email.includes(search));
 
   const toggleBan = (u: User) => {
     const next = { ...u, status: u.status === "active" ? "banned" : "active" };
