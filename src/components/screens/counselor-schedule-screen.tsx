@@ -615,7 +615,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
-                    className="flex-1 py-2 rounded-xl text-xs font-semibold border transition-all"
                     style={{ background: form.mode === m ? "#9CB48A" : "#F5F0E8", color: form.mode === m ? "white" : "#6B5E52", border: form.mode === m ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
                     {m === "recurring" ? "🔁 循环（每周）" : "📅 单次（指定日期）"}
                   </button>
