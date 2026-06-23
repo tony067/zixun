@@ -109,9 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-type User = typeof MOCK_USERS[0];
-
-export default function AdminUsersScreen() {
   const router = useRouter();
   const [tab, setTab] = useState<"client" | "counselor">("client");
   const [search, setSearch] = useState("");
