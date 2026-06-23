@@ -611,6 +611,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 }
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
+export function CounselorScheduleScreen() {
 
 
 
