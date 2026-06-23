@@ -297,7 +297,8 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
                               </span>
                               {/* 循环图标 */}
                               {slot.isRecurring && (
-                                <span className="text-[10px]" style={{ color: "#9B8E82" }}>↺</span>
+                                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold flex-shrink-0"
+                                  style={{ background: "#E4F0DC", color: "#3A6228" }}>↺</span>
                               )}
                             </div>
                             {/* 右侧箭头提示可点击 */}
