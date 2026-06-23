@@ -438,16 +438,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
       )}
       {rules.filter(r => !r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
 
-      <AnimatePresence>> r.isSingle).length} 条）
-            </span>
-            <ChevronRight size={16}
-              style={{ color: "#9B8E82", transition: "transform 0.2s",
-                transform: showSingles ? "rotate(90deg)" : "rotate(0deg)" }} />
-          </button>
-          <AnimatePresence>
-            {showSingles && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-2 space-y-2">
+      <AnimatePresence>
+        {showForm && (ce-y-2">
                 {rules.filter(r => r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
               </motion.div>
             )}
