@@ -109,9 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-    setUsers(prev => prev.map(x => x.id === u.id ? next : x));
-    setSelected(next);
-  };
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--color-bg)" }}>
