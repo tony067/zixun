@@ -761,8 +761,6 @@ export function CounselorScheduleScreen() {
           <Plus className="w-4 h-4" /> 新增规则
         </motion.button>
       )}
-    </div>
-  );
 }
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
