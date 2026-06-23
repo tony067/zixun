@@ -77,6 +77,7 @@ function getDaySlots(rules: Rule[], dateStr: string): SlotDisplay[] {
           period: timePeriod(st), type: "blocked",
           isRecurring: true, overriddenByBlock: true,
           recurringId: r.id, ruleId: override.id,
+          durationMinutes: r.durationMinutes,
         });
       } else {
         slots.push({
@@ -94,6 +95,7 @@ function getDaySlots(rules: Rule[], dateStr: string): SlotDisplay[] {
         period: timePeriod(st), type: r.type,
         isRecurring: true, overriddenByBlock: false,
         recurringId: r.id, ruleId: r.id,
+        durationMinutes: r.durationMinutes,
       });
     }
   }
@@ -109,6 +111,7 @@ function getDaySlots(rules: Rule[], dateStr: string): SlotDisplay[] {
         period: timePeriod(st), type: s.type,
         isRecurring: false, overriddenByBlock: false,
         ruleId: s.id,
+        durationMinutes: s.durationMinutes,
       });
     }
   }
