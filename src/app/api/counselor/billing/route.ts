@@ -14,9 +14,8 @@ export async function GET(req: NextRequest) {
   const year  = parseInt(searchParams.get("year")  ?? String(new Date().getFullYear()));
   const month = parseInt(searchParams.get("month") ?? String(new Date().getMonth() + 1));
 
-  const from = `${year}-${String(month).padStart(2,"0")}-01`;
-  const toDate = new Date(year, month, 0);
-  const to   = `${year}-${String(month).padStart(2,"0")}-${String(toDate.getDate()).padStart(2,"0")}`;
+  const fromDate = new Date(year, month - 1, 1);
+  const toDate   = new Date(year, month, 0, 23, 59, 59);
 
   // 先找这个用户对应的 counselor 记录
   const counselorRow = await db.select({ id: counselors.id })
