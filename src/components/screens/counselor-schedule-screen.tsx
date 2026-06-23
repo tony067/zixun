@@ -622,17 +622,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
+
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
-              <div className="flex gap-2">
-                {([["available","可预约"],["blocked","屏蔽时段"],["fixed","固定档期"]] as const).map(([id, label]) => (
-                  <button key={id} onClick={() => set("type", id)}
-                    className="flex-1 py-2 rounded-xl text-xs font-semibold"
-                    style={{ background: form.type === id ? "#9CB48A" : "#F5F0E8", color: form.type === id ? "white" : "#6B5E52", border: form.type === id ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* 循环：生效时间 */}
             {form.mode === "recurring" && (
