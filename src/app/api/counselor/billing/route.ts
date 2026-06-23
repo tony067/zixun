@@ -29,8 +29,7 @@ export async function GET(req: NextRequest) {
   const rows = await db
     .select({
       id:            bookings.id,
-      scheduledDate: bookings.scheduledDate,
-      scheduledTime: bookings.scheduledTime,
+      scheduledAt:   bookings.scheduledAt,
       priceAmount:   bookings.priceAmount,
       clientId:      bookings.clientId,
       clientNote:    bookings.clientNote,
