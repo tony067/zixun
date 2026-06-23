@@ -259,33 +259,3 @@ export default function AdminUsersScreen() {
     </div>
   );
 }
-                <div key={k} className="flex justify-between items-center px-4 py-3 border-b last:border-0"
-                  style={{ borderColor: "#F5F0EA" }}>
-                  <span className="text-sm" style={{ color: "#9B8E82" }}>{k}</span>
-                  <span className="text-sm font-medium" style={{ color: k === "账号状态" && v === "已封禁" ? "#DC2626" : "#2C2420" }}>{v}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* 操作按钮 */}
-            <div className="space-y-2">
-              {selected.role === "counselor" && (
-                <button onClick={() => { setSelected(null); router.push("/admin/counselors"); }}
-                  className="w-full py-3 rounded-2xl text-sm font-bold"
-                  style={{ background: "#E4F0DC", color: "var(--color-primary)" }}>
-                  查看咨询师档案
-                </button>
-              )}
-              <button onClick={toggleBan}
-                className="w-full py-3 rounded-2xl text-sm font-bold"
-                style={{ background: selected.status === "banned" ? "#DCFCE7" : "#FEE2E2",
-                  color: selected.status === "banned" ? "#16A34A" : "#DC2626" }}>
-                {selected.status === "banned" ? "解除封禁" : "封禁该用户"}
-              </button>
-            </div>
-          </div>
-        </div>
-      , document.body)}
-    </div>
-  );
-}
