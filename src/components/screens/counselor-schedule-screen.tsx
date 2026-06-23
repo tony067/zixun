@@ -613,7 +613,9 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
   );
 }
 
-// placeholder-remove
+}
+
+
                 ))}
               </div>
             </div>
