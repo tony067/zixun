@@ -101,10 +101,20 @@ const AV_COLORS = [
   { bg: "#EDE0C8", text: "#6B4A18" },
 ];
 
-// 从 ListItem[] 或 string[] 中提取文本
+// 从 ListItem[] 或 string[] 中提取文本（兼容存为 JSON 字符串的旧数据）
 function toStrings(arr?: (string | ListItem)[] | null): string[] {
   if (!arr) return [];
-  return arr.map((x) => (typeof x === "string" ? x : x.value)).filter(Boolean);
+  return arr.map((x) => {
+    if (typeof x !== "string") return x.value;
+    // 尝试解析 JSON 字符串 {"id":"...","value":"..."} 格式
+    try {
+      const parsed = JSON.parse(x);
+      if (parsed && typeof parsed === "object" && "value" in parsed) return String(parsed.value);
+    } catch {
+      // 不是 JSON，直接用原字符串
+    }
+    return x;
+  }).filter(Boolean);
 }
 
 // 板块标题
