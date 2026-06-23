@@ -439,15 +439,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
       {rules.filter(r => !r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
 
       <AnimatePresence>
-        {showForm && (ce-y-2">
-                {rules.filter(r => r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-
-      <AnimatePresence>
         {showForm && (
           <>
             <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
