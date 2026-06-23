@@ -614,9 +614,9 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 }
 
 
-// ── 主屏幕 ────────────────────────────────────────────────────────────────────
-              <div>
-                <p className="text-xs text-[#9B8E82] mb-2">每周哪几天（可多选）</p>
+
+
+
                 <div className="flex gap-1.5">
                   {WEEKDAY_LABELS.map((d, i) => (
                     <button key={i} onClick={() => toggleDay(i)}
