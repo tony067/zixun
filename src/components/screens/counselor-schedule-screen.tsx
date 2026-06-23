@@ -323,10 +323,7 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
   );
 }
 
-
-
-
-
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
 
 
 
@@ -613,10 +610,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
   );
 }
 
-
-
-
-
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
 
 
 
