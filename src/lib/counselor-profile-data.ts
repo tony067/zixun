@@ -9,6 +9,7 @@ export type ListItem = { id: string; value: string };
 export interface ProfileForm {
   reviewStatus: string;
   reviewNote: string;
+  isAccepting: boolean;
   avatarUrl: string;
   displayName: string;
   counselorTypes: string[];
