@@ -797,11 +797,11 @@ export function CounselorScheduleScreen() {
                     return (
                       <div key={label} className="mb-3">
                         <p className="text-[10px] mb-1.5" style={{ color: "#C4BDB5" }}>{label}</p>
-                        <div className="grid grid-cols-3 gap-1.5">
+                        <div className="grid grid-cols-2 gap-2">
                           {times.map(h => {
                             const sel = daySelectedTimes.has(h);
                             const end = timeEnd(h, dayDuration);
-                            // 冲突检测：h 的开始时间落在已选某时间段的区间内，或已选时间段的开始落在 h 的区间内
+                            // 冲突检测：两个时间段有重叠
                             const hStart = h.split(":").map(Number);
                             const hStartMin = hStart[0] * 60 + hStart[1];
                             const hEndMin = hStartMin + dayDuration;
@@ -809,7 +809,6 @@ export function CounselorScheduleScreen() {
                               const sp = s.split(":").map(Number);
                               const sStartMin = sp[0] * 60 + sp[1];
                               const sEndMin = sStartMin + dayDuration;
-                              // 两个区间有重叠
                               return hStartMin < sEndMin && hEndMin > sStartMin;
                             });
                             return (
@@ -820,12 +819,12 @@ export function CounselorScheduleScreen() {
                                 if (next.has(h)) next.delete(h); else next.add(h);
                                 return next;
                               })}
-                                className="py-2 rounded-xl text-[10px] font-semibold leading-tight"
+                                className="py-2.5 rounded-xl text-xs font-medium"
                                 style={{
-                                  background: sel ? (dayType === "fixed" ? "#F59E0B" : "#9CB48A") : conflicted ? "#E8E4DF" : "#F0EDE8",
-                                  color: sel ? "white" : conflicted ? "#C4BDB5" : "#7D736A",
+                                  background: sel ? (dayType === "fixed" ? "#F59E0B" : "#9CB48A") : conflicted ? "#F5F3F0" : "#F0EDE8",
+                                  color: sel ? "white" : conflicted ? "#D0C8C0" : "#5A4E44",
                                   border: sel ? "none" : "1px solid #EBE7DF",
-                                  opacity: conflicted ? 0.5 : 1,
+                                  opacity: conflicted ? 0.45 : 1,
                                   cursor: conflicted ? "not-allowed" : "pointer",
                                   textDecoration: conflicted ? "line-through" : "none",
                                 }}>
