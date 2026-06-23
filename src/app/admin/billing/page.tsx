@@ -161,17 +161,7 @@ const MOCK_BILLS = [
 
 export default function BillingPage() {
   return <Suspense><BillingContent /></Suspense>;
-}()}</p>
-          </div>
-        </div>
-
-        {/* 账单列表 */}
-        <p className="text-xs font-semibold pt-1" style={{ color:"#9B8E82" }}>账单明细</p>
-        {bills.map(b => {
-          const st = STATUS_STYLE[b.status] ?? { bg:"#F5F0EA", color:"#9B8E82", label:b.status };
-          return (
-            <button key={b.id} onClick={() => router.push("/admin/orders/"+b.id)}
-              className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-left"
+}
               style={{ background:"white", border:"1px solid #EBE7DF" }}>
               <div>
                 <p className="text-sm font-semibold" style={{ color:"#2C2420" }}>{b.client} → {b.counselor}</p>
