@@ -109,12 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-      {/* 顶栏 */}
-      <div className="sticky top-0 z-10 px-4 pt-12 pb-3"
-        style={{ background: "rgba(245,240,232,0.96)", backdropFilter: "blur(8px)", borderBottom: "1px solid #EBE7DF" }}>
-        <div className="flex items-center gap-3 mb-3">
-          <button onClick={() => router.back()} className="p-1.5 rounded-full" style={{ background: "#EBE7DF" }}>
-            <ArrowLeft className="w-4 h-4" style={{ color: "#5A4E44" }} />
           </button>
           <h1 className="text-base font-bold" style={{ color: "#2C2420" }}>用户管理</h1>
         </div>
