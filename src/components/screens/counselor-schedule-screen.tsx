@@ -625,16 +625,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
-// ── 主屏幕 ────────────────────────────────────────────────────────────────────ll px-3 py-2.5 rounded-xl text-sm"
-                  style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
-              </div>
-            )}
 
-            {/* 屏蔽：备注 */}
-            {form.type === "blocked" && (
-              <div>
-                <p className="text-xs text-[#9B8E82] mb-2">备注（如假期、培训等）</p>
-                <input type="text" value={form.blockNote} placeholder="可选"
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
                   onChange={e => set("blockNote", e.target.value)}
                   className="w-full px-3 py-2.5 rounded-xl text-sm"
                   style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
