@@ -158,7 +158,3 @@ const MOCK_BILLS = [
   { id:"bk_006", date:"2026-05-15", client:"李晓月", counselor:"余晓彤", amount:500, status:"completed" },
   { id:"bk_007", date:"2026-04-30", client:"张靖", counselor:"陈晓雯", amount:450, status:"completed" },
 ];
-
-export default function BillingPage() {
-  return <Suspense><BillingContent /></Suspense>;
-}
