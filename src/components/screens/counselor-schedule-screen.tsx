@@ -617,14 +617,9 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
+
+
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
-              </div>
-              <div className="flex-1">
-                <p className="text-xs text-[#9B8E82] mb-2">时长</p>
-                <div className="flex gap-1">
-                  {([50, 90, "custom"] as const).map(d => (
-                    <button key={String(d)} onClick={() => set("durationMinutes", d)}
-                      className="flex-1 py-2.5 rounded-xl text-xs font-semibold"
                       style={{ background: form.durationMinutes === d ? "#9CB48A" : "#F5F0E8", color: form.durationMinutes === d ? "white" : "#6B5E52", border: form.durationMinutes === d ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
                       {d === "custom" ? "自定义" : `${d}分`}
                     </button>
