@@ -109,6 +109,19 @@ export default function AdminUsersScreen() {
     setAllUsers(prev => prev.map(u => u.id === selected.id ? { ...u, status: newStatus } : u));
   }
 
+  async function toggleRole() {
+    if (!selected) return;
+    const newRole = selected.role === "counselor" ? "visitor" : "counselor";
+    const label = newRole === "counselor" ? "设为咨询师" : "移回来访者";
+    if (!window.confirm(`确认将该用户「${label}」？`)) return;
+    await request(`/api/admin/users/${selected.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ role: newRole }),
+    });
+    setSelected(prev => prev ? { ...prev, role: newRole } : prev);
+    setAllUsers(prev => prev.map(u => u.id === selected.id ? { ...u, role: newRole } : u));
+  }
+
   return (
     <div className="min-h-screen pb-24" style={{ background: "#FAF7F2" }}>
       {/* 顶栏 */}
