@@ -755,14 +755,6 @@ export function CounselorScheduleScreen() {
       </AnimatePresence>
 
       {!showForm && (
-        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setShowForm(true)}
-          className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-medium"
-          style={{ border: "2px dashed #C0B8B0", color: "#7D736A" }}>
-          <Plus className="w-4 h-4" /> 新增规则
-        </motion.button>
-      )}
-}
-
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
   const { user } = useAuth();
