@@ -200,7 +200,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             }
 
-            // 来访者（visitor）：首页、消息、我的，无切换入口
+            // 来访者（visitor）：首页、消息、我的；admin/counselor 额外显示切换入口
             return (
               <>
                 {CLIENT_TABS.map(tab => {
@@ -212,10 +212,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </Link>
                   );
                 })}
-                <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => router.push("/profile")}>
-                  <User size={22} style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }} strokeWidth={pathname === "/profile" ? 2.2 : 1.8} />
-                  <span className="text-[10px] font-medium" style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }}>我的</span>
-                </button>
+                {(userDbRole === "admin" || userDbRole === "counselor") ? (
+                  <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => setShowRolePicker(true)}>
+                    <ChevronRight size={22} style={{ color: "#9B8E82" }} strokeWidth={1.8} className="rotate-90" />
+                    <span className="text-[10px] font-medium" style={{ color: "#9B8E82" }}>切换</span>
+                  </button>
+                ) : (
+                  <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => router.push("/profile")}>
+                    <User size={22} style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }} strokeWidth={pathname === "/profile" ? 2.2 : 1.8} />
+                    <span className="text-[10px] font-medium" style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }}>我的</span>
+                  </button>
+                )}      </button>
               </>
             );
           })()}
