@@ -18,7 +18,11 @@ type Rule = {
 };
 
 const WEEKDAY_LABELS = ["一","二","三","四","五","六","日"];
-const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2,"0")}:00`);
+const HOUR_OPTIONS = Array.from({ length: 48 }, (_, i) => {
+  const h = Math.floor(i / 2);
+  const m = i % 2 === 0 ? "00" : "30";
+  return `${String(h).padStart(2,"0")}:${m}`;
+});
 
 // ── 工具函数 ──────────────────────────────────────────────────────────────────
 function timeEnd(start: string, minutes: number): string {
