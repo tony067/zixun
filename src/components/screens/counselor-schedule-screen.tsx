@@ -407,7 +407,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
   const set = <K extends keyof NewRule>(k: K, v: NewRule[K]) => setForm(p => ({ ...p, [k]: v }));
   const toggleDay = (i: number) => set("weekdays",
     form.weekdays.includes(i) ? form.weekdays.filter(d => d !== i) : [...form.weekdays, i].sort());
-  const [showForm, setShowForm] = useState(false);
 
   const canSubmit = form.mode === "single" ? !!form.date && !!form.startTime : form.weekdays.length > 0;
   const actualDur = form.durationMinutes === "custom" ? (parseInt(form.customDuration) || 50) : form.durationMinutes;
