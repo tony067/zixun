@@ -532,10 +532,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
                       </div>
                     );
                   })}
-                </div>                   {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
-                    </select>
-                  </div>
-                  <div className="flex-1">
+                </div>
+                <div className="flex-1">
                     <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>时长</p>
                     <div className="flex gap-1.5">
                       {[50, 90].map(d => (
