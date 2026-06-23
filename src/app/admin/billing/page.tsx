@@ -162,23 +162,3 @@ const MOCK_BILLS = [
 export default function BillingPage() {
   return <Suspense><BillingContent /></Suspense>;
 }
-              style={{ background:"white", border:"1px solid #EBE7DF" }}>
-              <div>
-                <p className="text-sm font-semibold" style={{ color:"#2C2420" }}>{b.client} → {b.counselor}</p>
-                <p className="text-xs mt-0.5" style={{ color:"#9B8E82" }}>{b.date}</p>
-              </div>
-              <div className="flex flex-col items-end gap-1.5">
-                <p className="text-sm font-bold" style={{ color:"#2C2420" }}>¥{b.amount}</p>
-                <span className="text-xs px-2 py-0.5 rounded-full" style={{ background:st.bg, color:st.color }}>{st.label}</span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-export default function BillingPage() {
-  return <Suspense><BillingContent /></Suspense>;
-}
