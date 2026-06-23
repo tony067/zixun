@@ -44,6 +44,7 @@ type SlotDisplay = {
   overriddenByBlock: boolean; // 循环可预约被单次屏蔽覆盖
   recurringId?: string;       // 原循环规则 id（用于「删除循环规则」）
   ruleId: string;             // 操作时用的 id（单次优先）
+  durationMinutes?: number;   // 时长（用于新建屏蔽记录）
 };
 
 function getDaySlots(rules: Rule[], dateStr: string): SlotDisplay[] {
