@@ -110,13 +110,6 @@ export default function AdminUsersScreen() {
 }
 
         </div>
-        {/* 搜索 */}
-        <div className="flex items-center gap-2 px-3 py-2 rounded-2xl" style={{ background: "white", border: "1px solid #EBE7DF" }}>
-          <Search className="w-4 h-4 flex-none" style={{ color: "#9B8E82" }} />
-          <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="搜索姓名或邮箱…" className="flex-1 text-sm outline-none bg-transparent"
-            style={{ color: "#2C2420" }} />
-        </div>
       </div>
 
       {/* 用户列表 */}
