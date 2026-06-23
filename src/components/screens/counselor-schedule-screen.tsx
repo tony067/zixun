@@ -425,10 +425,16 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
         </div>
       )}
 
-      {/* 循环规则 */}
+      {/* 循环规则 — 规则列表只显示循环规则，单次安排在日历中管理 */}
+      {rules.filter(r => !r.isSingle).length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-sm" style={{ color: "#9B8E82" }}>还没有设置循环规则</p>
+          <p className="text-xs mt-1" style={{ color: "#C4BDB5" }}>单次安排请在「日历」标签中管理</p>
+        </div>
+      )}
       {rules.filter(r => !r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
 
-      {/* 单次规则折叠 */}
+      {/* 单次安排入口提示 — 不在此列出，引导去日历查看 */}
       {rules.filter(r => r.isSingle).length > 0 && (
         <div>
           <button onClick={() => setShowSingles(v => !v)}
