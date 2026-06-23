@@ -32,14 +32,13 @@ export async function GET(req: NextRequest) {
 
   const rows = await db
     .select({
-      id:            bookings.id,
-      scheduledDate: bookings.scheduledDate,
-      scheduledTime: bookings.scheduledTime,
-      priceAmount:   bookings.priceAmount,
-      status:        bookings.status,
-      counselorId:   bookings.counselorId,
-      clientId:      bookings.clientId,
-      clientNote:    bookings.clientNote,
+      id:          bookings.id,
+      scheduledAt: bookings.scheduledAt,
+      priceAmount: bookings.priceAmount,
+      status:      bookings.status,
+      counselorId: bookings.counselorId,
+      clientId:    bookings.clientId,
+      clientNote:  bookings.clientNote,
     })
     .from(bookings)
     .where(and(...conditions))
