@@ -137,7 +137,7 @@ export default function AdminUsersScreen() {
           </div>
         ) : filtered.map(u => (
           <button key={u.id}
-            onClick={() => router.push(`/admin/users/${u.id}`)}
+            onClick={() => openDetail(u)}
             className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left"
             style={{ background: "#FDFBF7", border: "1px solid #EBE7DF" }}>
             <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-bold"
@@ -218,7 +218,7 @@ export default function AdminUsersScreen() {
                   查看咨询师档案
                 </button>
               )}
-              <button onClick={() => toggleBan(selected)}
+              <button onClick={toggleBan}
                 className="w-full py-3 rounded-2xl text-sm font-bold"
                 style={{ background: selected.status === "banned" ? "#DCFCE7" : "#FEE2E2",
                   color: selected.status === "banned" ? "#16A34A" : "#DC2626" }}>
