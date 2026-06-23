@@ -620,12 +620,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
+
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
-                    onChange={e => set("customDuration", e.target.value)}
-                    className="w-full mt-2 px-3 py-2 rounded-xl text-sm"
-                    style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
-                )}
-              </div>
             </div>
 
             {/* 档期类型 */}
