@@ -497,13 +497,42 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
                       style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
                   </div>
                 )}
-                <div className="flex gap-3">
-                  <div className="flex-1">
-                    <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>开始时间</p>
-                    <select value={form.startTime} onChange={e => set("startTime", e.target.value)}
-                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
-                      style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }}>
-                      {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs" style={{ color: "#9B8E82" }}>开始时间</p>
+                    {form.startTime && (
+                      <span className="text-xs font-semibold" style={{ color: "#9CB48A" }}>
+                        {form.startTime}–{timeEnd(form.startTime, typeof form.durationMinutes === "number" ? form.durationMinutes : 50)}
+                      </span>
+                    )}
+                  </div>
+                  {([["早上",[6,12]],["下午",[12,18]],["晚上",[18,23]]] as const).map(([label, [from, to]]) => {
+                    const times = HOUR_OPTIONS.filter(h => { const hh = parseInt(h); return hh >= from && hh < to; });
+                    return (
+                      <div key={label} className="mb-2">
+                        <p className="text-[10px] mb-1" style={{ color: "#C4BDB5" }}>{label}</p>
+                        <div className="grid grid-cols-3 gap-1">
+                          {times.map(h => {
+                            const sel = form.startTime === h;
+                            const dur = typeof form.durationMinutes === "number" ? form.durationMinutes : 50;
+                            const end = timeEnd(h, dur);
+                            return (
+                              <button key={h} onClick={() => set("startTime", h)}
+                                className="py-1.5 rounded-lg text-[10px] font-semibold leading-tight"
+                                style={{
+                                  background: sel ? (form.type === "fixed" ? "#F59E0B" : "#9CB48A") : "#F0EDE8",
+                                  color: sel ? "white" : "#7D736A",
+                                  border: sel ? "none" : "1px solid #EBE7DF",
+                                }}>
+                                {h}–{end}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>                   {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
                     </select>
                   </div>
                   <div className="flex-1">
