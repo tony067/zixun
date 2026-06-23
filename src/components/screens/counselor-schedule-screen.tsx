@@ -837,8 +837,8 @@ export function CounselorScheduleScreen() {
                     setAddingDateModal(null);
                   } finally { setAddingDay(false); }
                 }} className="w-full py-3 rounded-2xl text-sm font-semibold text-white"
-                  style={{ background: addingDay ? "#C0B8B0" : "#9CB48A" }}>
-                  {addingDay ? "保存中…" : "保存"}
+                  style={{ background: (addingDay || daySelectedTimes.size === 0) ? "#C0B8B0" : "#9CB48A" }}>
+                  {addingDay ? "保存中…" : daySelectedTimes.size > 0 ? `保存 ${daySelectedTimes.size} 个时间段` : "请先选择时间"}
                 </button>
               </div>
             </motion.div>
