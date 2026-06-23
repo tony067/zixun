@@ -627,12 +627,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
+
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
-                {form.mode === "recurring"
-                  ? `每 ${form.weekdays.map(d => `周${WEEKDAY_LABELS[d]}`).join("、")} 的 ${form.startTime}，每次 ${actualDur} 分钟，${form.validFrom} 起${form.validUntil ? ` 至 ${form.validUntil}` : "长期循环"}`
-                  : `${form.date} ${form.startTime}，时长 ${actualDur} 分钟`}
-              </div>
-            )}
 
             <div className="flex gap-2 pt-1">
               <button onClick={() => setShowForm(false)}
