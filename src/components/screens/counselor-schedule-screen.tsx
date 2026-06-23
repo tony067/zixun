@@ -428,12 +428,44 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
         </div>
       )}
 
-      {rules.map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
+      {/* 循环规则 */}
+      {rules.filter(r => !r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
+
+      {/* 单次规则折叠 */}
+      {rules.filter(r => r.isSingle).length > 0 && (
+        <div>
+          <button onClick={() => setShowSingles(v => !v)}
+            className="w-full flex items-center justify-between py-2.5 px-4 rounded-2xl"
+            style={{ background: "#F5F1E8" }}>
+            <span className="text-sm font-medium" style={{ color: "#2C2420" }}>
+              单次安排（{rules.filter(r => r.isSingle).length} 条）
+            </span>
+            <ChevronRight size={16}
+              style={{ color: "#9B8E82", transition: "transform 0.2s",
+                transform: showSingles ? "rotate(90deg)" : "rotate(0deg)" }} />
+          </button>
+          <AnimatePresence>
+            {showSingles && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-2 space-y-2">
+                {rules.filter(r => r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
 
       <AnimatePresence>
         {showForm && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-            className="rounded-2xl p-4 space-y-4"
+          <>
+            <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowForm(false)} />
+            <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-y-auto"
+              style={{ background: "#FDFBF7", maxHeight: "85vh" }}
+              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
+              <div className="px-5 pt-5 pb-2 flex items-center justify-between sticky top-0" style={{ background: "#FDFBF7" }}
             style={{ border: "1.5px solid #9CB48A", background: "#FDFAF5" }}>
             <p className="text-sm font-bold text-[#2C2420]">新增档期规则</p>
 
