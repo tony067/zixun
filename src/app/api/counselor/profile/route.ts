@@ -39,6 +39,7 @@ export async function PUT(request: NextRequest) {
     location:           fields.location ?? "",
     totalHours:         fields.totalHours ? parseInt(fields.totalHours) : 0,
     avatarUrl:          fields.avatarUrl ?? "",
+    isAccepting:        fields.isAccepting === true || fields.isAccepting === "true",
     counselorTypes:     fields.counselorTypes ?? [],
     isSupervisor:       fields.isSupervisor ?? false,
     specialties:        fields.specialties ?? [],
