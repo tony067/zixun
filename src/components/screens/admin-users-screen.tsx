@@ -109,9 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-          </button>
-        ))}
-        {filtered.length === 0 && (
           <p className="text-center py-12 text-sm" style={{ color: "#9B8E82" }}>没有符合条件的用户</p>
         )}
       </div>
