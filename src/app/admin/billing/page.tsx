@@ -162,15 +162,6 @@ const MOCK_BILLS = [
 export default function BillingPage() {
   return <Suspense><BillingContent /></Suspense>;
 }
-        <button onClick={() => router.back()} className="p-1.5 rounded-full" style={{ background:"#EBE7DF" }}>
-          <ArrowLeft className="w-4 h-4" style={{ color:"#5A4E44" }} />
-        </button>
-        <h1 className="text-base font-bold" style={{ color:"#2C2420" }}>{title}</h1>
-      </div>
-
-      <div className="px-4 pt-4 space-y-3">
-        {/* 汇总卡 */}
-        <div className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl p-4" style={{ background:"white", border:"1px solid #EBE7DF" }}>
             <p className="text-xs mb-1" style={{ color:"#9B8E82" }}>已到账</p>
             <p className="text-xl font-bold" style={{ color:"#2C2420" }}>¥{total.toLocaleString()}</p>
