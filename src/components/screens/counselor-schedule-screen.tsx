@@ -615,8 +615,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 }
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
-
-            {/* 循环 vs 单次 */}
+export function CounselorScheduleScreen() {
             <div>
               <p className="text-xs text-[#9B8E82] mb-2">规则类型</p>
               <div className="flex gap-2">
