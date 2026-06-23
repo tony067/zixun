@@ -18,9 +18,9 @@ export function AvatarUploader({
       const formData = new FormData();
       formData.append("file", file);
       const token = typeof window !== "undefined" ? localStorage.getItem("mindpace_token") : "";
-      const res = await fetch("/api/upload/avatar", {
+      const res = await fetch("/api/counselor/avatar-upload", {
         method: "POST",
-        headers: token ? { "x-session-token": token } : {},
+        headers: token ? { "Authorization": `Bearer ${token}` } : {},
         body: formData,
       });
       const data = await res.json();
