@@ -70,7 +70,30 @@ export default function AdminUsersScreen() {
 
   const filtered = allUsers
     .filter(u => u.role === tab)
-    .filter(u => !search || u.name.includes(search) || u.email.includes(search));
+    .filter(u => !search || (u.name ?? "").includes(search) || u.email.includes(search));
+
+  async function openDetail(u: UserRow) {
+    setDetailLoading(true);
+    setSelected({ ...u, bookings: [] });
+    try {
+      const r = await request(`/api/admin/users/${u.id}`);
+      const d = await r.json();
+      if (d && !d.error) setSelected(d as UserDetail);
+    } finally {
+      setDetailLoading(false);
+    }
+  }
+
+  async function toggleBan() {
+    if (!selected) return;
+    const newStatus = selected.status === "banned" ? "active" : "banned";
+    await request(`/api/admin/users/${selected.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: newStatus }),
+    });
+    setSelected(prev => prev ? { ...prev, status: newStatus } : prev);
+    setAllUsers(prev => prev.map(u => u.id === selected.id ? { ...u, status: newStatus } : u));
+  }
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "#FAF7F2" }}>
@@ -137,23 +160,30 @@ export default function AdminUsersScreen() {
           </button>
         ))}
       </div>
-    </div>
-  );
-}
 
+      {/* 详情弹窗 */}
+      {mounted && selected && createPortal(
+        <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(0,0,0,0.45)" }}
+          onClick={() => setSelected(null)}>
+          <div className="w-full rounded-t-3xl px-5 pt-5 pb-10 overflow-y-auto"
+            style={{ background: "var(--color-bg)", maxHeight: "82vh" }}
+            onClick={e => e.stopPropagation()}>
+
+            {/* 头部 */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-base font-bold text-white"
                   style={{ background: selected.status === "banned" ? "#D1D5DB" : "var(--color-primary)" }}>
-                  {selected.name[0]}
+                  {((selected.name ?? selected.email ?? "?")[0]).toUpperCase()}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-base font-bold" style={{ color: "#2C2420" }}>{selected.name}</p>
+                    <p className="text-base font-bold" style={{ color: "#2C2420" }}>{selected.name ?? "未设置昵称"}</p>
                     {selected.status === "banned" && (
                       <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ background: "#FEE2E2", color: "#DC2626" }}>已封禁</span>
                     )}
                   </div>
-                  <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>
-                    {selected.role === "client" ? "来访者" : "咨询师"}
-                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{ROLE_LABEL[selected.role] ?? selected.role}</p>
                 </div>
               </div>
               <button onClick={() => setSelected(null)}
@@ -190,9 +220,9 @@ export default function AdminUsersScreen() {
               )}
               <button onClick={() => toggleBan(selected)}
                 className="w-full py-3 rounded-2xl text-sm font-bold"
-                style={{ background: selected.status === "active" ? "#FEE2E2" : "#DCFCE7",
-                  color: selected.status === "active" ? "#DC2626" : "#16A34A" }}>
-                {selected.status === "active" ? "封禁该用户" : "解除封禁"}
+                style={{ background: selected.status === "banned" ? "#DCFCE7" : "#FEE2E2",
+                  color: selected.status === "banned" ? "#16A34A" : "#DC2626" }}>
+                {selected.status === "banned" ? "解除封禁" : "封禁该用户"}
               </button>
             </div>
           </div>
