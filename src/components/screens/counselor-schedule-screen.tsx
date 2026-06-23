@@ -957,7 +957,6 @@ export function CounselorScheduleScreen() {
     </div>
   );
 }
-}
 
 
 function StatsPanel() {
