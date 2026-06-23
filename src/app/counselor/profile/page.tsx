@@ -107,7 +107,6 @@ export default function CounselorProfilePage() {
             {form.isAccepting ? "接诊中" : "已暂停"}
           </button>
         )}
-        </div>
         <span className="text-xs font-semibold px-3 py-1 rounded-full"
           style={{ color: status.color, background: status.bg }}>{status.text}</span>
       </div>
