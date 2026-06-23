@@ -38,7 +38,7 @@ export async function PATCH(
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ ok: true, role: updated[0].role, status: updated[0].status });
+  return NextResponse.json({ ok: true, role: updated[0].role });
 }
 
 export async function GET(
