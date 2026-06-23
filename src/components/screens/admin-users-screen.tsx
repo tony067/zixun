@@ -109,9 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-
-  const toggleBan = (u: User) => {
-    const next = { ...u, status: u.status === "active" ? "banned" : "active" };
     setUsers(prev => prev.map(x => x.id === u.id ? next : x));
     setSelected(next);
   };
