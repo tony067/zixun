@@ -222,7 +222,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <User size={22} style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }} strokeWidth={pathname === "/profile" ? 2.2 : 1.8} />
                     <span className="text-[10px] font-medium" style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }}>我的</span>
                   </button>
-                )}      </button>
+                )}
               </>
             );
           })()}
