@@ -616,12 +616,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
-// ── 主屏幕 ────────────────────────────────────────────────────────────────────
-              </div>
-            ) : (
-              <div>
-                <p className="text-xs text-[#9B8E82] mb-2">指定日期</p>
-                <input type="date" value={form.date} min={TODAY_STR} onChange={e => set("date", e.target.value)}
+
+
                   className="w-full px-3 py-2.5 rounded-xl text-sm"
                   style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
               </div>
