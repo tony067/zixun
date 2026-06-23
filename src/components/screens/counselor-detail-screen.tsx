@@ -440,7 +440,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
               if (!user) { router.push("/login"); return; }
               window.location.href = `/booking/${c.id}`;
             }}>
-            {c.isAccepting ? "预约咨询" : "暂停接诊"}
+            {c.isAccepting ? "预约咨询" : "暂停预约"}
           </motion.button>
         </div>
       </div>
