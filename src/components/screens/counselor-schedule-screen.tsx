@@ -616,16 +616,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
-
-                <div className="flex gap-1.5">
-                  {WEEKDAY_LABELS.map((d, i) => (
-                    <button key={i} onClick={() => toggleDay(i)}
-                      className="flex-1 h-9 rounded-xl text-xs font-semibold"
-                      style={{ background: form.weekdays.includes(i) ? "#9CB48A" : "#F5F0E8", color: form.weekdays.includes(i) ? "white" : "#6B5E52", border: form.weekdays.includes(i) ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
-                      {d}
-                    </button>
-                  ))}
-                </div>
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
               </div>
             ) : (
               <div>
