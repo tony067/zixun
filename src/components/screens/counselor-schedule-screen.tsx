@@ -616,7 +616,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
   const { user } = useAuth();
-                    {m === "recurring" ? "🔁 循环（每周）" : "📅 单次（指定日期）"}
+  const router = useRouter();
                   </button>
                 ))}
               </div>
