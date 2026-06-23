@@ -863,7 +863,7 @@ export function CounselorScheduleScreen() {
                       const block = rules.find(r =>
                         r.isSingle && r.type === "blocked" &&
                         r.singleDate === editingSlotDisplay.dateStr &&
-                        (r.singleTime === editingSlotDisplay.slot.startTime || r.singleTime === editingSlotDisplay.slot.singleTime)
+                        r.singleTime === editingSlotDisplay.slot.startTime
                       );
                       if (block) {
                         await request("/api/counselor/schedule", {
