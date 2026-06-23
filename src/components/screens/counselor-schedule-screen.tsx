@@ -616,10 +616,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
-
-
-                  className="w-full px-3 py-2.5 rounded-xl text-sm"
-                  style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
               </div>
             )}
 
