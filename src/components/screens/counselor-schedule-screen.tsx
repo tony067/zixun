@@ -801,8 +801,21 @@ export function CounselorScheduleScreen() {
                           {times.map(h => {
                             const sel = daySelectedTimes.has(h);
                             const end = timeEnd(h, dayDuration);
+                            // 冲突检测：h 的开始时间落在已选某时间段的区间内，或已选时间段的开始落在 h 的区间内
+                            const hStart = h.split(":").map(Number);
+                            const hStartMin = hStart[0] * 60 + hStart[1];
+                            const hEndMin = hStartMin + dayDuration;
+                            const conflicted = !sel && Array.from(daySelectedTimes).some(s => {
+                              const sp = s.split(":").map(Number);
+                              const sStartMin = sp[0] * 60 + sp[1];
+                              const sEndMin = sStartMin + dayDuration;
+                              // 两个区间有重叠
+                              return hStartMin < sEndMin && hEndMin > sStartMin;
+                            });
                             return (
-                              <button key={h} onClick={() => setDaySelectedTimes(prev => {
+                              <button key={h}
+                                disabled={conflicted}
+                                onClick={() => setDaySelectedTimes(prev => {
                                 const next = new Set(prev);
                                 if (next.has(h)) next.delete(h); else next.add(h);
                                 return next;
