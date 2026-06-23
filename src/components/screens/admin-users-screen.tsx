@@ -8,12 +8,39 @@ import { request } from "@/lib/api/request";
 interface UserRow {
   id: string;
   email: string;
-  name: string;
+  name: string | null;
   avatarUrl: string | null;
   role: string;
+  status?: string;
   bookingCount: number;
   counselorId: string | null;
   createdAt: string;
+}
+
+interface BookingRow {
+  id: string;
+  scheduledAt: string;
+  status: string;
+  priceAmount: number;
+  counterpartName: string;
+}
+
+interface UserDetail extends UserRow {
+  bookings: BookingRow[];
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  pending_confirmation: "待确认",
+  confirmed: "已确认",
+  completed: "已完成",
+  cancelled: "已取消",
+  pending_payment: "待支付",
+};
+
+function fmtDate(iso: string) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -28,6 +55,10 @@ export default function AdminUsersScreen() {
   const [search, setSearch] = useState("");
   const [allUsers, setAllUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<UserDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     setLoading(true);
