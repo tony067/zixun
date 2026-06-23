@@ -291,10 +291,6 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
                               {slot.isRecurring && (
                                 <span className="text-[10px]" style={{ color: "#9B8E82" }}>↺</span>
                               )}
-                              {/* 覆盖提示 */}
-                              {slot.overriddenByBlock && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "#FEE2E2", color: "#DC2626" }}>已屏蔽</span>
-                              )}
                             </div>
                             {/* 右侧箭头提示可点击 */}
                             <ChevronRight size={14} style={{ color: "#C4BDB5", flexShrink: 0 }} />
