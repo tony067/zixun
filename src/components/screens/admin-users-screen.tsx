@@ -109,14 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-                )}
-              </div>
-              <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{u.email}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>
-                {u.role === "client" ? `预约 ${u.bookings} 次` : `完成 ${u.bookings} 次咨询`} · 加入 {u.joined}
-              </p>
-            </div>
-            <span style={{ color: "#C4BDB5", fontSize: 18 }}>›</span>
           </button>
         ))}
         {filtered.length === 0 && (
