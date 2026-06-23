@@ -717,7 +717,7 @@ export function CounselorScheduleScreen() {
                   });
                   await loadRules();
                 }}
-                onAddClick={(d) => { setAddingDateModal(d); setDayType("available"); setDayStartTime("09:00"); setDayDuration(50); }}
+                onAddClick={(d) => { setAddingDateModal(d); setDayType("available"); setDaySelectedTimes(new Set()); setDayDuration(50); }}
               />
             : tab === "stats"
             ? <StatsPanel />
