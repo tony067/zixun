@@ -271,6 +271,17 @@ export default function AdminUsersScreen() {
               </div>
             )}
 
+            {/* 角色切换按钮 */}
+            <div className="mt-2">
+              <button onClick={toggleRole}
+                className="w-full py-3 rounded-2xl text-sm font-bold mb-2"
+                style={{
+                  background: selected.role === "counselor" ? "#FEF3C7" : "#E4F0DC",
+                  color: selected.role === "counselor" ? "#92400E" : "#3A6228",
+                }}>
+                {selected.role === "counselor" ? "移回来访者身份" : "设为咨询师"}
+              </button>
+            </div>
             {/* 封禁按钮 */}
             <div className="mt-2">
               <button onClick={toggleBan}
