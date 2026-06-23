@@ -957,15 +957,9 @@ export function CounselorScheduleScreen() {
     </div>
   );
 }
-                          singleTime: editingSlotDisplay.slot.startTime,
-                          durationMinutes: editingSlotDisplay.slot.endTime
-                            ? (parseInt(editingSlotDisplay.slot.endTime) - parseInt(editingSlotDisplay.slot.startTime)) * 60
-                            : 50,
-                        }),
-                      });
-                      await loadRules();
-                      setEditingSlotDisplay(null);
-                    }} className="w-full py-3 rounded-2xl text-sm font-semibold"
+}
+
+function StatsPanel() {-full py-3 rounded-2xl text-sm font-semibold"
                       style={{ background: "#FEF3C7", color: "#D97706" }}>
                       仅屏蔽这一天
                     </button>
