@@ -109,24 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-        </div>
-      </div>
-
-      {/* 用户列表 */}
-      <div className="px-4 pt-3 space-y-2">
-        {filtered.map(u => (
-          <button key={u.id} onClick={() => router.push("/admin/users/"+u.id)}
-            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left"
-            style={{ background: "white", border: "1px solid #EBE7DF" }}>
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-none"
-              style={{ background: u.status === "banned" ? "#D1D5DB" : "var(--color-primary)" }}>
-              {u.name[0]}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold" style={{ color: "#2C2420" }}>{u.name}</p>
-                {u.status === "banned" && (
-                  <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ background: "#FEE2E2", color: "#DC2626" }}>已封禁</span>
                 )}
               </div>
               <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>{u.email}</p>
