@@ -161,14 +161,7 @@ const MOCK_BILLS = [
 
 export default function BillingPage() {
   return <Suspense><BillingContent /></Suspense>;
-}
-          <div className="rounded-2xl p-4" style={{ background:"white", border:"1px solid #EBE7DF" }}>
-            <p className="text-xs mb-1" style={{ color:"#9B8E82" }}>已到账</p>
-            <p className="text-xl font-bold" style={{ color:"#2C2420" }}>¥{total.toLocaleString()}</p>
-          </div>
-          <div className="rounded-2xl p-4" style={{ background:"white", border:"1px solid #EBE7DF" }}>
-            <p className="text-xs mb-1" style={{ color:"#9B8E82" }}>待到账</p>
-            <p className="text-xl font-bold" style={{ color:"#D97706" }}>¥{pending.toLocaleString()}</p>
+}()}</p>
           </div>
         </div>
 
