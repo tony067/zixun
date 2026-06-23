@@ -78,7 +78,21 @@ export default function AdminUsersScreen() {
     try {
       const r = await request(`/api/admin/users/${u.id}`);
       const d = await r.json();
-      if (d && !d.error) setSelected(d as UserDetail);
+      if (d && !d.error) {
+        // API 返回 clientBookings + counselorBookings，合并为 bookings
+        const merged = [
+          ...(d.clientBookings ?? []),
+          ...(d.counselorBookings ?? []),
+        ].sort((a: BookingRow, b: BookingRow) =>
+          new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime()
+        );
+        setSelected({
+          ...u,
+          counselorId: d.counselorId ?? null,
+          bookingCount: u.bookingCount,
+          bookings: merged,
+        });
+      }
     } finally {
       setDetailLoading(false);
     }
