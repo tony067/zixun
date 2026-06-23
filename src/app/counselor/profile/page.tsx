@@ -84,6 +84,30 @@ export default function CounselorProfilePage() {
           <h1 className="text-lg font-bold text-[#2C2420]">编辑档案</h1>
           <p className="text-xs text-[#9B8E82]">填写完整后提交，等待平台审核</p>
         </div>
+        {/* 接诊开关 — 仅审核通过后显示 */}
+        {form.reviewStatus === "approved" && (
+          <button
+            onClick={async () => {
+              const next = !form.isAccepting;
+              setForm(prev => ({ ...prev, isAccepting: next }));
+              await request("/api/counselor/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...form, isAccepting: next, action: "save" }),
+              });
+              showToast(next ? "已开始接诊" : "已暂停接诊");
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors"
+            style={{
+              background: form.isAccepting ? "#E4F0DC" : "#F0EDE8",
+              color: form.isAccepting ? "#3A6228" : "#9B8E82",
+              border: `1px solid ${form.isAccepting ? "#CCE0C0" : "#DDD8D0"}`,
+            }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: form.isAccepting ? "#9CB48A" : "#C0B8B0" }} />
+            {form.isAccepting ? "接诊中" : "已暂停"}
+          </button>
+        )}
+        </div>
         <span className="text-xs font-semibold px-3 py-1 rounded-full"
           style={{ color: status.color, background: status.bg }}>{status.text}</span>
       </div>
