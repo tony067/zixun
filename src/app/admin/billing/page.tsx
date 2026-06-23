@@ -159,29 +159,9 @@ const MOCK_BILLS = [
   { id:"bk_007", date:"2026-04-30", client:"张靖", counselor:"陈晓雯", amount:450, status:"completed" },
 ];
 
-const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
-  completed:   { bg:"#F0FDF4", color:"#16A34A", label:"已完成" },
-  paid:        { bg:"#FEF3C7", color:"#D97706", label:"待咨询" },
-  pending_payment: { bg:"#EFF6FF", color:"#2563EB", label:"待支付" },
-};
-
-function BillingContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const type = searchParams.get("type") ?? "monthly";
-  const title = type === "monthly" ? "本月应收" : "累计应收";
-
-  const bills = type === "monthly"
-    ? MOCK_BILLS.filter(b => b.date.startsWith("2026-06"))
-    : MOCK_BILLS;
-
-  const total = bills.filter(b => b.status === "completed").reduce((s, b) => s + b.amount, 0);
-  const pending = bills.filter(b => b.status !== "completed").reduce((s, b) => s + b.amount, 0);
-
-  return (
-    <div className="min-h-screen pb-10" style={{ background:"var(--color-bg)" }}>
-      <div className="sticky top-0 z-20 flex items-center gap-3 px-4 py-3 border-b"
-        style={{ background:"rgba(245,240,232,0.95)", backdropFilter:"blur(8px)", borderColor:"#DDD8D0" }}>
+export default function BillingPage() {
+  return <Suspense><BillingContent /></Suspense>;
+}
         <button onClick={() => router.back()} className="p-1.5 rounded-full" style={{ background:"#EBE7DF" }}>
           <ArrowLeft className="w-4 h-4" style={{ color:"#5A4E44" }} />
         </button>
