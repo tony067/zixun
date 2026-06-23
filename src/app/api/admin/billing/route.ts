@@ -68,17 +68,26 @@ export async function GET(req: NextRequest) {
     clientMap[uid] = u[0]?.name ?? uid;
   }
 
-  const items = rows.map(r => ({
-    id:            r.id,
-    scheduledDate: r.scheduledDate,
-    scheduledTime: r.scheduledTime,
-    priceAmount:   r.priceAmount ?? 0,
-    counselorId:   r.counselorId,
-    counselorName: counselorMap[r.counselorId] ?? r.counselorId,
-    clientId:      r.clientId,
-    clientName:    clientMap[r.clientId] ?? r.clientId,
-    clientNote:    r.clientNote ?? "",
-  }));
+  const items = rows.map(r => {
+    const d = r.scheduledAt ? new Date(r.scheduledAt) : null;
+    const scheduledDate = d
+      ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`
+      : "";
+    const scheduledTime = d
+      ? `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`
+      : "";
+    return {
+      id:            r.id,
+      scheduledDate,
+      scheduledTime,
+      priceAmount:   r.priceAmount ?? 0,
+      counselorId:   r.counselorId,
+      counselorName: counselorMap[r.counselorId] ?? r.counselorId,
+      clientId:      r.clientId,
+      clientName:    clientMap[r.clientId] ?? r.clientId,
+      clientNote:    r.clientNote ?? "",
+    };
+  });
 
   const total = items.reduce((s, r) => s + r.priceAmount, 0);
 
