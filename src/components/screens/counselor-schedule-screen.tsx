@@ -623,25 +623,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
-// ── 主屏幕 ────────────────────────────────────────────────────────────────────
 
-            {/* 循环：生效时间 */}
-            {form.mode === "recurring" && (
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <p className="text-xs text-[#9B8E82] mb-2">开始生效</p>
-                  <input type="date" value={form.validFrom} onChange={e => set("validFrom", e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl text-sm"
-                    style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-[#9B8E82] mb-2">截止（留空=长期）</p>
-                  <input type="date" value={form.validUntil} onChange={e => set("validUntil", e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl text-sm"
-                    style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
-                </div>
-              </div>
-            )}
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
 
             {/* 固定：绑定来访 */}
             {form.type === "fixed" && (
