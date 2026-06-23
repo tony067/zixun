@@ -109,12 +109,6 @@ export default function AdminUsersScreen() {
   );
 }
 
-          </button>
-          <h1 className="text-base font-bold" style={{ color: "#2C2420" }}>用户管理</h1>
-        </div>
-        {/* Tab */}
-        <div className="flex gap-2 mb-3">
-          {[["client","来访者"],["counselor","咨询师"]].map(([k,label]) => (
             <button key={k} onClick={() => setTab(k as "client"|"counselor")}
               className="px-5 py-1.5 rounded-full text-sm font-medium"
               style={{ background: tab===k ? "var(--color-primary)" : "#EBE7DF", color: tab===k ? "white" : "#5A4E44" }}>
