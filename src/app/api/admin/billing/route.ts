@@ -18,14 +18,14 @@ export async function GET(req: NextRequest) {
   const month = parseInt(searchParams.get("month") ?? String(new Date().getMonth() + 1));
   const counselorId = searchParams.get("counselorId"); // 可选，不传则返回所有
 
-  const from = `${year}-${String(month).padStart(2,"0")}-01`;
-  const toDate = new Date(year, month, 0); // 该月最后一天
-  const to   = `${year}-${String(month).padStart(2,"0")}-${String(toDate.getDate()).padStart(2,"0")}`;
+  // scheduledAt 是 timestamp，用 Date 范围筛选
+  const fromDate = new Date(year, month - 1, 1);
+  const toDate   = new Date(year, month, 0, 23, 59, 59); // 该月最后一天末尾
 
   // 查询完成的订单
   const conditions = [
-    gte(bookings.scheduledDate, from),
-    lte(bookings.scheduledDate, to),
+    gte(bookings.scheduledAt, fromDate),
+    lte(bookings.scheduledAt, toDate),
     eq(bookings.status, "completed"),
   ];
   if (counselorId) conditions.push(eq(bookings.counselorId, counselorId));
