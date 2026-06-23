@@ -148,13 +148,3 @@ function BillingContent() {
 export default function BillingPage() {
   return <Suspense><BillingContent /></Suspense>;
 }
-
-const MOCK_BILLS = [
-  { id:"bk_001", date:"2026-06-01", client:"张靖", counselor:"陈晓雯", amount:450, status:"completed" },
-  { id:"bk_002", date:"2026-06-02", client:"王明浩", counselor:"林诗涵", amount:380, status:"pending_payment" },
-  { id:"bk_003", date:"2026-06-03", client:"李晓月", counselor:"余晓彤", amount:500, status:"paid" },
-  { id:"bk_004", date:"2026-05-28", client:"张靖", counselor:"陈晓雯", amount:450, status:"completed" },
-  { id:"bk_005", date:"2026-05-20", client:"王明浩", counselor:"林诗涵", amount:380, status:"completed" },
-  { id:"bk_006", date:"2026-05-15", client:"李晓月", counselor:"余晓彤", amount:500, status:"completed" },
-  { id:"bk_007", date:"2026-04-30", client:"张靖", counselor:"陈晓雯", amount:450, status:"completed" },
-];
