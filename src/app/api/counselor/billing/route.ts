@@ -38,8 +38,8 @@ export async function GET(req: NextRequest) {
     .where(and(
       eq(bookings.counselorId, counselorId),
       eq(bookings.status, "completed"),
-      gte(bookings.scheduledDate, from),
-      lte(bookings.scheduledDate, to),
+      gte(bookings.scheduledAt, fromDate),
+      lte(bookings.scheduledAt, toDate),
     ))
     .orderBy(desc(bookings.scheduledDate));
 
