@@ -621,12 +621,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
-// ── 主屏幕 ────────────────────────────────────────────────────────────────────
-            </div>
 
-            {/* 档期类型 */}
-            <div>
-              <p className="text-xs text-[#9B8E82] mb-2">档期类型</p>
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
               <div className="flex gap-2">
                 {([["available","可预约"],["blocked","屏蔽时段"],["fixed","固定档期"]] as const).map(([id, label]) => (
                   <button key={id} onClick={() => set("type", id)}
