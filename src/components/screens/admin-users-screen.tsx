@@ -108,9 +108,6 @@ export default function AdminUsersScreen() {
     </div>
   );
 }
-
-const MOCK_USERS = [
-  { id: "u001", name: "张婧", email: "zhang@example.com", role: "client", bookings: 3, joined: "2026-03-12", status: "active", phone: "138****1234" },
   { id: "u002", name: "王明浩", email: "wang@example.com", role: "client", bookings: 1, joined: "2026-04-05", status: "active", phone: "139****5678" },
   { id: "u003", name: "李晓月", email: "li@example.com", role: "client", bookings: 7, joined: "2026-01-20", status: "active", phone: "137****9012" },
   { id: "u006", name: "刘海涛", email: "liu@example.com", role: "client", bookings: 0, joined: "2026-05-28", status: "banned", phone: "136****3456" },
