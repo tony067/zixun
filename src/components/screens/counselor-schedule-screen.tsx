@@ -771,22 +771,23 @@ export function CounselorScheduleScreen() {
                     return (
                       <div key={label} className="mb-3">
                         <p className="text-[10px] mb-1.5" style={{ color: "#C4BDB5" }}>{label}</p>
-                        <div className="grid grid-cols-4 gap-1.5">
+                        <div className="grid grid-cols-3 gap-1.5">
                           {times.map(h => {
                             const sel = daySelectedTimes.has(h);
+                            const end = timeEnd(h, dayDuration);
                             return (
                               <button key={h} onClick={() => setDaySelectedTimes(prev => {
                                 const next = new Set(prev);
                                 if (next.has(h)) next.delete(h); else next.add(h);
                                 return next;
                               })}
-                                className="py-2 rounded-xl text-xs font-semibold"
+                                className="py-2 rounded-xl text-[10px] font-semibold leading-tight"
                                 style={{
                                   background: sel ? (dayType === "fixed" ? "#F59E0B" : "#9CB48A") : "#F0EDE8",
                                   color: sel ? "white" : "#7D736A",
                                   border: sel ? "none" : "1px solid #EBE7DF",
                                 }}>
-                                {h}
+                                {h}–{end}
                               </button>
                             );
                           })}
