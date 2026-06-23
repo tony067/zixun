@@ -7,7 +7,7 @@ import { users } from "@/lib/db/schema/users";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
   if (auth.user.role !== "admin") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
