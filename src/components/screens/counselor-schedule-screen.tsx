@@ -616,8 +616,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
-            <div>
-              <p className="text-xs text-[#9B8E82] mb-2">规则类型</p>
               <div className="flex gap-2">
                 {(["recurring","single"] as const).map(m => (
                   <button key={m} onClick={() => set("mode", m)}
