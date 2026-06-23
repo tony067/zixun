@@ -954,25 +954,9 @@ export function CounselorScheduleScreen() {
           </>
         )}
       </AnimatePresence>
-                    });
-                    await loadRules();
-                    setEditingSlotDisplay(null);
-                  }} className="w-full py-3 rounded-2xl text-sm font-semibold"
-                    style={{ background: "#FEE2E2", color: "#EF4444" }}>
-                    删除该时间段
-                  </button>
-                )}
-                {/* 循环规则：屏蔽这一天 / 删除循环规则 */}
-                {editingSlotDisplay.slot.isRecurring && !editingSlotDisplay.slot.overriddenByBlock && (
-                  <>
-                    <button onClick={async () => {
-                      if (!confirm(`确认屏蔽 ${editingSlotDisplay.dateStr} 这一天的该时间段？`)) return;
-                      await request("/api/counselor/schedule", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          type: "blocked", isSingle: true,
-                          singleDate: editingSlotDisplay.dateStr,
+    </div>
+  );
+}
                           singleTime: editingSlotDisplay.slot.startTime,
                           durationMinutes: editingSlotDisplay.slot.endTime
                             ? (parseInt(editingSlotDisplay.slot.endTime) - parseInt(editingSlotDisplay.slot.startTime)) * 60
