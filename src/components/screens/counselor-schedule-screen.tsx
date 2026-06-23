@@ -626,16 +626,8 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
 
 
-// ── 主屏幕 ────────────────────────────────────────────────────────────────────
-                  onChange={e => set("blockNote", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm"
-                  style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
-              </div>
-            )}
 
-            {/* 预览 */}
-            {canSubmit && (
-              <div className="px-3 py-2.5 rounded-xl text-xs text-[#6B5E52]" style={{ background: "#E4F0DC" }}>
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
                 {form.mode === "recurring"
                   ? `每 ${form.weekdays.map(d => `周${WEEKDAY_LABELS[d]}`).join("、")} 的 ${form.startTime}，每次 ${actualDur} 分钟，${form.validFrom} 起${form.validUntil ? ` 至 ${form.validUntil}` : "长期循环"}`
                   : `${form.date} ${form.startTime}，时长 ${actualDur} 分钟`}
