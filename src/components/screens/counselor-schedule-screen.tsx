@@ -560,7 +560,6 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
                         style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
                     )}
                   </div>
-                </div>
                 <div>
                   <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>档期类型</p>
                   <div className="flex gap-2">
