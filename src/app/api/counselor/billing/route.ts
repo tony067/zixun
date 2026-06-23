@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       gte(bookings.scheduledAt, fromDate),
       lte(bookings.scheduledAt, toDate),
     ))
-    .orderBy(desc(bookings.scheduledDate));
+    .orderBy(desc(bookings.scheduledAt));
 
   const clientMap: Record<string, string> = {};
   for (const r of rows) {
