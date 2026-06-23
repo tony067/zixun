@@ -612,7 +612,9 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
     </div>
   );
 }
-            <p className="text-sm font-bold text-[#2C2420]">新增档期规则</p>
+}
+
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
 
             {/* 循环 vs 单次 */}
             <div>
