@@ -108,12 +108,6 @@ export default function AdminUsersScreen() {
     </div>
   );
 }
-  { id: "u002", name: "王明浩", email: "wang@example.com", role: "client", bookings: 1, joined: "2026-04-05", status: "active", phone: "139****5678" },
-  { id: "u003", name: "李晓月", email: "li@example.com", role: "client", bookings: 7, joined: "2026-01-20", status: "active", phone: "137****9012" },
-  { id: "u006", name: "刘海涛", email: "liu@example.com", role: "client", bookings: 0, joined: "2026-05-28", status: "banned", phone: "136****3456" },
-  { id: "u004", name: "陈晓雯", email: "chen@example.com", role: "counselor", bookings: 42, joined: "2026-02-01", status: "active", phone: "135****7890" },
-  { id: "u005", name: "林诗涵", email: "lin@example.com", role: "counselor", bookings: 31, joined: "2026-02-15", status: "active", phone: "134****2345" },
-];
 
 type User = typeof MOCK_USERS[0];
 
