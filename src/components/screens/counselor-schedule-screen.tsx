@@ -613,6 +613,120 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
   );
 }
 
+
+
+
+
+// ── 主屏幕 ────────────────────────────────────────────────────────────────────
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-[#9B8E82] mb-2">时长</p>
+                <div className="flex gap-1">
+                  {([50, 90, "custom"] as const).map(d => (
+                    <button key={String(d)} onClick={() => set("durationMinutes", d)}
+                      className="flex-1 py-2.5 rounded-xl text-xs font-semibold"
+                      style={{ background: form.durationMinutes === d ? "#9CB48A" : "#F5F0E8", color: form.durationMinutes === d ? "white" : "#6B5E52", border: form.durationMinutes === d ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
+                      {d === "custom" ? "自定义" : `${d}分`}
+                    </button>
+                  ))}
+                </div>
+                {form.durationMinutes === "custom" && (
+                  <input type="number" placeholder="分钟数" value={form.customDuration}
+                    onChange={e => set("customDuration", e.target.value)}
+                    className="w-full mt-2 px-3 py-2 rounded-xl text-sm"
+                    style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                )}
+              </div>
+            </div>
+
+            {/* 档期类型 */}
+            <div>
+              <p className="text-xs text-[#9B8E82] mb-2">档期类型</p>
+              <div className="flex gap-2">
+                {([["available","可预约"],["blocked","屏蔽时段"],["fixed","固定档期"]] as const).map(([id, label]) => (
+                  <button key={id} onClick={() => set("type", id)}
+                    className="flex-1 py-2 rounded-xl text-xs font-semibold"
+                    style={{ background: form.type === id ? "#9CB48A" : "#F5F0E8", color: form.type === id ? "white" : "#6B5E52", border: form.type === id ? "1px solid #9CB48A" : "1px solid #EBE7DF" }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 循环：生效时间 */}
+            {form.mode === "recurring" && (
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <p className="text-xs text-[#9B8E82] mb-2">开始生效</p>
+                  <input type="date" value={form.validFrom} onChange={e => set("validFrom", e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl text-sm"
+                    style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-[#9B8E82] mb-2">截止（留空=长期）</p>
+                  <input type="date" value={form.validUntil} onChange={e => set("validUntil", e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl text-sm"
+                    style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                </div>
+              </div>
+            )}
+
+            {/* 固定：绑定来访 */}
+            {form.type === "fixed" && (
+              <div>
+                <p className="text-xs text-[#9B8E82] mb-1">绑定来访（可选）</p>
+                <p className="text-[10px] text-[#9B8E82] mb-2 opacity-75">留空表示预留但不指定来访</p>
+                <input type="text" value={form.fixedClientId} placeholder="来访姓名或 ID"
+                  onChange={e => set("fixedClientId", e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm"
+                  style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+              </div>
+            )}
+
+            {/* 屏蔽：备注 */}
+            {form.type === "blocked" && (
+              <div>
+                <p className="text-xs text-[#9B8E82] mb-2">备注（如假期、培训等）</p>
+                <input type="text" value={form.blockNote} placeholder="可选"
+                  onChange={e => set("blockNote", e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm"
+                  style={{ background: "#F5F0E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+              </div>
+            )}
+
+            {/* 预览 */}
+            {canSubmit && (
+              <div className="px-3 py-2.5 rounded-xl text-xs text-[#6B5E52]" style={{ background: "#E4F0DC" }}>
+                {form.mode === "recurring"
+                  ? `每 ${form.weekdays.map(d => `周${WEEKDAY_LABELS[d]}`).join("、")} 的 ${form.startTime}，每次 ${actualDur} 分钟，${form.validFrom} 起${form.validUntil ? ` 至 ${form.validUntil}` : "长期循环"}`
+                  : `${form.date} ${form.startTime}，时长 ${actualDur} 分钟`}
+              </div>
+            )}
+
+            <div className="flex gap-2 pt-1">
+              <button onClick={() => setShowForm(false)}
+                className="flex-1 h-11 rounded-2xl text-sm text-[#7D736A]"
+                style={{ border: "1px solid #EBE7DF", background: "#F5F0E8" }}>取消</button>
+              <motion.button whileTap={{ scale: 0.97 }} onClick={submit}
+                disabled={!canSubmit || saving}
+                className="flex-1 h-11 rounded-2xl text-sm font-semibold text-white"
+                style={{ background: canSubmit && !saving ? "#9CB48A" : "#C0B8B0" }}>
+                {saving ? "保存中…" : "保存规则"}
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.button whileTap={{ scale: 0.97 }} onClick={() => { setForm({ ...EMPTY }); setShowForm(true); }}
+        className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-medium"
+        style={{ border: "2px dashed #C0B8B0", color: "#7D736A" }}>
+        <Plus className="w-4 h-4" /> 新增规则
+      </motion.button>
+    </div>
+  );
+}
+
 // ── 主屏幕 ────────────────────────────────────────────────────────────────────
 export function CounselorScheduleScreen() {
   const { user } = useAuth();
