@@ -161,7 +161,7 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
           </>)}
           {(b.status === "confirmed" || b.status === "pending_payment") && (<>
             <motion.button whileTap={{ scale: 0.95 }}
-              onClick={() => router.push(`/messages?counselorId=${b.counselorId}`)}
+              onClick={() => { window.location.href = `/messages?clientId=${b.clientId}`; }}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-white"
               style={{ background: "var(--color-primary)" }}>
               联系来访
