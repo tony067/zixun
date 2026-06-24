@@ -16,15 +16,33 @@ interface Props {
 
 function YesNo({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-3">
       {([false, true] as const).map(v => (
-        <label key={String(v)} className="flex items-center gap-1.5 cursor-pointer">
-          <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
-            style={{ borderColor: value === v ? "var(--color-primary)" : "#C4BDB5" }}>
-            {value === v && <div className="w-2 h-2 rounded-full" style={{ background: "var(--color-primary)" }} />}
+        <button
+          key={String(v)}
+          type="button"
+          onClick={() => onChange(v)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
+          style={{
+            background: value === v ? (v ? "#FEE2E2" : "#E4F0DC") : "#F5F0EA",
+            border: `1.5px solid ${value === v ? (v ? "#FCA5A5" : "#9CB48A") : "#E0DAD4"}`,
+          }}
+        >
+          <div
+            className="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center flex-none"
+            style={{ borderColor: value === v ? (v ? "#DC2626" : "var(--color-primary)") : "#C4BDB5" }}
+          >
+            {value === v && (
+              <div
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: v ? "#DC2626" : "var(--color-primary)" }}
+              />
+            )}
           </div>
-          <span className="text-sm text-[#5A4E44]">{v ? "是" : "否"}</span>
-        </label>
+          <span className="text-sm font-medium" style={{ color: value === v ? (v ? "#DC2626" : "#3A6228") : "#9B8E82" }}>
+            {v ? "是" : "否"}
+          </span>
+        </button>
       ))}
     </div>
   );
