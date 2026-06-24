@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { bookings } from "@/lib/db/schema/scheduling";
+import { users } from "@/lib/db/schema/users";
 import { counselors } from "@/lib/db/schema/counselors";
 import { eq } from "drizzle-orm";
 import { updateBookingStatus } from "@/lib/db/queries/bookings";
