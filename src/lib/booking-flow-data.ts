@@ -25,7 +25,6 @@ export interface ApplicationForm {
   emergencyName: string;
   emergencyPhone: string;
   consentSigned: boolean;
-  purposeOther?: string;
 }
 
 export const EMPTY_FORM: ApplicationForm = {
