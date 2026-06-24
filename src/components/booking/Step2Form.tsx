@@ -74,7 +74,29 @@ MindPace 平台不对因用户提供虚假信息、擅自中断咨询或违反�
 七、协议修改
 平台有权在必要时更新本协议，更新后的协议将在平台公告后生效。您继续使用平台服务即视为接受更新后的协议。`;
 
-const CONSENT_TEXT = `知情同意书
+function AgreementAccordion() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-2xl overflow-hidden mb-1" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+      <button onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3.5"
+        style={{ borderBottom: open ? "1px solid #F5F0EA" : "none" }}>
+        <span className="text-sm font-medium text-[#5A4E44]">《MindPace 用户服务协议》</span>
+        <svg className={`w-4 h-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          viewBox="0 0 24 24" fill="none" stroke="#9B8E82" strokeWidth="2">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && (
+        <div className="px-4 py-4 text-xs text-[#9B8E82] leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+          {AGREE_TEXT}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 
 尊重来访者的知情权是咨询工作的基础，请在预约前仔细阅读以下内容。
 
