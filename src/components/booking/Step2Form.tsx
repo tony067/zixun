@@ -296,15 +296,8 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             <p className="text-xs text-red-400 mt-2 pl-8">{errorMsg}</p>
           )}
         </div>
-            className="flex items-start gap-3 w-full text-left">
-            <div className="mt-0.5 w-5 h-5 rounded-md flex-none flex items-center justify-center border-2 transition-colors"
-              style={{
-                borderColor: agreed ? "var(--color-primary)" : "#C4BDB5",
-                background: agreed ? "var(--color-primary)" : "white"
-              }}>
-              {agreed && <svg viewBox="0 0 12 10" className="w-3 h-3 fill-none stroke-white stroke-2"><polyline points="1,5 4.5,8.5 11,1" /></svg>}
-            </div>
-            <span className="text-sm text-[#5A4E44]">我已阅读并同意上述《MindPace 用户服务协议》</span>
+
+      {/* 底部 */}</span>
           </button>
           {errorMsg && (
             <p className="text-xs text-red-400 mt-2 pl-8">{errorMsg}</p>
