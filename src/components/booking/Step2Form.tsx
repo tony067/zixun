@@ -22,14 +22,14 @@ function YesNo({ value, onChange }: { value: boolean; onChange: (v: boolean) => 
           key={String(v)}
           type="button"
           onClick={() => onChange(v)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl transition-all"
           style={{
-            background: value === v ? "var(--color-primary)" : "#F5F0EA",
-            border: `1.5px solid ${value === v ? "var(--color-primary)" : "#E0DAD4"}`,
+            background: value === v ? "#F0F7EC" : "#F5F0EA",
+            border: `2px solid ${value === v ? "var(--color-primary)" : "#E0DAD4"}`,
           }}
         >
           <div
-            className="w-3.5 h-3.5 rounded border-2 flex items-center justify-center flex-none"
+            className="w-4 h-4 rounded border-2 flex items-center justify-center flex-none"
             style={{ borderColor: value === v ? "white" : "#C4BDB5", background: value === v ? "white" : "transparent" }}
           >
             {value === v && (
