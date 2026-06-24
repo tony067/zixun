@@ -286,7 +286,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
               <pre className="text-sm text-[#5A4E44] whitespace-pre-wrap leading-relaxed font-sans">{AGREE_TEXT}</pre>
             </div>
             <div className="px-5 pb-8 pt-3 border-t" style={{ borderColor: "#F0EBE3" }}>
-              <button onClick={() => { setAgreed(true); setShowAgreement(false); }}
+              <button onClick={() => { setAgreed(true); set("consentSigned", true); setShowAgreement(false); }}
                 className="w-full py-3.5 rounded-2xl text-white font-bold"
                 style={{ background: "var(--color-primary)" }}>
                 同意并继续
