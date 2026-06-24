@@ -119,7 +119,6 @@ export default function MessagesPage() {
     </div>
   );
 }
-  const pathname = usePathname();
   const role = pathname.startsWith("/counselor") ? "counselor" : pathname.startsWith("/admin") ? "admin" : "client";
   const router = useRouter();
   const [convs, setConvs] = useState<Conv[]>([]);
