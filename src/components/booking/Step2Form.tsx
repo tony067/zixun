@@ -307,9 +307,8 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
           </button>
         </div>
       </div>
+      </div>
     </div>
   );
 }
-
-// Note: closing tags verified: flex-col wrapper + overflow-y-auto wrapper both closed above
 
