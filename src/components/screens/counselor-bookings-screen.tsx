@@ -54,7 +54,6 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
   const af = b.applicationForm;
   const clientName = af?.name || b.client?.name || b.client?.email?.split("@")[0] || "来访者";
   const [showForm, setShowForm] = useState(false);
-  const af = b.applicationForm;
 
   return (
     <motion.div
