@@ -119,19 +119,6 @@ export default function MessagesPage() {
     </div>
   );
 }
-
-function Avatar({ name, size = 44 }: { name: string; size?: number }) {
-  const COLORS = ["#9CB48A", "#C4A882", "#89B4C8", "#B8A86E", "#A89BC8", "#C8A889"];
-  const idx = name.charCodeAt(0) % COLORS.length;
-  return (
-    <div className="rounded-full flex items-center justify-center font-bold text-white flex-none"
-      style={{ width: size, height: size, background: COLORS[idx], fontSize: size * 0.38 }}>
-      {name.slice(0, 1)}
-    </div>
-  );
-}
-
-export default function MessagesPage() {
   const { user } = useAuth();
   const pathname = usePathname();
   const role = pathname.startsWith("/counselor") ? "counselor" : pathname.startsWith("/admin") ? "admin" : "client";
