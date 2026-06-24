@@ -86,6 +86,15 @@ function BookingCard({ b }: { b: Booking }) {
             style={{ background: "#9CB48A" }}>立即支付 ¥{b.priceAmount}</button>
         </div>
       )}
+      {b.status === "confirmed" && (
+        <div className="flex gap-2 mt-3">
+          <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1"
+            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}>
+            <MessageCircle className="w-4 h-4" />私信咨询师</button>
+          <button className="flex-[2] py-2.5 rounded-xl text-white text-sm font-semibold"
+            style={{ background: "#9CB48A" }}>立即支付 ¥{b.priceAmount}</button>
+        </div>
+      )}
       {b.status === "paid" && (
         <div className="flex gap-2 mt-3">
           <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1"
