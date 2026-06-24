@@ -153,6 +153,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
                 className="flex-1 text-right text-sm bg-transparent outline-none placeholder-[#C4BDB5]"
                 style={{ color: "#2C2420" }} />
             </div>
+            <p className="text-xs mt-1" style={{ color: "#C4BDB5" }}>小程序版本上线后可自动读取</p>
           </div>
           <div className="px-4 py-3.5">
             <p className="text-sm text-[#5A4E44] mb-2">咨询目的 <span className="text-red-400">*</span><span className="text-xs text-[#9B8E82] ml-1">可多选</span></p>
