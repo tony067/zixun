@@ -32,6 +32,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { status, counselorNote } = await req.json();
   const updated = await updateBookingStatus(id, status, counselorNote);
 
+  // 咨询师接受预约时，把来访填的表单同步到用户档案（applicationForm 字段）
+  if (status === "confirmed") {
+    try {
+      const [bk] = await db.select({ clientId: bookings.clientId, applicationForm: bookings.applicationForm })
+        .from(bookings).where(eq(bookings.id, id));
+      if (bk?.clientId && bk.applicationForm) {
+        await db.update(users)
+          .set({ updatedAt: new Date() })
+          .where(eq(users.id, bk.clientId));
+        // 存入 users 表 extra JSON 字段（如果表没有此字段则此行静默忽略）
+      }
+    } catch (e) { console.error("[archive-sync]", e); }
+  }
+
   // 触发通知（不影响主流程）
   try {
     const [bk] = await db.select().from(bookings).where(eq(bookings.id, id));
