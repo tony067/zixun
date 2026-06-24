@@ -119,15 +119,6 @@ export default function MessagesPage() {
     </div>
   );
 }
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const min = Math.floor(diff / 60000);
-  if (min < 1) return "刚刚";
-  if (min < 60) return `${min} 分钟前`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} 小时前`;
-  const d = Math.floor(hr / 24);
   if (d < 7) return `${d} 天前`;
   return new Date(dateStr).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" });
 }
