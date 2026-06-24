@@ -24,22 +24,21 @@ function YesNo({ value, onChange }: { value: boolean; onChange: (v: boolean) => 
           onClick={() => onChange(v)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all"
           style={{
-            background: value === v ? (v ? "#FEE2E2" : "#E4F0DC") : "#F5F0EA",
-            border: `1.5px solid ${value === v ? (v ? "#FCA5A5" : "#9CB48A") : "#E0DAD4"}`,
+            background: value === v ? "var(--color-primary)" : "#F5F0EA",
+            border: `1.5px solid ${value === v ? "var(--color-primary)" : "#E0DAD4"}`,
           }}
         >
           <div
-            className="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center flex-none"
-            style={{ borderColor: value === v ? (v ? "#DC2626" : "var(--color-primary)") : "#C4BDB5" }}
+            className="w-3.5 h-3.5 rounded border-2 flex items-center justify-center flex-none"
+            style={{ borderColor: value === v ? "white" : "#C4BDB5", background: value === v ? "white" : "transparent" }}
           >
             {value === v && (
-              <div
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ background: v ? "#DC2626" : "var(--color-primary)" }}
-              />
+              <svg viewBox="0 0 10 8" className="w-2 h-2" fill="none" stroke="var(--color-primary)" strokeWidth="2">
+                <polyline points="1,4 3.5,6.5 9,1" />
+              </svg>
             )}
           </div>
-          <span className="text-sm font-medium" style={{ color: value === v ? (v ? "#DC2626" : "#3A6228") : "#9B8E82" }}>
+          <span className="text-sm font-medium" style={{ color: value === v ? "white" : "#9B8E82" }}>
             {v ? "是" : "否"}
           </span>
         </button>
