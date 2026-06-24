@@ -15,6 +15,7 @@ export interface ApplicationForm {
   phone: string;       // 手机号（必填）
   wechat: string;      // 微信号（选填）
   purposes: string[];  // 咨询目的（多选）
+  purposeOther?: string; // 其他目的补充说明
   hasMentalDisease: boolean;
   onMedication: boolean;
   hasSelfHarm: boolean;
@@ -24,6 +25,7 @@ export interface ApplicationForm {
   emergencyName: string;
   emergencyPhone: string;
   consentSigned: boolean;
+  purposeOther?: string;
 }
 
 export const EMPTY_FORM: ApplicationForm = {
