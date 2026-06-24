@@ -8,7 +8,7 @@ import { request } from "@/lib/api/request";
 type Booking = {
   id: string; scheduledAt: string; sessionNumber: number;
   status: string; sessionMode: string; durationMinutes: number; priceAmount: number;
-  applicationForm?: { purpose?: string[]; background?: string; emergencyContact?: string; emergencyPhone?: string };
+  applicationForm?: { purposes?: string[]; background?: string; emergencyContact?: string; emergencyPhone?: string };
 };
 type ClientData = {
   clientId: string; clientName: string; clientEmail: string;
