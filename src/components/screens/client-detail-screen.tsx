@@ -32,7 +32,7 @@ const MOCK:ClientData={
   totalSessions:4,completedSessions:3,
   bookings:[
     {id:"b1",scheduledAt:new Date(Date.now()-28*864e5).toISOString(),sessionNumber:1,status:"completed",sessionMode:"视频咨询",durationMinutes:50,priceAmount:380,
-      applicationForm:{purpose:["焦虑","人际关系"],background:"工作压力较大，近半年睡眠质量下降，与同事关系紧张，希望通过咨询找到调整方式。",emergencyContact:"张父",emergencyPhone:"138xxxx0001"}},
+      applicationForm:{purposes:["焦虑","人际关系"],background:"工作压力较大，近半年睡眠质量下降，与同事关系紧张，希望通过咨询找到调整方式。",emergencyContact:"张父",emergencyPhone:"138xxxx0001"}},
     {id:"b2",scheduledAt:new Date(Date.now()-14*864e5).toISOString(),sessionNumber:2,status:"completed",sessionMode:"视频咨询",durationMinutes:50,priceAmount:380,applicationForm:{}},
     {id:"b3",scheduledAt:new Date(Date.now()-7*864e5).toISOString(),sessionNumber:3,status:"completed",sessionMode:"视频咨询",durationMinutes:50,priceAmount:380,applicationForm:{}},
     {id:"b4",scheduledAt:new Date(Date.now()+7*864e5).toISOString(),sessionNumber:4,status:"confirmed",sessionMode:"视频咨询",durationMinutes:50,priceAmount:380,applicationForm:{}},
