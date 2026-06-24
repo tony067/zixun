@@ -159,7 +159,13 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
               <Check className="w-3.5 h-3.5" />接受
             </motion.button>
           </>)}
-          {(b.status === "confirmed" || b.status === "pending_payment") && (
+          {(b.status === "confirmed" || b.status === "pending_payment") && (<>
+            <motion.button whileTap={{ scale: 0.95 }}
+              onClick={() => router.push(`/messages?counselorId=${b.counselorId}`)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-white"
+              style={{ background: "var(--color-primary)" }}>
+              联系来访
+            </motion.button>
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "cancelled")}
               className="px-3 py-1.5 rounded-xl text-xs font-medium border"
               style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
