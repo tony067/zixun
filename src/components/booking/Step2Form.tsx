@@ -276,23 +276,28 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             style={{ color: "#2C2420" }} />
         </div>
 
-                {/* 服务协议 */}
-        <div id="field-agreement" className="mx-5 flex items-start gap-2.5">
-          <button onClick={() => setAgreed(!agreed)}
-            className="w-5 h-5 rounded flex items-center justify-center flex-none mt-0.5 transition-colors"
-            style={{
-              background: agreed ? "var(--color-primary)" : "white",
-              border: `2px solid ${agreed ? "var(--color-primary)" : "#C4BDB5"}`
-            }}>
-            {agreed && <svg viewBox="0 0 12 10" className="w-3 h-3 fill-none stroke-white stroke-2"><polyline points="1,5 4.5,8.5 11,1" /></svg>}
+        {/* 服务协议 */}
+        <div id="field-agreement" className="mx-5 mb-4">
+          <div className="rounded-2xl p-4 mb-3" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+            <p className="text-xs text-[#9B8E82] mb-2 font-medium">MindPace 用户服务协议</p>
+            <div className="text-xs text-[#9B8E82] leading-relaxed max-h-32 overflow-y-auto whitespace-pre-wrap pr-1">
+              {AGREE_TEXT}
+            </div>
+          </div>
+          <button onClick={() => { setAgreed(!agreed); set("consentSigned", !agreed); }}
+            className="flex items-start gap-3 w-full text-left">
+            <div className="mt-0.5 w-5 h-5 rounded-md flex-none flex items-center justify-center border-2 transition-colors"
+              style={{
+                borderColor: agreed ? "var(--color-primary)" : "#C4BDB5",
+                background: agreed ? "var(--color-primary)" : "white"
+              }}>
+              {agreed && <svg viewBox="0 0 12 10" className="w-3 h-3 fill-none stroke-white stroke-2"><polyline points="1,5 4.5,8.5 11,1" /></svg>}
+            </div>
+            <span className="text-sm text-[#5A4E44]">我已阅读并同意上述《MindPace 用户服务协议》</span>
           </button>
-          <p className="text-sm text-[#5A4E44]">
-            阅读并同意{" "}
-            <button onClick={() => setShowAgreement(true)} className="font-semibold underline"
-              style={{ color: "var(--color-primary)" }}>
-              《MindPace 咨询服务协议》
-            </button>
-          </p>
+          {errorMsg && (
+            <p className="text-xs text-red-400 mt-2 pl-8">{errorMsg}</p>
+          )}
         </div>
       </div>
 
@@ -300,6 +305,19 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
       <div className="px-5 pb-8 pt-3 border-t" style={{ borderColor: "#EBE7DF", background: "var(--color-bg)" }}>
         <div className="flex items-center gap-3">
           <button onClick={onBack} className="text-sm font-semibold px-5 py-3 rounded-2xl border"
+            style={{ borderColor: "#E8E2D8", color: "#9B8E82" }}>
+            上一步
+          </button>
+          <button onClick={handleSubmitClick}
+            className="flex-1 py-3 rounded-2xl text-white font-bold text-base"
+            style={{ background: "var(--color-primary)" }}>
+            提交预约 · ¥{priceAmount}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}emibold px-5 py-3 rounded-2xl border"
             style={{ borderColor: "#E8E2D8", color: "#9B8E82" }}>
             上一步
           </button>
