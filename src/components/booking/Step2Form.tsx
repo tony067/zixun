@@ -297,14 +297,6 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
           )}
         </div>
 
-      {/* 底部 */}</span>
-          </button>
-          {errorMsg && (
-            <p className="text-xs text-red-400 mt-2 pl-8">{errorMsg}</p>
-          )}
-        </div>
-      </div>
-
       {/* 底部 */}
       <div className="px-5 pb-8 pt-3 border-t" style={{ borderColor: "#EBE7DF", background: "var(--color-bg)" }}>
         <div className="flex items-center gap-3">
