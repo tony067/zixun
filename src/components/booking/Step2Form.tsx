@@ -221,8 +221,9 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
           {([
             ["hasMentalDisease", "\u662f\u5426\u6709\u7cbe\u795e\u7c7b\u75be\u75c5\u8bca\u65ad"],
             ["onMedication", "\u662f\u5426\u6b63\u5728\u670d\u7528\u7cbe\u795e\u7c7b\u836f\u7269"],
-            ["hasSelfHarm", "\u8fd1\u671f\u662f\u5426\u6709\u81ea\u4f24/\u81ea\u6740\u7684\u60f3\u6cd5"],
-            ["hasHarmToOthers", "\u8fd1\u671f\u662f\u5426\u6709\u4f24\u5bb3\u4ed6\u4eba\u7684\u60f3\u6cd5"],
+            ["hasSelfHarm", "\u8fd1\u671f\u662f\u5426\u6709\u81ea\u4f24\u884c\u4e3a"],
+            ["hasSuicidalThought", "\u8fd1\u671f\u662f\u5426\u6709\u81ea\u6740\u60f3\u6cd5"],
+            ["hasSuicidalBehavior", "\u8fd1\u671f\u662f\u5426\u6709\u81ea\u6740\u884c\u4e3a\uff08\u5982\u5236\u5b9a\u8ba1\u5212\u7b49\uff09"],
           ] as [keyof ApplicationForm, string][]).map(([key, label]) => (
             <div key={key} className="px-4 py-3 border-t flex items-center justify-between" style={{ borderColor: "#F5F0EA" }}>
               <span className="text-sm text-[#5A4E44]">{label}</span>
