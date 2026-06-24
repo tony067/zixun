@@ -166,18 +166,13 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
         )}
       </div>
 
-      {/* Step3 底部按钮 */}
+      {/* Step3 底部按钮 — 等待咨询师确认，只能查看预约 */}
       {step === 3 && (
         <div className="px-5 pb-8 pt-3 border-t flex gap-3" style={{ borderColor: "#EBE7DF", background: "var(--color-bg)" }}>
-          <button onClick={() => router.push("/profile")}
-            className="flex-1 py-3 rounded-2xl border text-sm font-semibold"
-            style={{ borderColor: "#E8E2D8", color: "#9B8E82" }}>
-            查看我的预约
-          </button>
-          <button onClick={() => setStep(4)}
+          <button onClick={() => router.push("/my-bookings")}
             className="flex-1 py-3 rounded-2xl text-white font-bold text-sm"
             style={{ background: "var(--color-primary)" }}>
-            去支付
+            查看我的预约
           </button>
         </div>
       )}
