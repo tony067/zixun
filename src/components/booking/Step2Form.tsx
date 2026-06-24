@@ -175,8 +175,6 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             </div>
             <p className="text-xs mt-1" style={{ color: "#C4BDB5" }}>小程序版本上线后可自动读取</p>
           </div>
-            </div>
-          </div>
           <div className="px-4 py-3.5 border-t" style={{ borderColor: "#F5F0EA" }}>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#5A4E44] w-24 flex-none">微信号 <span className="text-[#C4BDB5] text-xs">选填</span></span>
