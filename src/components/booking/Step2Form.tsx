@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import React from "react";
 import { ApplicationForm, EMPTY_FORM, PURPOSE_OPTIONS } from "@/lib/booking-flow-data";
 import { TimeSlot } from "@/lib/booking-flow-data";
 
@@ -291,9 +292,9 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             style={{ borderColor: "#E8E2D8", color: "#9B8E82" }}>
             上一步
           </button>
-          <button disabled={!canSubmit} onClick={() => canSubmit && onNext(form, agreed)}
+          <button disabled={!canSubmit} onClick={handleSubmitClick}
             className="flex-1 py-3 rounded-2xl text-white font-bold text-base transition-opacity"
-            style={{ background: canSubmit ? "var(--color-primary)" : "#C4BDB5" }}>
+            style={{ background: "var(--color-primary)" }}>
             提交预约 · ¥{priceAmount}
           </button>
         </div>
