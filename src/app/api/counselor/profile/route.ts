@@ -26,11 +26,13 @@ export async function PUT(request: NextRequest) {
   const body = await request.json();
   const { action, ...fields } = body; // action: 'save' | 'submit'
 
-  const existing = await db.select({ id: counselors.id })
+  const existing = await db.select({ id: counselors.id, reviewStatus: counselors.reviewStatus })
     .from(counselors).where(eq(counselors.userId, userId)).limit(1);
 
   const now = new Date().toISOString();
-  const newStatus = action === "submit" ? "pending" : (fields.reviewStatus ?? "draft");
+  // 'submit' → 送审 pending；'save' → 保留数据库现有状态，新记录默认 draft
+  const currentStatus = existing[0]?.reviewStatus ?? "draft";
+  const newStatus = action === "submit" ? "pending" : currentStatus;
 
   const data = {
     displayName:        fields.displayName ?? "",
