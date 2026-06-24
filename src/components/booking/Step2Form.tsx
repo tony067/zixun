@@ -181,7 +181,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             {form.purposes.includes("其他") && (
               <input
                 value={form.purposeOther ?? ""}
-                onChange={e => set("purposeOther" as keyof ApplicationForm, e.target.value as never)}
+                onChange={e => setForm(prev => ({ ...prev, purposeOther: e.target.value }))}
                 placeholder="请简单描述（选填）"
                 className="mt-2 w-full text-sm bg-[#FAF8F5] rounded-xl px-3 py-2 outline-none placeholder-[#C4BDB5]"
                 style={{ color: "#2C2420", border: "1px solid #EBE7DF" }}
