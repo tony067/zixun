@@ -317,17 +317,8 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
       </div>
     </div>
   );
-}emibold px-5 py-3 rounded-2xl border"
-            style={{ borderColor: "#E8E2D8", color: "#9B8E82" }}>
-            上一步
-          </button>
-          <button onClick={handleSubmitClick}
-            className="flex-1 py-3 rounded-2xl text-white font-bold text-base"
-            style={{ background: "var(--color-primary)" }}>
-            提交预约 · ¥{priceAmount}
-          </button>
-        </div>
-      </div>
+}
+ </div>
 
       {/* 服务协议弹窗（已移除，协议内容内嵌在页面中） */}
       {false && showAgreement && (
