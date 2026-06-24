@@ -119,9 +119,6 @@ export default function MessagesPage() {
     </div>
   );
 }
-  if (d < 7) return `${d} 天前`;
-  return new Date(dateStr).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" });
-}
 
 function Avatar({ name, size = 44 }: { name: string; size?: number }) {
   const COLORS = ["#9CB48A", "#C4A882", "#89B4C8", "#B8A86E", "#A89BC8", "#C8A889"];
