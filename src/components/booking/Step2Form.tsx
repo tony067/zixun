@@ -108,7 +108,27 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
   const set = <K extends keyof ApplicationForm>(k: K, v: ApplicationForm[K]) =>
     setForm(prev => ({ ...prev, [k]: v }));
 
-  const canSubmit = form.name.trim() && form.phone.trim() && form.purposes.length > 0 && agreed && form.consentSigned;
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  function handleSubmitClick() {
+    if (!form.name.trim()) {
+      document.getElementById("field-name")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (!form.phone.trim()) {
+      document.getElementById("field-phone")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (form.purposes.length === 0) {
+      document.getElementById("field-purposes")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (!agreed || !form.consentSigned) {
+      document.getElementById("field-agreement")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    onNext(form, agreed);
+  }
 
   const WEEKDAY = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
   const dateStr = `${date.getMonth() + 1}月${date.getDate()}日 ${WEEKDAY[date.getDay()]} ${slot.start}–${slot.end}`;
