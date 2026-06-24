@@ -99,7 +99,52 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
       </div>
 
       {/* 金额 + 操作 */}
-      <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: "var(--color-border)" }}>
+      {/* 来访者预约表单（可折叠） */}
+      {af && (
+        <div className="mt-3 border-t pt-3" style={{ borderColor: "var(--color-border)" }}>
+          <button onClick={() => setShowForm(v => !v)}
+            className="flex items-center gap-1.5 text-xs font-medium w-full text-left"
+            style={{ color: "var(--color-primary)" }}>
+            <span>{showForm ? "▲" : "▼"}</span>
+            {showForm ? "收起来访信息" : "查看来访信息"}
+          </button>
+          <AnimatePresence>
+            {showForm && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden">
+                <div className="mt-3 rounded-2xl p-4 space-y-2.5 text-xs" style={{ background: "#F8F5F0" }}>
+                  {af.name && <div className="flex gap-2"><span className="text-[#9B8E82] w-20 flex-none">真实姓名</span><span className="text-[#2C2420] font-medium">{af.name}</span></div>}
+                  {af.phone && <div className="flex gap-2"><span className="text-[#9B8E82] w-20 flex-none">手机号</span><span className="text-[#2C2420]">{af.phone}</span></div>}
+                  {af.wechat && <div className="flex gap-2"><span className="text-[#9B8E82] w-20 flex-none">微信号</span><span className="text-[#2C2420]">{af.wechat}</span></div>}
+                  {af.purposes && af.purposes.length > 0 && (
+                    <div className="flex gap-2">
+                      <span className="text-[#9B8E82] w-20 flex-none">咨询目的</span>
+                      <span className="text-[#2C2420]">
+                        {af.purposes.join("、")}{af.purposeOther ? `、${af.purposeOther}` : ""}
+                      </span>
+                    </div>
+                  )}
+                  {af.background && <div className="flex gap-2"><span className="text-[#9B8E82] w-20 flex-none">背景说明</span><span className="text-[#2C2420]">{af.background}</span></div>}
+                  {af.emergencyContact && (
+                    <div className="flex gap-2">
+                      <span className="text-[#9B8E82] w-20 flex-none">紧急联系人</span>
+                      <span className="text-[#2C2420]">{af.emergencyContact}{af.emergencyPhone ? ` · ${af.emergencyPhone}` : ""}</span>
+                    </div>
+                  )}
+                  {af.safetyRisk && Object.values(af.safetyRisk).some(Boolean) && (
+                    <div className="flex gap-2 items-start">
+                      <span className="text-[#9B8E82] w-20 flex-none">安全评估</span>
+                      <span className="font-medium" style={{ color: "#DC2626" }}>⚠ 存在风险项，请注意</span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between pt-3 border-t mt-3" style={{ borderColor: "var(--color-border)" }}>
         <span className="text-base font-bold" style={{ color: "var(--color-text-primary)" }}>¥{b.priceAmount}</span>
         <div className="flex gap-2">
           {(b.status === "pending_confirmation" || b.status === "pending") && (<>
