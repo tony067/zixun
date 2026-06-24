@@ -171,7 +171,7 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
               style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
               取消预约
             </motion.button>
-          )}
+          </>)}
           {b.status === "paid" && (<>
             <motion.button whileTap={{ scale: 0.95 }}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
