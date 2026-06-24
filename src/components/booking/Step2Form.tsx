@@ -242,7 +242,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
 
         <div id="field-agreement" className="mx-5 mb-4">
           <AgreementAccordion />
-          <button type="button" onClick={() => setAgreed(!agreed)}
+          <button type="button" onClick={() => { setAgreed(!agreed); set("consentSigned", !agreed); }}
             className="flex items-start gap-3 w-full text-left mt-3">
             <div className="mt-0.5 w-5 h-5 rounded-md flex-none flex items-center justify-center border-2 transition-colors"
               style={{ borderColor: agreed ? "var(--color-primary)" : "#C4BDB5", background: agreed ? "var(--color-primary)" : "white" }}>
