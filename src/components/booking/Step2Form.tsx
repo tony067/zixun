@@ -22,7 +22,7 @@ function YesNo({ value, onChange }: { value: boolean; onChange: (v: boolean) => 
           key={String(v)}
           type="button"
           onClick={() => onChange(v)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all"
           style={{
             background: value === v ? (v ? "#FEE2E2" : "#E4F0DC") : "#F5F0EA",
             border: `1.5px solid ${value === v ? (v ? "#FCA5A5" : "#9CB48A") : "#E0DAD4"}`,
