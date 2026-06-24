@@ -126,19 +126,36 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
                 style={{ color: "#2C2420" }} />
             </div>
           </div>
+          <div className="px-4 py-3.5 border-t" style={{ borderColor: "#F5F0EA" }}>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-[#5A4E44] w-24 flex-none">微信号</span>
+              <input value={form.wechat} onChange={e => set("wechat", e.target.value)}
+                placeholder="选填"
+                className="flex-1 text-right text-sm bg-transparent outline-none placeholder-[#C4BDB5]"
+                style={{ color: "#2C2420" }} />
+            </div>
+          </div>
           <div className="px-4 py-3.5">
-            <p className="text-sm text-[#5A4E44] mb-2">咨询目的</p>
+            <p className="text-sm text-[#5A4E44] mb-2">咨询目的 <span className="text-red-400">*</span><span className="text-xs text-[#9B8E82] ml-1">可多选</span></p>
             <div className="flex flex-wrap gap-2">
-              {PURPOSE_OPTIONS.map(opt => (
-                <button key={opt} onClick={() => set("purpose", opt)}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
-                  style={{
-                    background: form.purpose === opt ? "var(--color-primary)" : "#F5F0EA",
-                    color: form.purpose === opt ? "white" : "#5A4E44",
-                  }}>
-                  {opt}
-                </button>
-              ))}
+              {PURPOSE_OPTIONS.map(opt => {
+                const selected = form.purposes.includes(opt);
+                return (
+                  <button key={opt} onClick={() => {
+                    const next = selected
+                      ? form.purposes.filter(p => p !== opt)
+                      : [...form.purposes, opt];
+                    set("purposes", next);
+                  }}
+                    className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                    style={{
+                      background: selected ? "var(--color-primary)" : "#F5F0EA",
+                      color: selected ? "white" : "#5A4E44",
+                    }}>
+                    {opt}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
