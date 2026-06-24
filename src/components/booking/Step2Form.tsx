@@ -264,7 +264,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
         </div>
 
                 {/* 服务协议 */}
-        <div className="mx-5 flex items-start gap-2.5">
+        <div id="field-agreement" className="mx-5 flex items-start gap-2.5">
           <button onClick={() => setAgreed(!agreed)}
             className="w-5 h-5 rounded flex items-center justify-center flex-none mt-0.5 transition-colors"
             style={{
