@@ -115,10 +115,10 @@ export default function ClientDetailScreen() {
               {showForm&&(
                 <motion.div initial={{height:0}} animate={{height:"auto"}} exit={{height:0}} className="overflow-hidden">
                   <div className="px-4 pb-4 border-t" style={{borderColor:"var(--color-border)"}}>
-                    {firstForm.purpose?.length?(<div className="mt-3 mb-2">
+                    {firstForm.purposes?.length?(<div className="mt-3 mb-2">
                       <p className="text-xs font-medium mb-1.5" style={{color:"#9B8E82"}}>咨询目的</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {firstForm.purpose.map(p=>(
+                        {firstForm.purposes.map(p=>(
                           <span key={p} className="px-2.5 py-1 rounded-full text-xs" style={{background:"#E4F0DC",color:"#3A6228"}}>{p}</span>
                         ))}
                       </div>
