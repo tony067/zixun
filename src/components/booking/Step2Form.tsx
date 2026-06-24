@@ -103,8 +103,6 @@ function AgreementAccordion() {
 export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, counselorName, onNext, onBack }: Props) {
   const [form, setForm] = useState<ApplicationForm>(EMPTY_FORM);
   const [agreed, setAgreed] = useState(false);
-  const [showAgreement, setShowAgreement] = useState(false);
-  const [showConsent, setShowConsent] = useState(false);
 
   const set = <K extends keyof ApplicationForm>(k: K, v: ApplicationForm[K]) =>
     setForm(prev => ({ ...prev, [k]: v }));
