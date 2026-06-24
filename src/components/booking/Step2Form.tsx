@@ -318,16 +318,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
     </div>
   );
 }
- </div>
-
-      {/* 服务协议弹窗（已移除，协议内容内嵌在页面中） */}
-      {false && showAgreement && (
-        <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "rgba(0,0,0,0.5)" }}
-          onClick={() => setShowAgreement(false)}>
-          <div className="mt-auto rounded-t-3xl overflow-hidden flex flex-col max-h-[80vh]"
-            style={{ background: "white" }} onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "#F0EBE3" }}>
-              <h3 className="text-base font-bold text-[#2C2420]">MindPace 用户服务协议</h3>
+-base font-bold text-[#2C2420]">MindPace 用户服务协议</h3>
               <button onClick={() => setShowAgreement(false)} className="text-[#9B8E82] text-xl">✕</button>
             </div>
             <div className="overflow-y-auto px-5 py-4 flex-1">
