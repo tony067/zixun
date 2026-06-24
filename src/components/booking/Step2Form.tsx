@@ -146,11 +146,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
         </div>
 
         {/* 基本信息 */}
-        <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-          <div className="px-4 py-3.5 border-b" style={{ borderColor: "#F5F0EA" }}>
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col items-end">
-                <span className="text-sm text-[#5A4E44] w-24 flex-none self-start">真实姓名 <span className="text-[#E07A5F] text-xs">*</span></span>
+        <div id="field-name" className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}> <span className="text-[#E07A5F] text-xs">*</span></span>
               </div>
               <input value={form.name} onChange={e => set("name", e.target.value)}
                 placeholder="请填写真实姓名（非昵称）"
@@ -177,8 +173,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             </div>
             <p className="text-xs mt-1" style={{ color: "#C4BDB5" }}>小程序版本上线后可自动读取</p>
           </div>
-          <div className="px-4 py-3.5">
-            <p className="text-sm text-[#5A4E44] mb-2">咨询目的 <span className="text-red-400">*</span><span className="text-xs text-[#9B8E82] ml-1">可多选</span></p>
+          <div id="field-purposes" className="px-4 py-3.5"><span className="text-xs text-[#9B8E82] ml-1">可多选</span></p>
             <div className="flex flex-wrap gap-2">
               {PURPOSE_OPTIONS.map(opt => {
                 const selected = form.purposes.includes(opt);
