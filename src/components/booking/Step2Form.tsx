@@ -292,8 +292,8 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             style={{ borderColor: "#E8E2D8", color: "#9B8E82" }}>
             上一步
           </button>
-          <button disabled={!canSubmit} onClick={handleSubmitClick}
-            className="flex-1 py-3 rounded-2xl text-white font-bold text-base transition-opacity"
+          <button onClick={handleSubmitClick}
+            className="flex-1 py-3 rounded-2xl text-white font-bold text-base"
             style={{ background: "var(--color-primary)" }}>
             提交预约 · ¥{priceAmount}
           </button>
