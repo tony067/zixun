@@ -232,7 +232,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
         </div>
 
         <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-          <textarea value={form.background ?? ""} onChange={e => set("background", e.target.value)}
+          <textarea value={form.additionalNote ?? ""} onChange={e => set("additionalNote", e.target.value)}
             placeholder="\u8865\u5145\u8bf4\u660e\uff08\u9009\u586b\uff09\u2014\u2014\u60a8\u53ef\u4ee5\u7b80\u8981\u63cf\u8ff0\u60a8\u76ee\u524d\u7684\u56f0\u6270\u6216\u5bf9\u672c\u6b21\u548b\u8be2\u7684\u671f\u671b"
             rows={3}
             className="w-full px-4 py-3.5 text-sm bg-transparent outline-none resize-none placeholder-[#C4BDB5]"
