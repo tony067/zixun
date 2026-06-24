@@ -52,6 +52,8 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
   const timeStr = dt.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
   const st = STATUS_STYLE[b.status] ?? { color: "#6B7280", bg: "#F3F4F6" };
   const clientName = b.client?.name || b.client?.email?.split("@")[0] || "来访者";
+  const [showForm, setShowForm] = useState(false);
+  const af = b.applicationForm;
 
   return (
     <motion.div
