@@ -237,6 +237,17 @@ export function CounselorBookingsScreen() {
     });
     if (res.ok) {
       setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+      // 接受预约时，把来访填写的表单同步到客户档案
+      if (status === "confirmed") {
+        const booking = bookings.find(b => b.id === id);
+        if (booking?.applicationForm && booking.client?.id) {
+          await request(`/api/admin/users/${booking.client.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ applicationForm: booking.applicationForm }),
+          }).catch(() => {}); // 静默失败，不影响主流程
+        }
+      }
     }
   };
 
