@@ -127,9 +127,11 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
         <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <div className="px-4 py-3.5 border-b" style={{ borderColor: "#F5F0EA" }}>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#5A4E44] w-24 flex-none">姓名 / 昵称</span>
+              <div className="flex flex-col items-end">
+                <span className="text-sm text-[#5A4E44] w-24 flex-none self-start">真实姓名 <span className="text-[#E07A5F] text-xs">*</span></span>
+              </div>
               <input value={form.name} onChange={e => set("name", e.target.value)}
-                placeholder="请填写"
+                placeholder="请填写真实姓名（非昵称）"
                 className="flex-1 text-right text-sm bg-transparent outline-none placeholder-[#C4BDB5]"
                 style={{ color: "#2C2420" }} />
             </div>
@@ -145,7 +147,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
           </div>
           <div className="px-4 py-3.5 border-t" style={{ borderColor: "#F5F0EA" }}>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#5A4E44] w-24 flex-none">微信号</span>
+              <span className="text-sm text-[#5A4E44] w-24 flex-none">微信号 <span className="text-[#C4BDB5] text-xs">选填</span></span>
               <input value={form.wechat} onChange={e => set("wechat", e.target.value)}
                 placeholder="选填"
                 className="flex-1 text-right text-sm bg-transparent outline-none placeholder-[#C4BDB5]"
