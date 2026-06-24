@@ -6,6 +6,13 @@ import { Calendar, Clock, Video, Phone, MessageCircle, Check, X } from "lucide-r
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 
+type ApplicationForm = {
+  name?: string; phone?: string; wechat?: string;
+  purposes?: string[]; purposeOther?: string;
+  background?: string; emergencyContact?: string; emergencyPhone?: string;
+  safetyRisk?: Record<string, boolean>;
+};
+
 type Booking = {
   id: string; status: string; scheduledAt: string; durationMinutes: number;
   sessionMode: string; priceAmount: number; clientNote: string | null;
@@ -13,6 +20,7 @@ type Booking = {
   rescheduleStatus: string | null;
   rescheduleNewTime: string | null;
   rescheduleReason: string | null;
+  applicationForm?: ApplicationForm | null;
 };
 
 // 4个平铺Tab，去掉「已取消」
