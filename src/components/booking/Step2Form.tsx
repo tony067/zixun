@@ -110,21 +110,32 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
     setForm(prev => ({ ...prev, [k]: v }));
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   function handleSubmitClick() {
+    setErrorMsg("");
     if (!form.name.trim()) {
+      setErrorMsg("请填写真实姓名");
       document.getElementById("field-name")?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     if (!form.phone.trim()) {
+      setErrorMsg("请填写手机号");
       document.getElementById("field-phone")?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     if (form.purposes.length === 0) {
+      setErrorMsg("请至少选择一项咨询目的");
       document.getElementById("field-purposes")?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    if (!agreed || !form.consentSigned) {
+    if (!agreed) {
+      setErrorMsg("请阅读并勾选服务协议");
+      document.getElementById("field-agreement")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (!form.consentSigned) {
+      setErrorMsg("请点击《MindPace 咨询服务协议》阅读并同意");
       document.getElementById("field-agreement")?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
