@@ -120,11 +120,6 @@ export default function MessagesPage() {
   );
 }
 
-type Conv = {
-  conv: { id: string; lastMessageAt: string };
-  otherUser: { id: string; name: string | null; email: string | null };
-};
-
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const min = Math.floor(diff / 60000);
