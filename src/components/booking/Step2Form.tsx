@@ -197,7 +197,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
           <div className="px-4 py-3.5 border-t" style={{ borderColor: "#F5F0EA" }}>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[#5A4E44] w-24 flex-none">\u59d3\u540d</span>
-              <input value={form.emergencyContact ?? ""} onChange={e => set("emergencyContact", e.target.value)}
+              <input value={form.emergencyName ?? ""} onChange={e => set("emergencyName", e.target.value)}
                 placeholder="\u7d27\u6025\u8054\u7cfb\u4eba\u59d3\u540d"
                 className="flex-1 text-right text-sm bg-transparent outline-none placeholder-[#C4BDB5]"
                 style={{ color: "#2C2420" }} />
