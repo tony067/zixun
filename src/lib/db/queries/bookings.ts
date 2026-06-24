@@ -55,6 +55,7 @@ export async function getCounselorBookings(counselorId: string) {
     priceAmount: bookings.priceAmount,
     clientNote: bookings.clientNote,
     counselorNote: bookings.counselorNote,
+    applicationForm: bookings.applicationForm,
     createdAt: bookings.createdAt,
     client: {
       id: users.id,
