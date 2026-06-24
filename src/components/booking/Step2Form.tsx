@@ -30,15 +30,15 @@ function YesNo({ value, onChange }: { value: boolean; onChange: (v: boolean) => 
         >
           <div
             className="w-4 h-4 rounded border-2 flex items-center justify-center flex-none"
-            style={{ borderColor: value === v ? "white" : "#C4BDB5", background: value === v ? "white" : "transparent" }}
+            style={{ borderColor: value === v ? "var(--color-primary)" : "#C4BDB5", background: value === v ? "var(--color-primary)" : "transparent" }}
           >
             {value === v && (
-              <svg viewBox="0 0 10 8" className="w-2 h-2" fill="none" stroke="var(--color-primary)" strokeWidth="2">
+              <svg viewBox="0 0 10 8" className="w-2 h-2" fill="none" stroke="white" strokeWidth="2">
                 <polyline points="1,4 3.5,6.5 9,1" />
               </svg>
             )}
           </div>
-          <span className="text-sm font-medium" style={{ color: value === v ? "white" : "#9B8E82" }}>
+          <span className="text-sm font-medium" style={{ color: value === v ? "var(--color-primary)" : "#9B8E82" }}>
             {v ? "是" : "否"}
           </span>
         </button>
