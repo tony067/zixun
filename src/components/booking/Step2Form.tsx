@@ -175,17 +175,8 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
             </div>
             <p className="text-xs mt-1" style={{ color: "#C4BDB5" }}>小程序版本上线后可自动读取</p>
           </div>
-          <div className="px-4 py-3.5 border-t" style={{ borderColor: "#F5F0EA" }}>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[#5A4E44] w-24 flex-none">微信号 <span className="text-[#C4BDB5] text-xs">选填</span></span>
-              <input value={form.wechat} onChange={e => set("wechat", e.target.value)}
-                placeholder="选填"
-                className="flex-1 text-right text-sm bg-transparent outline-none placeholder-[#C4BDB5]"
-                style={{ color: "#2C2420" }} />
-            </div>
-            <p className="text-xs mt-1" style={{ color: "#C4BDB5" }}>小程序版本上线后可自动读取</p>
-          </div>
-          <div id="field-purposes" className="px-4 py-3.5"><span className="text-xs text-[#9B8E82] ml-1">可多选</span></p>
+          <div id="field-purposes" className="px-4 py-3.5">
+            <p className="text-sm text-[#5A4E44] mb-2">咨询目的 <span className="text-red-400">*</span><span className="text-xs text-[#9B8E82] ml-1">可多选</span></p>
             <div className="flex flex-wrap gap-2">
               {PURPOSE_OPTIONS.map(opt => {
                 const selected = form.purposes.includes(opt);
