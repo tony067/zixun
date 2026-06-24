@@ -12,8 +12,9 @@ export interface TimeSlot {
 
 export interface ApplicationForm {
   name: string;
-  contact: string;
-  purpose: string;
+  phone: string;       // 手机号（必填）
+  wechat: string;      // 微信号（选填）
+  purposes: string[];  // 咨询目的（多选）
   hasMentalDisease: boolean;
   onMedication: boolean;
   hasSelfHarm: boolean;
@@ -27,8 +28,9 @@ export interface ApplicationForm {
 
 export const EMPTY_FORM: ApplicationForm = {
   name: "",
-  contact: "",
-  purpose: "",
+  phone: "",
+  wechat: "",
+  purposes: [],
   hasMentalDisease: false,
   onMedication: false,
   hasSelfHarm: false,
