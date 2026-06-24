@@ -308,7 +308,6 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
         </div>
       </div>
       </div>
-      </div>
     </div>
   );
 }
