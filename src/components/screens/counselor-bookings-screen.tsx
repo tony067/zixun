@@ -9,7 +9,7 @@ import { request } from "@/lib/api/request";
 type ApplicationForm = {
   name?: string; phone?: string; wechat?: string;
   purposes?: string[]; purposeOther?: string;
-  background?: string; emergencyContact?: string; emergencyPhone?: string;
+  background?: string; emergencyName?: string; emergencyPhone?: string;
   safetyRisk?: Record<string, boolean>;
 };
 
@@ -125,10 +125,10 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
                     </div>
                   )}
                   {af.background && <div className="flex gap-2"><span className="text-[#9B8E82] w-20 flex-none">背景说明</span><span className="text-[#2C2420]">{af.background}</span></div>}
-                  {af.emergencyContact && (
+                  {af.emergencyName && (
                     <div className="flex gap-2">
                       <span className="text-[#9B8E82] w-20 flex-none">紧急联系人</span>
-                      <span className="text-[#2C2420]">{af.emergencyContact}{af.emergencyPhone ? ` · ${af.emergencyPhone}` : ""}</span>
+                      <span className="text-[#2C2420]">{af.emergencyName}{af.emergencyPhone ? ` · ${af.emergencyPhone}` : ""}</span>
                     </div>
                   )}
                   {af.safetyRisk && Object.values(af.safetyRisk).some(Boolean) && (

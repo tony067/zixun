@@ -50,7 +50,7 @@ function MessagesPageInner() {
     // 查找或创建与目标用户的对话，然后跳转到聊天页
     request("/api/messages", {
       method: "POST",
-      body: JSON.stringify({ targetUserId }),
+      body: JSON.stringify({ otherUserId: targetUserId }),
     }).then(r => r.json()).then(d => {
       if (d.conversationId) {
         router.replace(`/chat/${d.conversationId}`);
