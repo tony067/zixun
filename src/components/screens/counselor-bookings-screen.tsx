@@ -9,8 +9,9 @@ import { request } from "@/lib/api/request";
 type ApplicationForm = {
   name?: string; phone?: string; wechat?: string;
   purposes?: string[]; purposeOther?: string;
-  background?: string; emergencyName?: string; emergencyPhone?: string;
-  safetyRisk?: Record<string, boolean>;
+  additionalNote?: string; emergencyName?: string; emergencyPhone?: string;
+  hasMentalDisease?: boolean; onMedication?: boolean;
+  hasSelfHarm?: boolean; hasSuicidalThought?: boolean; hasSuicidalBehavior?: boolean;
 };
 
 type Booking = {
@@ -124,17 +125,22 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
                       </span>
                     </div>
                   )}
-                  {af.background && <div className="flex gap-2"><span className="text-[#9B8E82] w-20 flex-none">背景说明</span><span className="text-[#2C2420]">{af.background}</span></div>}
+                  {af.additionalNote && <div className="flex gap-2"><span className="text-[#9B8E82] w-20 flex-none">背景说明</span><span className="text-[#2C2420]">{af.additionalNote}</span></div>}
                   {af.emergencyName && (
                     <div className="flex gap-2">
                       <span className="text-[#9B8E82] w-20 flex-none">紧急联系人</span>
                       <span className="text-[#2C2420]">{af.emergencyName}{af.emergencyPhone ? ` · ${af.emergencyPhone}` : ""}</span>
                     </div>
                   )}
-                  {af.safetyRisk && Object.values(af.safetyRisk).some(Boolean) && (
+                  {(af.hasMentalDisease || af.hasSelfHarm || af.hasSuicidalThought || af.hasSuicidalBehavior) && (
                     <div className="flex gap-2 items-start">
                       <span className="text-[#9B8E82] w-20 flex-none">安全评估</span>
-                      <span className="font-medium" style={{ color: "#DC2626" }}>⚠ 存在风险项，请注意</span>
+                      <div className="flex flex-col gap-0.5">
+                        {af.hasMentalDisease && <span className="text-red-500 text-xs">⚠ 有精神科诊断</span>}
+                        {af.hasSelfHarm && <span className="text-red-500 text-xs">⚠ 近期有自伤行为</span>}
+                        {af.hasSuicidalThought && <span className="text-red-500 text-xs">⚠ 近期有自杀想法</span>}
+                        {af.hasSuicidalBehavior && <span className="text-red-500 text-xs">⚠ 近期有自杀行为</span>}
+                      </div>
                     </div>
                   )}
                 </div>

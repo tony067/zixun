@@ -62,7 +62,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
   const slots = useMemo(() => generateMockSlots(days), [days]);
 
   const [selectedMode, setSelectedMode] = useState<string | null>(
-    sessionModes.length === 1 ? sessionModes[0] : null
+    sessionModes[0] ?? null
   );
   const [selectedDay, setSelectedDay] = useState<Date>(days[0]);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
@@ -115,7 +115,7 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto px-5 pt-4 pb-4">
         {/* 咨询方式 */}
-        {sessionModes.length > 1 && (
+        {sessionModes.length > 0 && (
           <div className="mb-5">
             <p className="text-sm font-semibold mb-2.5" style={{ color: "#2C2420" }}>选择咨询方式</p>
             <div className="flex gap-3">
