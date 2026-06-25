@@ -69,6 +69,42 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+const FIELD_LABELS: Record<string, string> = {
+  name: "真实姓名", phone: "手机号", wechat: "微信号",
+  purposes: "咨询目的", purposeOther: "其他目的",
+  additionalNote: "补充说明", emergencyName: "紧急联系人姓名",
+  emergencyPhone: "紧急联系人电话", background: "背景说明",
+  hasMentalDisease: "有精神科诊断", onMedication: "正在服药",
+  hasSelfHarm: "近期有自伤行为", hasSuicidalThought: "近期有自杀想法",
+  hasSuicidalBehavior: "近期有自杀行为",
+  consentSigned: "已签署咨询协议",
+};
+const SAFETY_FIELDS = new Set(["hasMentalDisease","onMedication","hasSelfHarm","hasSuicidalThought","hasSuicidalBehavior"]);
+
+function IntakeFormDisplay({ form }: { form: Record<string, unknown> }) {
+  const entries = Object.entries(form).filter(([, v]) => v !== null && v !== undefined && v !== "");
+  if (entries.length === 0) return <p className="text-sm text-[#9B8E82] py-8 text-center">暂无申请单信息</p>;
+  return (
+    <div className="space-y-4">
+      {entries.map(([k, v]) => {
+        const label = FIELD_LABELS[k] ?? k;
+        const isTrue = v === true || v === "true";
+        const isFalse = v === false || v === "false";
+        const isBool = isTrue || isFalse;
+        const text = isBool ? (isTrue ? "是" : "否") : Array.isArray(v) ? (v as string[]).join("、") : String(v ?? "");
+        return (
+          <div key={k} className="flex gap-3 items-start">
+            <span className="text-xs text-[#9B8E82] w-28 flex-none pt-0.5">{label}</span>
+            <span className="text-sm font-medium leading-relaxed text-[#2C2420]">
+              {text}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function formatFull(d?: string) {
   if (!d) return "—";
   const dt = new Date(d);
@@ -222,7 +258,8 @@ export default function BookingDetailPage() {
         style={{ background: "rgba(245,240,234,0.95)", backdropFilter: "blur(8px)" }}>
         <div className="flex gap-3">
           <button className="flex-1 py-3 rounded-2xl text-sm font-semibold border"
-            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}>联系咨询师</button>
+            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
+            onClick={() => router.push(`/messages?counselorUserId=${bk.counselor?.id}`)}>联系咨询师</button>
           <button
             onClick={() => {
               if (bk.status === "pending_payment") {
@@ -245,14 +282,7 @@ export default function BookingDetailPage() {
       {modal === "form" && (
         <Modal title="我的申请单" onClose={() => setModal(null)}>
           {bk.applicationForm && Object.keys(bk.applicationForm).length > 0 ? (
-            <div className="space-y-5">
-              {Object.entries(bk.applicationForm).map(([k, v]) => (
-                <div key={k}>
-                  <p className="text-xs text-[#9B8E82] mb-1">{k}</p>
-                  <p className="text-sm text-[#2C2420] leading-relaxed">{String(v)}</p>
-                </div>
-              ))}
-            </div>
+            <IntakeFormDisplay form={bk.applicationForm as Record<string, unknown>} />
           ) : (
             <p className="text-sm text-[#9B8E82] py-8 text-center">暂无申请单信息</p>
           )}

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, Video, ChevronRight, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
 import { request } from "@/lib/api/request";
 
 type Booking = {
@@ -31,12 +32,15 @@ const STATUS_BADGE: Record<string, { label: string; color: string; bg: string }>
 };
 
 function BookingCard({ b }: { b: Booking }) {
+  const router = useRouter();
+  const needsPay = b.status === "pending_payment" || b.status === "confirmed";
   const badge = STATUS_BADGE[b.status] ?? { label: b.status, color: "#9B8E82", bg: "#F5F0E8" };
   const dt = b.scheduledAt ? new Date(b.scheduledAt) : null;
   const c = b.counselor;
   return (
     <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       className="rounded-2xl p-4 mb-3" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+      <button className="w-full text-left" onClick={() => router.push(`/my-bookings/${b.id}`)}>
       <div className="flex items-start gap-3">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0"
           style={{ background: "#E8DFCC", color: "#7A6248" }}>
@@ -73,6 +77,7 @@ function BookingCard({ b }: { b: Booking }) {
           </div>
         </div>
       </div>
+      </button>
       {(b.status === "pending_confirmation" || b.status === "pending") && (
         <button className="w-full mt-3 py-2.5 rounded-xl text-sm font-semibold border"
           style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}>取消预约</button>

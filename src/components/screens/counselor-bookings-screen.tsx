@@ -132,17 +132,25 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
                       <span className="text-[#2C2420]">{af.emergencyName}{af.emergencyPhone ? ` · ${af.emergencyPhone}` : ""}</span>
                     </div>
                   )}
-                  {(af.hasMentalDisease || af.hasSelfHarm || af.hasSuicidalThought || af.hasSuicidalBehavior) && (
-                    <div className="flex gap-2 items-start">
-                      <span className="text-[#9B8E82] w-20 flex-none">安全评估</span>
-                      <div className="flex flex-col gap-0.5">
-                        {af.hasMentalDisease && <span className="text-red-500 text-xs">⚠ 有精神科诊断</span>}
-                        {af.hasSelfHarm && <span className="text-red-500 text-xs">⚠ 近期有自伤行为</span>}
-                        {af.hasSuicidalThought && <span className="text-red-500 text-xs">⚠ 近期有自杀想法</span>}
-                        {af.hasSuicidalBehavior && <span className="text-red-500 text-xs">⚠ 近期有自杀行为</span>}
-                      </div>
+                  <div className="flex gap-2 items-start mt-1">
+                    <span className="text-[#9B8E82] w-20 flex-none shrink-0">安全评估</span>
+                    <div className="flex flex-col gap-1">
+                      {[
+                        { key: "hasMentalDisease", label: "有精神科诊断", val: af.hasMentalDisease },
+                        { key: "onMedication",     label: "正在服药",     val: af.onMedication },
+                        { key: "hasSelfHarm",      label: "近期有自伤行为", val: af.hasSelfHarm },
+                        { key: "hasSuicidalThought", label: "近期有自杀想法", val: af.hasSuicidalThought },
+                        { key: "hasSuicidalBehavior", label: "近期有自杀行为", val: af.hasSuicidalBehavior },
+                      ].map(({ key, label, val }) => (
+                        <div key={key} className="flex items-center gap-1.5">
+                          <span className="text-[#9B8E82]">{label}：</span>
+                          <span className={val ? "text-red-500 font-semibold" : "text-[#2C2420]"}>
+                            {val ? "⚠ 是" : "否"}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  )}
+                  </div>
                 </div>
               </motion.div>
             )}
