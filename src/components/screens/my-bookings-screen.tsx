@@ -20,15 +20,15 @@ const TABS = [
 ];
 
 const STATUS_BADGE: Record<string, { label: string; color: string; bg: string }> = {
-  pending_confirmation: { label: "待咨询师确认", color: "#D97706", bg: "#FEF3C7" },
-  pending:              { label: "待咨询师确认", color: "#D97706", bg: "#FEF3C7" },
-  pending_payment:      { label: "待支付",       color: "#3A6228", bg: "#C6DFB8" },
-  confirmed:            { label: "待支付",       color: "#3A6228", bg: "#C6DFB8" },
-  paid:                 { label: "即将咨询",     color: "#059669", bg: "#D1FAE5" },
-  upcoming:             { label: "即将咨询",     color: "#059669", bg: "#D1FAE5" },
-  completed:            { label: "已完成",       color: "#6B7280", bg: "#F3F4F6" },
-  cancelled:            { label: "已取消",       color: "#9CA3AF", bg: "#F9FAFB" },
-  rejected:             { label: "已拒绝",       color: "#DC2626", bg: "#FEF2F2" },
+  pending_confirmation: { label: "待咨询师确认", color: "#D97706", bg: "transparent" },
+  pending:              { label: "待咨询师确认", color: "#D97706", bg: "transparent" },
+  pending_payment:      { label: "待支付",       color: "#4A7A36", bg: "#E4F0DC" },
+  confirmed:            { label: "待支付",       color: "#4A7A36", bg: "#E4F0DC" },
+  paid:                 { label: "即将咨询",     color: "#059669", bg: "transparent" },
+  upcoming:             { label: "即将咨询",     color: "#059669", bg: "transparent" },
+  completed:            { label: "已完成",       color: "#6B7280", bg: "transparent" },
+  cancelled:            { label: "已取消",       color: "#9CA3AF", bg: "transparent" },
+  rejected:             { label: "已拒绝",       color: "#DC2626", bg: "transparent" },
 };
 
 function BookingCard({ b }: { b: Booking }) {

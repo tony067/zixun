@@ -50,7 +50,7 @@ export default function ClientDetailScreen() {
 
   useEffect(() => {
     request("/api/counselor/bookings").then(r=>r.json()).then((d:any)=>{
-      const all:any[] = Array.isArray(d.bookings)?d.bookings:[];
+      const all:any[] = Array.isArray(d)?d:Array.isArray(d.bookings)?d.bookings:[];
       const mine = all.filter(b=>b.clientId===clientId||b.clientUserId===clientId);
       if(!mine.length){setLoading(false);return;}
       const sorted = [...mine].sort((a,b)=>new Date(a.scheduledAt).getTime()-new Date(b.scheduledAt).getTime());

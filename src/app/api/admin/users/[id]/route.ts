@@ -62,12 +62,13 @@ export async function GET(
 
   // 来访者订单（作为 client）
   const clientBookings = await db.select({
-    id:          bookings.id,
-    counselorId: bookings.counselorId,
-    scheduledAt: bookings.scheduledAt,
-    priceAmount: bookings.priceAmount,
-    status:      bookings.status,
-    clientNote:  bookings.clientNote,
+    id:              bookings.id,
+    counselorId:     bookings.counselorId,
+    scheduledAt:     bookings.scheduledAt,
+    priceAmount:     bookings.priceAmount,
+    status:          bookings.status,
+    clientNote:      bookings.clientNote,
+    agreementSigned: bookings.agreementSigned,
   }).from(bookings)
     .where(eq(bookings.clientId, id))
     .orderBy(desc(bookings.scheduledAt));
@@ -79,12 +80,13 @@ export async function GET(
   let counselorBookings: typeof clientBookings = [];
   if (counselorRow[0]) {
     counselorBookings = await db.select({
-      id:          bookings.id,
-      counselorId: bookings.counselorId,
-      scheduledAt: bookings.scheduledAt,
-      priceAmount: bookings.priceAmount,
-      status:      bookings.status,
-      clientNote:  bookings.clientNote,
+      id:              bookings.id,
+      counselorId:     bookings.counselorId,
+      scheduledAt:     bookings.scheduledAt,
+      priceAmount:     bookings.priceAmount,
+      status:          bookings.status,
+      clientNote:      bookings.clientNote,
+      agreementSigned: bookings.agreementSigned,
     }).from(bookings)
       .where(eq(bookings.counselorId, counselorRow[0].id))
       .orderBy(desc(bookings.scheduledAt));
@@ -118,8 +120,9 @@ export async function GET(
       priceAmount:    b.priceAmount ?? 0,
       status:         b.status ?? "",
       statusLabel:    STATUS_LABEL[b.status ?? ""] ?? b.status ?? "",
-      counselorName:  allCounselorNames[b.counselorId] ?? b.counselorId,
-      clientNote:     b.clientNote ?? "",
+      counselorName:   allCounselorNames[b.counselorId] ?? b.counselorId,
+      clientNote:      b.clientNote ?? "",
+      agreementSigned: b.agreementSigned ?? false,
     };
   }
 

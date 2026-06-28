@@ -1,4 +1,27 @@
 "use client";
+const AGREEMENT_TEXT = `MindPace 咨询服务协议
+
+一、服务说明
+本平台提供神经多样性友好的心理咨询服务，咨询师均经联盟认证。
+
+二、保密原则
+咨询内容严格保密，以下情况除外：
+1. 来访者有伤害自己或他人的危险；
+2. 法律要求披露。
+
+三、取消与改期政策
+• 咨询开始前24小时可免费取消或改期；
+• 24小时内取消将扣除50%费用；
+• 未出席将扣除全部费用。
+
+四、来访者权利与责任
+来访者有权了解咨询方法，有责任如实告知个人情况，并遵守预约时间。
+
+五、紧急情况
+如遇紧急心理危机，请拨打心理援助热线 400-161-9995。
+
+本协议由来访者在首次预约时确认签署，签署后视为同意以上条款。`;
+
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
@@ -23,6 +46,7 @@ interface BookingRow {
   status: string;
   priceAmount: number;
   counterpartName: string;
+  agreementSigned?: boolean;
 }
 
 interface UserDetail extends UserRow {
@@ -31,7 +55,7 @@ interface UserDetail extends UserRow {
 
 const STATUS_LABEL: Record<string, string> = {
   pending_confirmation: "待确认",
-  confirmed: "已确认",
+  confirmed: "待支付",
   completed: "已完成",
   cancelled: "已取消",
   pending_payment: "待支付",
@@ -56,6 +80,7 @@ export default function AdminUsersScreen() {
   const [allUsers, setAllUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<UserDetail | null>(null);
+  const [showAgreement, setShowAgreement] = useState<string | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -190,10 +215,10 @@ export default function AdminUsersScreen() {
 
       {/* 详情弹窗 */}
       {mounted && selected && createPortal(
-        <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(0,0,0,0.45)" }}
+        <div className="fixed inset-0 z-50 flex items-end min-h-screen w-full" style={{ background: "rgba(0,0,0,0.75)" }}
           onClick={() => setSelected(null)}>
           <div className="w-full rounded-t-3xl px-5 pt-5 pb-10 overflow-y-auto"
-            style={{ background: "var(--color-bg)", maxHeight: "82vh" }}
+            style={{ background: "#FFFFFF", maxHeight: "82vh", boxShadow: "0 -4px 24px rgba(0,0,0,0.15)" }}
             onClick={e => e.stopPropagation()}>
 
             {/* 头部 */}
@@ -264,10 +289,35 @@ export default function AdminUsersScreen() {
                             color: b.status === "completed" ? "#16A34A" : "#6B7280" }}>
                           {STATUS_LABEL[b.status] ?? b.status}
                         </span>
+                        {b.agreementSigned && (
+                          <button onClick={() => setShowAgreement(b.id)}
+                            className="text-[10px] px-1.5 py-0.5 rounded mt-1 ml-1 inline-block cursor-pointer"
+                            style={{ background: "#E4F0DC", color: "#4A7A36" }}>已签协议 ▸</button>
+                        )}
                       </div>
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* 协议查看弹窗 */}
+            {showAgreement && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center px-4"
+                style={{ background: "rgba(0,0,0,0.7)" }}
+                onClick={() => setShowAgreement(null)}>
+                <div className="w-full rounded-3xl p-5 overflow-y-auto"
+                  style={{ background: "white", maxHeight: "75vh" }}
+                  onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-base font-bold" style={{ color: "#2C2420" }}>咨询服务协议</p>
+                    <button onClick={() => setShowAgreement(null)}
+                      className="w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{ background: "#EBE7DF", color: "#5A4E44" }}>×</button>
+                  </div>
+                  <pre className="text-sm whitespace-pre-wrap leading-relaxed font-sans" style={{ color: "#2C2420" }}>{AGREEMENT_TEXT}</pre>
+                  <p className="text-xs mt-4 pt-3 border-t" style={{ color: "#9CB48A", borderColor: "#EBE7DF" }}>✓ 来访者已于预约时签署同意</p>
+                </div>
               </div>
             )}
 

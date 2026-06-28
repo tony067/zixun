@@ -1031,18 +1031,18 @@ function StatsPanel() {
   }, [user]);
 
   const STATS = [
-    { icon: "CalendarDays", label: "本月接单", value: stats?.monthBookings ?? "—", unit: "个", desc: "本月新增预约订单", href: "/counselor/bookings" },
-    { icon: "Clock", label: "本月完成咨询", value: stats?.monthHours ?? "—", unit: "小时", desc: "本月已完成咨询时长", href: "/counselor/bookings" },
-    { icon: "Users", label: "接待来访", value: stats?.totalClients ?? "—", unit: "个", desc: "累计接待来访人数", href: "/counselor/schedule?tab=clients" },
-    { icon: "TrendingUp", label: "我的账单", value: "查看", unit: "", desc: "月度收入明细与导出", href: "/counselor/billing" },
+    { icon: "CalendarDays", label: "本月接单", value: stats?.monthBookings ?? "—", unit: "个", desc: "本月新增预约订单", href: null },
+    { icon: "Clock", label: "本月完成咨询", value: stats?.monthHours ?? "—", unit: "小时", desc: "本月已完成咨询时长", href: null },
+    { icon: "Users", label: "接待来访", value: stats?.totalClients ?? "—", unit: "个", desc: "累计接待来访人数", href: null },
+    { icon: "TrendingUp", label: "我的账单", value: "—", unit: "", desc: "查看月度收入明细 →", href: "/counselor/billing?from=stats" },
   ];
   return (
     <div className="px-5 py-4">
       <div className="grid grid-cols-2 gap-3">
         {STATS.map(s => (
-          <button key={s.label} onClick={() => router.push(s.href)}
+          <button key={s.label} onClick={() => s.href && router.push(s.href)}
             className="rounded-2xl p-4 text-left"
-            style={{ background: "#FDFBF7", boxShadow: "0 1px 6px rgba(0,0,0,0.04)", border: "1px solid #EBE7DF" }}>
+            style={{ background: "#FDFBF7", boxShadow: "0 1px 6px rgba(0,0,0,0.04)", border: "1px solid #EBE7DF", cursor: s.href ? "pointer" : "default" }}>
             <div className="flex items-center gap-2 mb-2">
               {s.icon === "CalendarDays" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>}
               {s.icon === "Clock" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
@@ -1050,9 +1050,11 @@ function StatsPanel() {
               {s.icon === "TrendingUp" && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.8"><polyline points="22,7 13.5,15.5 8.5,10.5 2,17"/><polyline points="16,7 22,7 22,13"/></svg>}
               <p className="text-xs" style={{ color: "#9B8E82" }}>{s.label}</p>
             </div>
-            <div className="flex items-baseline gap-1">
-              <p className="text-2xl font-bold" style={{ color: "#2C2420" }}>{s.value}</p>
-              <p className="text-sm" style={{ color: "#9B8E82" }}>{s.unit}</p>
+            <div className="flex items-baseline gap-1 mt-2">
+              <p className="text-2xl font-bold" style={{ color: "#2C2420" }}>
+                {s.value === "—" ? <span style={{ color: "#C4BDB5" }}>—</span> : s.value}
+              </p>
+              {s.value !== "—" && <p className="text-sm" style={{ color: "#9B8E82" }}>{s.unit}</p>}
             </div>
             <p className="text-xs mt-1.5" style={{ color: "#C4BDB5" }}>{s.desc} →</p>
           </button>

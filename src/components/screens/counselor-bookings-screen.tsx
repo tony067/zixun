@@ -84,17 +84,17 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
       </div>
 
       {/* 时间 + 方式 */}
-      <div className="flex items-center gap-4 text-sm mb-4" style={{ color: "var(--color-text-secondary)" }}>
-        <span className="flex items-center gap-1.5">
-          <Calendar className="w-3.5 h-3.5" />
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm mb-4" style={{ color: "var(--color-text-secondary)" }}>
+        <span className="flex items-center gap-1 whitespace-nowrap">
+          <Calendar className="w-3.5 h-3.5 flex-none" />
           {dateStr}
         </span>
-        <span className="flex items-center gap-1.5">
-          <Clock className="w-3.5 h-3.5" />
+        <span className="flex items-center gap-1 whitespace-nowrap">
+          <Clock className="w-3.5 h-3.5 flex-none" />
           {timeStr} · {b.durationMinutes}分钟
         </span>
-        <span className="flex items-center gap-1.5">
-          {b.sessionMode?.includes("视频") ? <Video className="w-3.5 h-3.5" /> : <Phone className="w-3.5 h-3.5" />}
+        <span className="flex items-center gap-1 whitespace-nowrap">
+          {b.sessionMode?.includes("视频") ? <Video className="w-3.5 h-3.5 flex-none" /> : <Phone className="w-3.5 h-3.5 flex-none" />}
           {b.sessionMode}
         </span>
       </div>

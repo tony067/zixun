@@ -63,7 +63,7 @@ function BillingContent() {
     <div className="min-h-screen pb-24" style={{ background: "#FAF7F2" }}>
       <div className="sticky top-0 z-10 px-4 pt-12 pb-3 flex items-center gap-3"
         style={{ background: "rgba(250,247,242,0.95)", backdropFilter: "blur(12px)" }}>
-        <button onClick={() => router.back()}
+        <button onClick={() => { const from = new URLSearchParams(window.location.search).get('from'); router.push(from === 'stats' ? '/counselor/schedule?tab=stats' : '/counselor/billing'); }}
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: "#EBE7DF" }}>
           <ArrowLeft size={18} style={{ color: "#6B5E52" }} />
