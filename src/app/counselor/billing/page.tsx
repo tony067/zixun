@@ -35,6 +35,9 @@ function BillingContent() {
   const now = new Date();
   const [year,  setYear]  = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
+  const [showPicker, setShowPicker] = useState(false);
+  const years = Array.from({ length: 3 }, (_, i) => now.getFullYear() - i);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
   const [items, setItems] = useState<BillItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -85,7 +88,7 @@ function BillingContent() {
             <ChevronLeft size={16} style={{ color: "#6B5E52" }} />
           </button>
           <span className="text-base font-bold" style={{ color: "#2C2420" }}>
-            {year} 年 {month} 月
+            <button onClick={() => setShowPicker(v => !v)} className="font-bold text-base px-3 py-1 rounded-xl" style={{ color: "#2C2420", background: showPicker ? "#EBE7DF" : "transparent" }}>{year} 年 {month} 月 ▾</button>
           </span>
           <button onClick={nextMonth} className="w-8 h-8 rounded-xl flex items-center justify-center"
             style={{ background: canNext ? "#EBE7DF" : "transparent", opacity: canNext ? 1 : 0.3 }}>
@@ -93,6 +96,39 @@ function BillingContent() {
           </button>
         </div>
 
+        {showPicker && (
+          <div className="rounded-2xl p-4 mb-3" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <p className="text-xs text-center mb-2" style={{ color: "#9B8E82" }}>年份</p>
+                {years.map(y => (
+                  <button key={y} onClick={() => { setYear(y); }}
+                    className="w-full py-2 rounded-xl text-sm font-medium mb-1"
+                    style={{ background: y === year ? "#9CB48A" : "#F5F0EA", color: y === year ? "white" : "#2C2420" }}>
+                    {y} 年
+                  </button>
+                ))}
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-center mb-2" style={{ color: "#9B8E82" }}>月份</p>
+                <div className="grid grid-cols-3 gap-1">
+                  {months.map(m => {
+                    const disabled = year === now.getFullYear() && m > now.getMonth() + 1;
+                    return (
+                      <button key={m} onClick={() => { if (!disabled) { setMonth(m); setShowPicker(false); } }}
+                        className="py-1.5 rounded-lg text-sm font-medium"
+                        style={{ background: m === month && year === year ? "#9CB48A" : disabled ? "#F5F0EA" : "#F5F0EA",
+                          color: m === month ? "white" : disabled ? "#C4BDB5" : "#2C2420",
+                          opacity: disabled ? 0.4 : 1 }}>
+                        {m}月
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="rounded-2xl px-5 py-4" style={{ background: "#9CB48A" }}>
           <p className="text-sm font-medium text-white/80 mb-1">{year}年{month}月咨询收入</p>
           <p className="text-3xl font-bold text-white">¥{total.toLocaleString()}</p>

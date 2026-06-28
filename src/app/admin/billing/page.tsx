@@ -41,14 +41,26 @@ function BillingContent() {
   const [items, setItems] = useState<BillItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showPicker, setShowPicker] = useState(false);
+  const [counselorFilter, setCounselorFilter] = useState<string>("all");
+  const [counselorList, setCounselorList] = useState<{ id: string; name: string }[]>([]);
+  const years = Array.from({ length: 3 }, (_, i) => now.getFullYear() - i);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+  useEffect(() => {
+    request("/api/admin/counselors?status=approved").then(r => r.json()).then(d => {
+      if (Array.isArray(d)) setCounselorList(d.map((c: any) => ({ id: c.id, name: c.displayName ?? c.name })));
+    });
+  }, []);
 
   useEffect(() => {
     setLoading(true);
-    request(`/api/admin/billing?year=${year}&month=${month}`)
+    const url = `/api/admin/billing?year=${year}&month=${month}${counselorFilter !== "all" ? `&counselorId=${counselorFilter}` : ""}`;
+    request(url)
       .then(r => r.json())
       .then(d => { setItems(d.items ?? []); setTotal(d.total ?? 0); })
       .finally(() => setLoading(false));
-  }, [year, month]);
+  }, [year, month, counselorFilter]);
 
   function prevMonth() {
     if (month === 1) { setYear(y => y - 1); setMonth(12); }
@@ -88,12 +100,67 @@ function BillingContent() {
             <ChevronLeft size={16} style={{ color: "#6B5E52" }} />
           </button>
           <span className="text-base font-bold" style={{ color: "#2C2420" }}>
-            {year} 年 {month} 月
+            <button onClick={() => setShowPicker(v => !v)} className="font-bold text-base px-3 py-1 rounded-xl" style={{ color: "#2C2420", background: showPicker ? "#EBE7DF" : "transparent" }}>{year} 年 {month} 月 ▾</button>
           </span>
           <button onClick={nextMonth} className="w-8 h-8 rounded-xl flex items-center justify-center"
             style={{ background: canNext ? "#EBE7DF" : "transparent", opacity: canNext ? 1 : 0.3 }}>
             <ChevronRight size={16} style={{ color: "#6B5E52" }} />
           </button>
+        </div>
+
+        {/* 年月 picker */}
+        {showPicker && (
+          <div className="rounded-2xl p-4 mb-3" style={{ background: "white", border: "1px solid #EBE7DF" }}>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <p className="text-xs text-center mb-2" style={{ color: "#9B8E82" }}>年份</p>
+                {years.map(y => (
+                  <button key={y} onClick={() => { setYear(y); }}
+                    className="w-full py-2 rounded-xl text-sm font-medium mb-1"
+                    style={{ background: y === year ? "#9CB48A" : "#F5F0EA", color: y === year ? "white" : "#2C2420" }}>
+                    {y} 年
+                  </button>
+                ))}
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-center mb-2" style={{ color: "#9B8E82" }}>月份</p>
+                <div className="grid grid-cols-3 gap-1">
+                  {months.map(m => {
+                    const disabled = year === now.getFullYear() && m > now.getMonth() + 1;
+                    return (
+                      <button key={m} onClick={() => { if (!disabled) { setMonth(m); setShowPicker(false); } }}
+                        className="py-1.5 rounded-lg text-sm font-medium"
+                        style={{ background: m === month ? "#9CB48A" : "#F5F0EA",
+                          color: m === month ? "white" : disabled ? "#C4BDB5" : "#2C2420",
+                          opacity: disabled ? 0.4 : 1 }}>
+                        {m}月
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 咨询师筛选 */}
+        <div className="mb-3 overflow-x-auto">
+          <div className="flex gap-2 pb-1" style={{ minWidth: "max-content" }}>
+            <button onClick={() => setCounselorFilter("all")}
+              className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap"
+              style={{ background: counselorFilter === "all" ? "#9CB48A" : "#EBE7DF",
+                color: counselorFilter === "all" ? "white" : "#6B5E52" }}>
+              全部咨询师
+            </button>
+            {counselorList.map(cc => (
+              <button key={cc.id} onClick={() => setCounselorFilter(cc.id)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap"
+                style={{ background: counselorFilter === cc.id ? "#9CB48A" : "#EBE7DF",
+                  color: counselorFilter === cc.id ? "white" : "#6B5E52" }}>
+                {cc.name}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="rounded-2xl px-5 py-4" style={{ background: "#9CB48A" }}>
