@@ -8,7 +8,7 @@ import { request } from "@/lib/api/request";
 
 type Conv = {
   conv: { id: string; lastMessageAt: string };
-  otherUser: { id: string; name: string | null; email: string | null };
+  otherUser: { id: string; name: string | null; email: string | null } | null;
 };
 
 function timeAgo(dateStr: string) {
@@ -44,16 +44,21 @@ function MessagesPageInner() {
 
   // 处理来自预约页面的跳转参数，自动发起对话
   useEffect(() => {
-    const targetUserId = searchParams.get("counselorUserId") || searchParams.get("clientId");
-    if (!targetUserId || !user) return;
+    const counselorUserId = searchParams.get("counselorUserId") || searchParams.get("counselorId");
+    const clientId = searchParams.get("clientId");
+    if (!counselorUserId && !clientId || !user) return;
 
     // 查找或创建与目标用户的对话，然后跳转到聊天页
+    const body = counselorUserId
+      ? { counselorId: counselorUserId }
+      : { otherUserId: clientId };
     request("/api/messages", {
       method: "POST",
-      body: JSON.stringify({ otherUserId: targetUserId }),
+      body: JSON.stringify(body),
     }).then(r => r.json()).then(d => {
-      if (d.conversationId) {
-        router.replace(`/chat/${d.conversationId}`);
+      const convId = d.conversationId ?? d.id;
+      if (convId) {
+        router.replace(`/chat/${convId}`);
       }
     }).catch(() => {/* 静默失败，显示对话列表 */});
   }, [searchParams, user]);
@@ -96,6 +101,7 @@ function MessagesPageInner() {
       ) : (
         <div className="px-4 pt-4 space-y-2">
           {convs.map(({ conv, otherUser }) => {
+            if (!otherUser) return null;
             const name = otherUser.name || otherUser.email?.split("@")[0] || "用户";
             return (
               <motion.button key={conv.id} whileTap={{ scale: 0.98 }}

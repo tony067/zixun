@@ -16,10 +16,10 @@ const ACTIVE_STATUSES = ["pending_confirmation","pending_payment","paid","upcomi
 
 const STATUS_BADGE: Record<string,{label:string;color:string;bg:string}> = {
   pending_confirmation: { label:"待确认",   color:"#D97706", bg:"#FEF3C7" },
-  pending_payment:      { label:"待支付",   color:"#2563EB", bg:"#DBEAFE" },
+  pending_payment:      { label:"待支付",   color:"#3A6228", bg:"#C6DFB8" },
   paid:                 { label:"即将咨询", color:"#059669", bg:"#D1FAE5" },
   upcoming:             { label:"即将咨询", color:"#059669", bg:"#D1FAE5" },
-  confirmed:            { label:"待支付",   color:"#2563EB", bg:"#DBEAFE" },
+  confirmed:            { label:"待支付",   color:"#3A6228", bg:"#C6DFB8" },
   pending:              { label:"待确认",   color:"#D97706", bg:"#FEF3C7" },
   cancelled:            { label:"已取消",   color:"#6B7280", bg:"#F3F4F6" },
   completed:            { label:"已完成",   color:"#059669", bg:"#D1FAE5" },
@@ -174,9 +174,11 @@ export default function ProfileScreen() {
                   <button onClick={() => router.push(`/my-bookings/${b.id}`)}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left"
                     style={{ borderColor:"#F5F0EA" }}>
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-none"
+                  <div className="w-9 h-9 rounded-full flex-none overflow-hidden flex items-center justify-center text-sm font-bold text-white"
                     style={{ background:"var(--color-primary)" }}>
-                    {b.counselor?.displayName?.[0] ?? "师"}
+                    {(b.counselor as any)?.avatarUrl
+                      ? <img src={(b.counselor as any).avatarUrl} alt="" className="w-full h-full object-cover" />
+                      : (b.counselor?.displayName?.[0] ?? "师")}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate" style={{ color:"#2C2420" }}>
@@ -192,11 +194,19 @@ export default function ProfileScreen() {
                   {/* 操作按钮行 */}
                   {isPending && (
                     <div className="flex gap-2 px-4 pb-3" onClick={e => e.stopPropagation()}>
-                      <button onClick={() => router.push(`/messages`)}
-                        className="flex-1 py-1.5 rounded-xl text-xs font-medium border"
-                        style={{ borderColor:"var(--color-primary)", color:"var(--color-primary)" }}>
-                        联系咨询师
-                      </button>
+                      {(b.status === "pending_payment" || b.status === "confirmed") ? (
+                        <button onClick={(e) => { e.stopPropagation(); router.push(`/my-bookings/${b.id}?pay=1`); }}
+                          className="flex-1 py-1.5 rounded-xl text-xs font-bold text-white"
+                          style={{ background:"var(--color-primary)" }}>
+                          去支付
+                        </button>
+                      ) : (
+                        <button onClick={() => router.push(`/messages`)}
+                          className="flex-1 py--1.5 rounded-xl text-xs font-medium border"
+                          style={{ borderColor:"var(--color-primary)", color:"var(--color-primary)" }}>
+                          私信咨询师
+                        </button>
+                      )}
                       <button onClick={async (e) => {
                         e.stopPropagation();
                         if (!confirm("确认取消这个预约吗？")) return;

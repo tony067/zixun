@@ -8,7 +8,7 @@ import { request } from "@/lib/api/request";
 
 type Conv = {
   conv: { id: string; lastMessageAt: string };
-  otherUser: { id: string; name: string | null; email: string | null };
+  otherUser: { id: string; name: string | null; email: string | null } | null;
 };
 
 function timeAgo(dateStr: string) {
@@ -81,6 +81,7 @@ export default function CounselorMessagesPage() {
       ) : (
         <div className="px-4 pt-3">
           {convs.map(({ conv, otherUser }, i) => {
+            if (!otherUser) return null;
             const name = otherUser.name ?? otherUser.email ?? "来访者";
             return (
               <motion.button key={conv.id}

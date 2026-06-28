@@ -47,10 +47,13 @@ export function ChatScreen() {
 
   const load = () => {
     if (!user) return;
-    request(`/api/messages/${convId}`).then(r=>r.json()).then((d:Msg[])=>{
-      if (Array.isArray(d)) {
-        setMsgs(d);
-        const other = d.find(m=>m.sender.id!==user.id)?.sender;
+    request(`/api/messages/${convId}`).then(r=>r.json()).then((d)=>{
+      const msgList: Msg[] = Array.isArray(d) ? d : (d.msgs ?? []);
+      setMsgs(msgList);
+      if (d.otherUser) {
+        setOtherName(d.otherUser.name ?? d.otherUser.email ?? "对方");
+      } else {
+        const other = msgList.find((m: Msg)=>m.sender.id!==user.id)?.sender;
         if (other) setOtherName(other.name ?? other.email ?? "对方");
       }
     });

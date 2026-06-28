@@ -27,7 +27,7 @@ type Booking = {
 // 4个平铺Tab，去掉「已取消」
 const STATUS_OPTIONS = [
   { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation","pending"], dot: "#D97706" },
-  { key: "pending_payment",      label: "待支付", statuses: ["confirmed","pending_payment"], dot: "#2563EB" },
+  { key: "pending_payment",      label: "待支付", statuses: ["confirmed","pending_payment"], dot: "#9CB48A" },
   { key: "upcoming",             label: "待咨询", statuses: ["paid"], dot: "#059669" },
   { key: "completed",            label: "已咨询", statuses: ["completed"], dot: "#6B7280" },
 ];
@@ -39,8 +39,8 @@ const STATUS_LABEL: Record<string, string> = {
 const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
   pending_confirmation: { color: "#D97706", bg: "#FEF3C7" },
   pending:              { color: "#D97706", bg: "#FEF3C7" },
-  confirmed:            { color: "#2563EB", bg: "#DBEAFE" },
-  pending_payment:      { color: "#2563EB", bg: "#DBEAFE" },
+  confirmed:            { color: "#9CB48A", bg: "#E4F0DC" },
+  pending_payment:      { color: "#9CB48A", bg: "#E4F0DC" },
   paid:                 { color: "#059669", bg: "#D1FAE5" },
   completed:            { color: "#6B7280", bg: "#F3F4F6" },
   cancelled:            { color: "#9CA3AF", bg: "#F9FAFB" },

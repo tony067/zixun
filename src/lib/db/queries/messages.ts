@@ -1,7 +1,6 @@
 import { db } from "@/lib/db/client";
-import { conversations, messages } from "@/lib/db/schema";
+import { conversations, messages, users } from "@/lib/db/schema";
 import { eq, or, and, desc } from "drizzle-orm";
-import { users } from "@/lib/db/schema/users";
 
 export async function getOrCreateConversation(userAId: string, userBId: string) {
   const [existing] = await db.select().from(conversations)
@@ -60,4 +59,13 @@ export async function sendMessage(data: {
     .set({ lastMessageAt: new Date() })
     .where(eq(conversations.id, data.conversationId));
   return msg;
+}
+
+export async function getConversationOtherUser(conversationId: string, myUserId: string) {
+  const [conv] = await db.select().from(conversations).where(eq(conversations.id, conversationId));
+  if (!conv) return null;
+  const otherId = conv.participantAId === myUserId ? conv.participantBId : conv.participantAId;
+  const [other] = await db.select({ id: users.id, name: users.name, email: users.email })
+    .from(users).where(eq(users.id, otherId));
+  return other ?? null;
 }

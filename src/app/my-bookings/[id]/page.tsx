@@ -15,7 +15,8 @@ type BookingDetail = {
 
 const STATUS_CONFIG: Record<string,{label:string;desc:string;color:string}> = {
   pending_confirmation: { label:"等待咨询师确认", desc:"请耐心等候，咨询师确认后将通知您。", color:"#D97706" },
-  pending_payment:      { label:"待支付",         desc:"请在24小时内完成支付，逾期将自动取消。", color:"#2563EB" },
+  pending_payment:      { label:"待支付",         desc:"请在24小时内完成支付，逾期将自动取消。", color:"#9CB48A" },
+  confirmed:            { label:"待支付",         desc:"请在24小时内完成支付，逾期将自动取消。", color:"#9CB48A" },
   paid:                 { label:"即将咨询",        desc:"咨询即将开始，请提前准备好设备。", color:"#059669" },
   completed:            { label:"咨询完成",        desc:"本次咨询已完成。如已约定下次咨询时间，请记得续约。", color:"#059669" },
   cancelled:            { label:"已取消",          desc:"本次预约已取消。", color:"#9CA3AF" },
@@ -259,10 +260,11 @@ export default function BookingDetailPage() {
         <div className="flex gap-3">
           <button className="flex-1 py-3 rounded-2xl text-sm font-semibold border"
             style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
-            onClick={() => router.push(`/messages?counselorUserId=${bk.counselor?.id}`)}>联系咨询师</button>
+            onClick={() => router.push(`/messages?counselorUserId=${bk.counselor?.id}`)}>私信咨询师</button>
           <button
             onClick={() => {
-              if (bk.status === "pending_payment") {
+              const needsPay = bk.status === "pending_payment" || bk.status === "confirmed";
+              if (needsPay) {
                 router.push(`/my-bookings/${id}?pay=1`);
               } else if (bk.status === "paid" || bk.status === "upcoming") {
                 setModal("reschedule");
@@ -271,8 +273,8 @@ export default function BookingDetailPage() {
               }
             }}
             className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
-            style={{ background: "#9CB48A" }}>
-            {bk.status === "pending_payment" ? `立即支付 ¥${bk.priceAmount}` :
+            style={{ background: "var(--color-primary)" }}>
+            {(bk.status === "pending_payment" || bk.status === "confirmed") ? `立即支付 ¥${bk.priceAmount}` :
              (bk.status === "upcoming" || bk.status === "paid") ? "修改时间" : "续约"}
           </button>
         </div>

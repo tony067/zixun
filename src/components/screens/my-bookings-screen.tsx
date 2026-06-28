@@ -1,9 +1,9 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, Video, ChevronRight, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
-import { useRouter } from "next/navigation";
 import { request } from "@/lib/api/request";
 
 type Booking = {
@@ -22,8 +22,8 @@ const TABS = [
 const STATUS_BADGE: Record<string, { label: string; color: string; bg: string }> = {
   pending_confirmation: { label: "待咨询师确认", color: "#D97706", bg: "#FEF3C7" },
   pending:              { label: "待咨询师确认", color: "#D97706", bg: "#FEF3C7" },
-  pending_payment:      { label: "待支付",       color: "#2563EB", bg: "#DBEAFE" },
-  confirmed:            { label: "待支付",       color: "#2563EB", bg: "#DBEAFE" },
+  pending_payment:      { label: "待支付",       color: "#3A6228", bg: "#C6DFB8" },
+  confirmed:            { label: "待支付",       color: "#3A6228", bg: "#C6DFB8" },
   paid:                 { label: "即将咨询",     color: "#059669", bg: "#D1FAE5" },
   upcoming:             { label: "即将咨询",     color: "#059669", bg: "#D1FAE5" },
   completed:            { label: "已完成",       color: "#6B7280", bg: "#F3F4F6" },
@@ -33,14 +33,12 @@ const STATUS_BADGE: Record<string, { label: string; color: string; bg: string }>
 
 function BookingCard({ b }: { b: Booking }) {
   const router = useRouter();
-  const needsPay = b.status === "pending_payment" || b.status === "confirmed";
   const badge = STATUS_BADGE[b.status] ?? { label: b.status, color: "#9B8E82", bg: "#F5F0E8" };
   const dt = b.scheduledAt ? new Date(b.scheduledAt) : null;
   const c = b.counselor;
   return (
     <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       className="rounded-2xl p-4 mb-3" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
-      <button className="w-full text-left" onClick={() => router.push(`/my-bookings/${b.id}`)}>
       <div className="flex items-start gap-3">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0"
           style={{ background: "#E8DFCC", color: "#7A6248" }}>
@@ -77,33 +75,27 @@ function BookingCard({ b }: { b: Booking }) {
           </div>
         </div>
       </div>
-      </button>
       {(b.status === "pending_confirmation" || b.status === "pending") && (
         <button className="w-full mt-3 py-2.5 rounded-xl text-sm font-semibold border"
           style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}>取消预约</button>
       )}
-      {b.status === "pending_payment" && (
+      {(b.status === "pending_payment" || b.status === "confirmed") && (
         <div className="flex gap-2 mt-3">
           <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1"
-            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}>
+            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
+            onClick={() => router.push(`/messages?counselorId=${b.counselor?.id}`)}>
             <MessageCircle className="w-4 h-4" />私信咨询师</button>
           <button className="flex-[2] py-2.5 rounded-xl text-white text-sm font-semibold"
-            style={{ background: "#9CB48A" }}>立即支付 ¥{b.priceAmount}</button>
-        </div>
-      )}
-      {b.status === "confirmed" && (
-        <div className="flex gap-2 mt-3">
-          <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1"
-            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}>
-            <MessageCircle className="w-4 h-4" />私信咨询师</button>
-          <button className="flex-[2] py-2.5 rounded-xl text-white text-sm font-semibold"
-            style={{ background: "#9CB48A" }}>立即支付 ¥{b.priceAmount}</button>
+            style={{ background: "var(--color-primary)" }}
+            onClick={(e) => { e.stopPropagation(); router.push(`/my-bookings/${b.id}?pay=1`); }}>
+            立即支付 ¥{b.priceAmount}</button>
         </div>
       )}
       {b.status === "paid" && (
         <div className="flex gap-2 mt-3">
           <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1"
-            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}>
+            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
+            onClick={() => router.push(`/messages?counselorId=${b.counselor?.id}`)}>
             <MessageCircle className="w-4 h-4" />私信咨询师</button>
           <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border"
             style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}>申请改期</button>
