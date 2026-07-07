@@ -72,13 +72,15 @@ export default function ProfileScreen() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("/api/upload/avatar", { method: "POST", body: formData });
+      const res = await request("/api/upload/avatar", { method: "POST", body: formData });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "头像上传失败");
       const url = data.url;
       setAvatarUrl(url);
       await request("/api/user/profile", { method: "PATCH", body: JSON.stringify({ avatarUrl: url }) });
     } catch (err) {
       console.error("头像上传失败", err);
+      window.alert(err instanceof Error ? err.message : "头像上传失败，请重试");
     } finally {
       setUploading(false);
     }

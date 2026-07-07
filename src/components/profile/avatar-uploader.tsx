@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { Camera, Loader2 } from "lucide-react";
+import { request } from "@/lib/api/request";
 
 export function AvatarUploader({
   url, name, onChange,
@@ -17,10 +18,8 @@ export function AvatarUploader({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const token = typeof window !== "undefined" ? localStorage.getItem("mindpace_token") : "";
-      const res = await fetch("/api/counselor/avatar-upload", {
+      const res = await request("/api/counselor/avatar-upload", {
         method: "POST",
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
         body: formData,
       });
       const data = await res.json();
@@ -28,7 +27,7 @@ export function AvatarUploader({
       onChange(data.url);
     } catch (err) {
       console.error("头像上传失败", err);
-      setError("上传失败，请重试");
+      setError(err instanceof Error ? err.message : "上传失败，请重试");
     } finally {
       setUploading(false);
       if (ref.current) ref.current.value = "";

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { saveAvatarFile } from "@/lib/uploads/avatar";
+import { db } from "@/lib/db/client";
+import { counselors } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
@@ -15,25 +17,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "没有上传文件" }, { status: 400 });
     }
 
-    const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
-    const allowed = ["jpg", "jpeg", "png", "webp", "gif"];
-    if (!allowed.includes(ext)) {
-      return NextResponse.json({ error: "仅支持 JPG / PNG / WebP 格式" }, { status: 400 });
-    }
+    const url = await saveAvatarFile(file, auth.user.id);
 
-    const filename = `${auth.user.id}_${Date.now()}.${ext}`;
-    // 优先使用环境变量，否则使用项目根目录
-    const appRoot = process.env.APP_ROOT ?? process.cwd();
-    const uploadDir = path.join(appRoot, "public", "uploads", "avatars");
+    await db
+      .update(counselors)
+      .set({ avatarUrl: url })
+      .where(eq(counselors.userId, auth.user.id));
 
-    await mkdir(uploadDir, { recursive: true });
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, filename), buffer);
-
-    const url = `/uploads/avatars/${filename}`;
-    return NextResponse.json({ url });
+    return NextResponse.json({ url, ok: true });
   } catch (e) {
     console.error("[counselor/avatar-upload] error:", e);
-    return NextResponse.json({ error: "上传失败，请重试" }, { status: 500 });
+    const message = e instanceof Error ? e.message : "上传失败，请重试";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

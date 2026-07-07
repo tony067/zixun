@@ -12,10 +12,11 @@ export async function request(
   const token = getStoredToken();
 
   const hasBody = init.body != null;
+  const isFormData = typeof FormData !== "undefined" && init.body instanceof FormData;
   return fetch(input, {
     ...init,
     headers: {
-      ...(hasBody ? { "Content-Type": "application/json" } : {}),
+      ...(hasBody && !isFormData ? { "Content-Type": "application/json" } : {}),
       ...init.headers,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
