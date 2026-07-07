@@ -45,11 +45,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name, avatarUrl: user.avatarUrl },
+      user: { id: user.id, email: user.email, name: user.name, avatarUrl: user.avatarUrl, role: user.role ?? "visitor" },
     });
   } catch (e) {
     console.error("[register]", e);
     return NextResponse.json({ error: "注册失败，请稍后重试" }, { status: 500 });
   }
 }
-

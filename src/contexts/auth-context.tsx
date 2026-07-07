@@ -21,12 +21,14 @@ export interface AuthUser {
   email: string;
   name?: string | null;
   avatarUrl?: string | null;
+  role?: string | null;
 }
 
 interface AuthState {
   user: AuthUser | null;
   loading: boolean;
   token: string | null;
+  login: (token: string, user: AuthUser) => void;
   logout: () => void;
 }
 
@@ -34,6 +36,7 @@ const AuthContext = createContext<AuthState>({
   user: null,
   loading: true,
   token: null,
+  login: () => {},
   logout: () => {},
 });
 
@@ -77,6 +80,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     restore();
   }, [restore]);
 
+  const login = useCallback((nextToken: string, nextUser: AuthUser) => {
+    localStorage.setItem(TOKEN_KEY, nextToken);
+    setToken(nextToken);
+    setUser(nextUser);
+    setLoading(false);
+  }, []);
+
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     setUser(null);
@@ -85,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, token, logout }}>
+    <AuthContext.Provider value={{ user, loading, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

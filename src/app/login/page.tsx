@@ -6,10 +6,11 @@
  */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { persistToken } from "@/contexts/auth-context";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [tab, setTab]           = useState<"login" | "register">("login");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -43,8 +44,7 @@ export default function LoginPage() {
         setError(data.error ?? "操作失败，请重试");
         return;
       }
-      persistToken(data.token);
-      // 触发 AuthProvider 从 /api/auth/me 恢复会话，然后跳首页
+      login(data.token, data.user);
       router.replace("/");
     } catch {
       setError("网络错误，请检查连接后重试");
