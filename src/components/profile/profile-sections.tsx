@@ -338,7 +338,7 @@ export function BasicSection({ form, setForm, open, onToggle, AvatarUploader }: 
           </div>
           <div>
             <p className="text-xs font-medium text-[#2C2420] mb-0.5">简介 *</p>
-            <p className="text-xs text-[#9B8E82] mb-1.5">在首页咨询师列表卡片上显示（100-300字），也会在你的主页单独展示</p>
+            <p className="text-xs text-[#9B8E82] mb-1.5">你的简介将完整地展示在个人主页，但咨询师列表卡片上只显示前300字。</p>
             <textarea value={form.bio} onChange={e => set("bio", e.target.value)}
               rows={5} placeholder="介绍你自己和你的工作方式……"
               className="w-full px-4 py-3 rounded-2xl text-sm border border-[#DDD8D0] bg-[#FAFAF8] outline-none resize-none leading-relaxed" />

@@ -51,6 +51,9 @@ export default function CounselorProfilePage() {
           isAccepting: data.profile?.isAccepting ?? prev.isAccepting,
         }));
         showToast(submit ? "已提交审核！" : "草稿已保存 ✓");
+        if (submit) {
+          setTimeout(() => router.replace("/counselor/bookings"), 900);
+        }
       } else {
         showToast(`保存失败：${data.error ?? res.status}`);
         console.error("[profile save]", res.status, data);

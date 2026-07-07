@@ -221,9 +221,9 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
           {([
             ["hasMentalDisease", "是否有精神类疾病诊断"],
             ["onMedication", "是否正在服用精神类药物"],
-            ["hasSelfHarm", "近期是否有自伤行为"],
-            ["hasSuicidalThought", "近期是否有自杀想法"],
-            ["hasSuicidalBehavior", "近期是否有自杀行为（如制定计划等）"],
+            ["hasSelfHarm", "三个月内是否有自伤行为"],
+            ["hasSuicidalThought", "三个月内是否有自杀想法"],
+            ["hasSuicidalBehavior", "三个月内是否有自杀行为（如制定计划等）"],
           ] as [keyof ApplicationForm, string][]).map(([key, label]) => (
             <div key={key} className="px-4 py-3 border-t flex items-center justify-between" style={{ borderColor: "#F5F0EA" }}>
               <span className="text-sm text-[#5A4E44]">{label}</span>

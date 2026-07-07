@@ -76,8 +76,8 @@ const FIELD_LABELS: Record<string, string> = {
   additionalNote: "补充说明", emergencyName: "紧急联系人姓名",
   emergencyPhone: "紧急联系人电话", background: "背景说明",
   hasMentalDisease: "有精神科诊断", onMedication: "正在服药",
-  hasSelfHarm: "近期有自伤行为", hasSuicidalThought: "近期有自杀想法",
-  hasSuicidalBehavior: "近期有自杀行为",
+  hasSelfHarm: "三个月内有自伤行为", hasSuicidalThought: "三个月内有自杀想法",
+  hasSuicidalBehavior: "三个月内有自杀行为",
   consentSigned: "已签署咨询协议",
 };
 const SAFETY_FIELDS = new Set(["hasMentalDisease","onMedication","hasSelfHarm","hasSuicidalThought","hasSuicidalBehavior"]);

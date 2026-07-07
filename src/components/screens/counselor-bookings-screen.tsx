@@ -138,9 +138,9 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
                       {[
                         { key: "hasMentalDisease", label: "有精神科诊断", val: af.hasMentalDisease },
                         { key: "onMedication",     label: "正在服药",     val: af.onMedication },
-                        { key: "hasSelfHarm",      label: "近期有自伤行为", val: af.hasSelfHarm },
-                        { key: "hasSuicidalThought", label: "近期有自杀想法", val: af.hasSuicidalThought },
-                        { key: "hasSuicidalBehavior", label: "近期有自杀行为", val: af.hasSuicidalBehavior },
+                        { key: "hasSelfHarm",      label: "三个月内有自伤行为", val: af.hasSelfHarm },
+                        { key: "hasSuicidalThought", label: "三个月内有自杀想法", val: af.hasSuicidalThought },
+                        { key: "hasSuicidalBehavior", label: "三个月内有自杀行为", val: af.hasSuicidalBehavior },
                       ].map(({ key, label, val }) => (
                         <div key={key} className="flex items-center gap-1.5">
                           <span className="text-[#9B8E82]">{label}：</span>
