@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, BookmarkCheck, Send } from "lucide-react";
+import { ArrowLeft, BookmarkCheck, LogOut, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
@@ -19,7 +19,7 @@ const STATUS_LABEL: Record<string, { text: string; color: string; bg: string }> 
 
 export default function CounselorProfilePage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [form, setForm] = useState<ProfileForm>({ ...EMPTY_PROFILE });
   const [openSection, setOpenSection] = useState<SectionKey | null>("basic");
   const [saving, setSaving] = useState(false);
@@ -124,6 +124,12 @@ export default function CounselorProfilePage() {
           onToggle={toggleSection}>
           {(k) => <SectionContent skey={k} form={form} setForm={setForm} />}
         </SectionAccordion>
+        <button onClick={() => logout()}
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-semibold"
+          style={{ background: "white", border: "1px solid #EBE7DF", color: "#EF4444" }}>
+          <LogOut className="w-4 h-4" />
+          退出登录
+        </button>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 px-4 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3 bg-[#F5F0E8] border-t border-[#DDD8D0]">
