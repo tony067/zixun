@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
 // ── 可预约时间弹窗组件 ──
-function AvailableTimesButton({ counselorId }: { counselorId: string }) {
+function AvailableTimesButton({ counselorId, isAccepting }: { counselorId: string; isAccepting: boolean }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -19,6 +19,18 @@ function AvailableTimesButton({ counselorId }: { counselorId: string }) {
       i % 2 === 0 ? ["09:00","14:00","16:00"] : ["10:00","15:00"];
     return { label, slots };
   }).filter(d => d.slots.length > 0);
+
+  if (!isAccepting) {
+    return (
+      <div className="mt-3 rounded-2xl px-4 py-4 text-center"
+        style={{ background: "#F0EDE8", border: "1px solid #DDD8D0" }}>
+        <p className="text-sm font-semibold mb-1" style={{ color: "#6B5E52" }}>暂停约满</p>
+        <p className="text-xs leading-relaxed" style={{ color: "#9B8E82" }}>
+          咨询师当前暂停接受新的预约，暂不显示可预约时间。
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-3">
@@ -189,6 +201,11 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
       .then((r) => r.json())
       .then((d) => { setC(d); setLoading(false); })
       .catch(() => setLoading(false));
+  }, [counselorId]);
+
+  useEffect(() => {
+    const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
+    setSaved(ids.includes(counselorId));
   }, [counselorId]);
 
   if (loading) return (
@@ -376,7 +393,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           {c.sessionSettings && <MultiPara text={c.sessionSettings} />}
 
           {/* 查看可预约时间按钮 */}
-          <AvailableTimesButton counselorId={c.id} />
+          <AvailableTimesButton counselorId={c.id} isAccepting={c.isAccepting} />
         </div>
 
         {/* 从业背景 */}
@@ -437,10 +454,11 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
             className="flex-1 py-3 rounded-2xl text-white font-semibold text-base"
             style={{ background: c.isAccepting ? "#9CB48A" : "#C2BDB7" }}
             onClick={() => {
+              if (!c.isAccepting) return;
               if (!user) { router.push("/login"); return; }
               window.location.href = `/booking/${c.id}`;
             }}>
-            {c.isAccepting ? "预约咨询" : "暂停预约"}
+            {c.isAccepting ? "预约咨询" : "暂停约满"}
           </motion.button>
         </div>
       </div>

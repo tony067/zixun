@@ -52,7 +52,7 @@ export default function CounselorProfilePage() {
         }));
         showToast(submit ? "已提交审核！" : "草稿已保存 ✓");
         if (submit) {
-          setTimeout(() => router.replace("/counselor/bookings"), 900);
+          setTimeout(() => router.replace("/counselor/schedule"), 900);
         }
       } else {
         showToast(`保存失败：${data.error ?? res.status}`);
@@ -76,11 +76,6 @@ export default function CounselorProfilePage() {
           style={{ background: "#9CB48A", zIndex: 60 }}>
           {toast}
         </motion.div>
-      )}
-      {form.reviewStatus === "rejected" && form.reviewNote && (
-        <div className="mx-4 mt-16 p-4 rounded-2xl text-sm bg-red-50 border border-red-200 text-red-700">
-          <p className="font-medium mb-1">审核反馈：</p><p>{form.reviewNote}</p>
-        </div>
       )}
       <div className="sticky top-0 z-20 flex items-center gap-3 px-4 pt-12 pb-3 bg-[#F5F0E8]">
         <button onClick={() => router.push("/counselor/bookings")}
@@ -119,6 +114,12 @@ export default function CounselorProfilePage() {
       </div>
 
       <div className="px-4 space-y-3">
+        {form.reviewStatus === "rejected" && form.reviewNote && (
+          <div className="p-4 rounded-2xl text-sm bg-red-50 border border-red-200 text-red-700">
+            <p className="font-semibold mb-1">审核反馈</p>
+            <p className="leading-relaxed">{form.reviewNote}</p>
+          </div>
+        )}
         <BasicSection form={form} setForm={setForm}
           open={openSection === "basic"} onToggle={() => toggleSection("basic")}
           AvatarUploader={AvatarUploader} />

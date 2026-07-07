@@ -24,6 +24,7 @@ export const counselors = pgTable("counselors", {
   counselorTypes: text("counselor_types").array().default([]), // 心理咨询师/ADHD教练/特教老师
   isSupervisor: boolean("is_supervisor").default(false),
   reviewStatus: text("review_status").default("approved"),    // draft/pending/approved/rejected
+  reviewNote: text("review_note").default(""),
   totalHours: integer("total_hours").default(0),
   totalSessions: integer("total_sessions").default(0),
   rating: integer("rating").default(45),                      // 4.5 stored as 45

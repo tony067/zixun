@@ -19,10 +19,10 @@ export default function FavoritesScreen() {
     const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
     if (ids.length === 0) { setLoading(false); return; }
     request("/api/counselors").then(r => r.json()).then(d => {
-      const all: Counselor[] = d.counselors ?? [];
+      const all: Counselor[] = Array.isArray(d) ? d : (d.counselors ?? []);
       setFavorites(all.filter(c => ids.includes(c.id)));
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   }, []);
 
   function removeFavorite(id: string) {

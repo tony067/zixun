@@ -40,7 +40,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { action, reason } = await req.json();
   const approved = action === "approve";
   const newStatus = approved ? "approved" : "rejected";
-  await db.update(counselors).set({ reviewStatus: newStatus }).where(eq(counselors.id, id));
+  await db.update(counselors)
+    .set({ reviewStatus: newStatus, reviewNote: approved ? "" : (reason ?? "").trim() })
+    .where(eq(counselors.id, id));
   try {
     const [c] = await db.select().from(counselors).where(eq(counselors.id, id));
     if (c?.userId) await notifyCounselorReviewResult({ counselorUserId: c.userId, approved, reason: reason ?? "" });

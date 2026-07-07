@@ -268,9 +268,13 @@ function CounselorCard({ c, idx }: { c: Counselor; idx: number }) {
             </div>
             <motion.button whileTap={{ scale: 0.95 }}
               className="px-5 py-2.5 rounded-2xl text-white font-semibold text-[14px]"
-              style={{ background: "#9CB48A" }}
-              onClick={e => { e.preventDefault(); router.push(`/booking/${c.id}`); }}>
-              预约咨询
+              style={{ background: c.isAccepting ? "#9CB48A" : "#C2BDB7" }}
+              onClick={e => {
+                e.preventDefault();
+                if (!c.isAccepting) return;
+                router.push(`/booking/${c.id}`);
+              }}>
+              {c.isAccepting ? "预约咨询" : "暂停约满"}
             </motion.button>
           </div>
         </div>

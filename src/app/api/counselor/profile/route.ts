@@ -64,6 +64,7 @@ export async function PUT(request: NextRequest) {
     workExperiences:    (fields.workExperiences ?? []).map((x: unknown) =>
                           typeof x === "string" ? x : (x as {value:string}).value ?? JSON.stringify(x)),
     reviewStatus:       newStatus,
+    reviewNote:         action === "submit" ? "" : (fields.reviewNote ?? ""),
   };
 
   if (existing.length === 0) {
