@@ -1,0 +1,212 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 180rpx;
+}
+
+.header {
+  padding: 32rpx $page-padding;
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+}
+
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  border: 2rpx solid $color-border;
+}
+
+.stepActive {
+  background: $color-primary;
+  border-color: $color-primary;
+}
+
+.stepText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.stepActive .stepText {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.stepLine {
+  width: 80rpx;
+  height: 2rpx;
+  background: $color-border;
+  margin: 0 16rpx;
+}
+
+.section {
+  padding: 0 $page-padding 24rpx;
+}
+
+.sectionCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 32rpx;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 24rpx;
+}
+
+.dateList {
+  display: flex;
+  gap: 16rpx;
+}
+
+.dateItem {
+  flex-shrink: 0;
+  width: 120rpx;
+  height: 140rpx;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  @include flex-center;
+  flex-direction: column;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.dateActive {
+  background: $color-primary;
+}
+
+.dateWeek {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: 8rpx;
+}
+
+.dateActive .dateWeek {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dateDay {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.dateActive .dateDay {
+  color: $color-text-white;
+}
+
+.timeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.timeItem {
+  width: 140rpx;
+  height: 64rpx;
+  background: $color-bg-muted;
+  border-radius: 32rpx;
+  @include flex-center;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.timeActive {
+  background: $color-primary;
+}
+
+.timeText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.timeActive .timeText {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.textarea {
+  width: 100%;
+  height: 200rpx;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 20rpx;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.placeholder {
+  color: $color-text-tertiary;
+}
+
+.bottomBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $color-bg-card;
+  padding: 20rpx $page-padding calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.priceInfo {
+  display: flex;
+  align-items: baseline;
+}
+
+.price {
+  font-size: 40rpx;
+  font-weight: $font-weight-bold;
+  color: $color-price;
+}
+
+.priceUnit {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-left: 4rpx;
+}
+
+.submitButton {
+  @include button-reset;
+  width: 320rpx;
+  height: $button-height-md;
+  background: $color-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.submitButtonDisabled {
+  background: $color-text-disabled;
+}

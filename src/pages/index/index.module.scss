@@ -1,0 +1,243 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  height: 100vh;
+  background: $color-bg-page;
+}
+
+.scrollView {
+  height: 100vh;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+/* 顶部登录信息 */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx $page-padding 24rpx;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.greeting {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: 8rpx;
+}
+
+.brand {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.guideButton {
+  display: flex;
+  align-items: center;
+  height: 56rpx;
+  padding: 0 20rpx;
+  background: $color-bg-card;
+  border-radius: 28rpx;
+  border: 1rpx solid $color-border;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.guideIcon {
+  font-size: 24rpx;
+  margin-right: 8rpx;
+}
+
+.guideText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.noticeButton {
+  position: relative;
+  width: 56rpx;
+  height: 56rpx;
+  @include flex-center;
+  background: $color-bg-card;
+  border-radius: $radius-round;
+  border: 1rpx solid $color-border;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.noticeIcon {
+  font-size: 28rpx;
+}
+
+.noticeBadge {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 0 8rpx;
+  background: $color-error;
+  border-radius: 14rpx;
+  @include flex-center;
+}
+
+.noticeBadgeText {
+  font-size: 18rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+/* Banner */
+.bannerSection {
+  padding: 0 $page-padding 24rpx;
+}
+
+.bannerSwiper {
+  height: 320rpx;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.bannerCard {
+  height: 100%;
+  padding: 36rpx 40rpx;
+  background: linear-gradient(135deg, #9CB48A 0%, #7A9A6A 100%);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bannerBadge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  height: 44rpx;
+  padding: 0 18rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 22rpx;
+}
+
+.bannerBadgeDot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: $radius-round;
+  background: #ffffff;
+  margin-right: 10rpx;
+}
+
+.bannerBadgeText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+}
+
+.bannerTitleGroup {
+  margin: 16rpx 0;
+}
+
+.bannerTitle {
+  font-size: 44rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  line-height: 1.3;
+}
+
+.bannerTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.bannerTag {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  padding: 8rpx 16rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8rpx;
+}
+
+/* 搜索框 */
+.searchSection {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 0 $page-padding 24rpx;
+}
+
+.searchBox {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 80rpx;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  padding: 0 28rpx;
+  box-shadow: $shadow-card;
+}
+
+.searchIcon {
+  font-size: 32rpx;
+  color: $color-text-tertiary;
+  margin-right: 16rpx;
+}
+
+.searchInput {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.searchPlaceholder {
+  color: $color-text-tertiary;
+}
+
+.supervisorButton {
+  height: 80rpx;
+  padding: 0 28rpx;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  box-shadow: $shadow-card;
+  @include flex-center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.supervisorText {
+  font-size: $font-size-md;
+  color: $color-primary-dark;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+/* 分类 */
+.categorySection {
+  padding-bottom: 16rpx;
+}
+
+/* 列表 */
+.listSection {
+  padding: 24rpx $page-padding 40rpx;
+}
+
+.loading {
+  text-align: center;
+  padding: 60rpx 0;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}

@@ -1,0 +1,81 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 80rpx $page-padding;
+  box-sizing: border-box;
+}
+
+.logoBox {
+  @include flex-center;
+  flex-direction: column;
+  margin-bottom: 80rpx;
+}
+
+.logo {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  @include flex-center;
+  font-size: 80rpx;
+  margin-bottom: 32rpx;
+}
+
+.appName {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: 12rpx;
+}
+
+.appDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  text-align: center;
+}
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 48rpx;
+  box-shadow: $shadow-card;
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 16rpx;
+}
+
+.desc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  margin-bottom: 48rpx;
+}
+
+.loginButton {
+  @include button-reset;
+  width: 100%;
+  height: $button-height-md;
+  background: #07C160;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-bottom: 24rpx;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.tip {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+  line-height: $line-height-normal;
+}

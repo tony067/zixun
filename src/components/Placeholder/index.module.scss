@@ -1,0 +1,25 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  @include flex-center;
+  flex-direction: column;
+  padding: 120rpx 64rpx;
+}
+
+.icon {
+  font-size: 80rpx;
+  margin-bottom: 32rpx;
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 16rpx;
+}
+
+.description {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  text-align: center;
+}

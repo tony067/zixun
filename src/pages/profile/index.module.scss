@@ -1,0 +1,106 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 40rpx;
+}
+
+.header {
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+  padding: 48rpx $page-padding 40rpx;
+}
+
+.userCard {
+  display: flex;
+  align-items: center;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 40rpx;
+  box-shadow: $shadow-card;
+}
+
+.avatarWrapper {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: $radius-round;
+  background: $color-bg-hover;
+  margin-right: 28rpx;
+  overflow: hidden;
+  @include flex-center;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.avatarText {
+  font-size: 48rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+}
+
+.userDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.menuSection {
+  margin-top: 24rpx;
+  padding: 0 $page-padding;
+}
+
+.menuCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 8rpx 32rpx;
+  box-shadow: $shadow-card;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.menuLeft {
+  display: flex;
+  align-items: center;
+}
+
+.menuIcon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+}
+
+.menuText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.menuArrow {
+  font-size: 28rpx;
+  color: $color-text-tertiary;
+}

@@ -1,0 +1,98 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  position: relative;
+  background: $color-bg-page;
+}
+
+.scrollContainer {
+  @include scroll-x-container;
+  padding: 16rpx $page-padding;
+}
+
+.filterList {
+  display: inline-flex;
+  gap: 16rpx;
+}
+
+.filterItem {
+  display: inline-flex;
+  align-items: center;
+  height: 56rpx;
+  padding: 0 20rpx;
+  background: $color-bg-card;
+  border-radius: 28rpx;
+  border: 1rpx solid $color-border;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.filterItem.active {
+  background: rgba($color-primary, 0.1);
+  border-color: $color-primary;
+}
+
+.filterLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.filterItem.active .filterLabel {
+  color: $color-primary-dark;
+  font-weight: $font-weight-medium;
+}
+
+.arrow {
+  font-size: 18rpx;
+  color: $color-text-tertiary;
+  margin-left: 8rpx;
+}
+
+.panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: $color-bg-card;
+  padding: 24rpx $page-padding;
+  box-shadow: $shadow-float;
+  border-radius: 0 0 $radius-lg $radius-lg;
+}
+
+.optionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.optionItem {
+  padding: 14rpx 28rpx;
+  background: $color-bg-muted;
+  border-radius: 28rpx;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.optionActive {
+  background: rgba($color-primary, 0.15);
+  box-shadow: 0 0 0 2rpx $color-primary;
+}
+
+.optionText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.optionActive .optionText {
+  color: $color-primary-dark;
+  font-weight: $font-weight-medium;
+}

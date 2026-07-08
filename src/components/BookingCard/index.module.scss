@@ -1,0 +1,118 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-card;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.99);
+    box-shadow: $shadow-card-hover;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.counselorInfo {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.avatarWrapper {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: $radius-round;
+  background: $color-bg-hover;
+  margin-right: 20rpx;
+  overflow: hidden;
+  @include flex-center;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.avatarText {
+  font-size: 40rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  margin-bottom: 8rpx;
+}
+
+.mode {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.statusTag {
+  font-size: $font-size-xs;
+  padding: 8rpx 18rpx;
+  border-radius: 8rpx;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+  margin-left: 16rpx;
+}
+
+.body {
+  padding-top: 20rpx;
+  border-top: 1rpx solid $color-divider;
+}
+
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.infoLabel {
+  width: 120rpx;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.price {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-price;
+}
+
+.note {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  @include text-ellipsis-multi(1);
+}
