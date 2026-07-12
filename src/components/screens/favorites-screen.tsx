@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Heart } from "lucide-react";
 import { request } from "@/lib/api/request";
+import { useAuth } from "@/contexts/auth-context";
 
 type Counselor = {
   id: string; displayName: string; counselorTypes: string[];
@@ -11,24 +12,56 @@ type Counselor = {
 
 export default function FavoritesScreen() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [favorites, setFavorites] = useState<Counselor[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 从 localStorage 读取收藏的咨询师 ID
-    const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
-    if (ids.length === 0) { setLoading(false); return; }
-    request("/api/counselors").then(r => r.json()).then(d => {
-      const all: Counselor[] = Array.isArray(d) ? d : (d.counselors ?? []);
-      setFavorites(all.filter(c => ids.includes(c.id)));
+    if (authLoading) return;
+    if (!user) {
+      setFavorites([]);
       setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+      return;
+    }
 
-  function removeFavorite(id: string) {
+    let cancelled = false;
+    async function loadFavorites() {
+      setLoading(true);
+      try {
+        const legacyIds: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
+        if (legacyIds.length > 0) {
+          await Promise.all(
+            legacyIds.map((counselorId) =>
+              request("/api/user/favorites", {
+                method: "POST",
+                body: JSON.stringify({ counselorId }),
+              }).catch(() => null),
+            ),
+          );
+        }
+
+        const res = await request("/api/user/favorites");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "加载收藏失败");
+        if (!cancelled) setFavorites(data.counselors ?? []);
+      } catch {
+        if (!cancelled) setFavorites([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadFavorites();
+    return () => { cancelled = true; };
+  }, [authLoading, user]);
+
+  async function removeFavorite(id: string) {
+    await request("/api/user/favorites", {
+      method: "DELETE",
+      body: JSON.stringify({ counselorId: id }),
+    }).catch(() => null);
     const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
-    const next = ids.filter(i => i !== id);
-    localStorage.setItem("favorite_counselors", JSON.stringify(next));
+    localStorage.setItem("favorite_counselors", JSON.stringify(ids.filter(i => i !== id)));
     setFavorites(f => f.filter(c => c.id !== id));
   }
 
@@ -43,7 +76,16 @@ export default function FavoritesScreen() {
       </div>
 
       <div className="px-5 pt-4">
-        {loading ? (
+        {!user && !authLoading ? (
+          <div className="py-16 flex flex-col items-center gap-3">
+            <Heart className="w-10 h-10" style={{ color:"#DDD8D0" }} />
+            <p className="text-sm" style={{ color:"#9B8E82" }}>登录后查看收藏的咨询师</p>
+            <button onClick={() => router.push("/login")} className="mt-2 px-6 py-2.5 rounded-2xl text-sm font-medium text-white"
+              style={{ background:"var(--color-primary)" }}>
+              去登录
+            </button>
+          </div>
+        ) : loading ? (
           <div className="py-16 text-center text-sm" style={{ color:"#C4BDB5" }}>加载中…</div>
         ) : favorites.length === 0 ? (
           <div className="py-16 flex flex-col items-center gap-3">

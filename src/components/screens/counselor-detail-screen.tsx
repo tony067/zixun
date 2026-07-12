@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Clock, MapPin, Share2, MessageCircle, Bookmark, CalendarDays } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { request } from "@/lib/api/request";
 
 // ── 可预约时间弹窗组件 ──
 function AvailableTimesButton({ counselorId, isAccepting }: { counselorId: string; isAccepting: boolean }) {
@@ -195,6 +196,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
   const [c, setC] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [savingFavorite, setSavingFavorite] = useState(false);
 
   useEffect(() => {
     fetch(`/api/counselors/${counselorId}`)
@@ -204,9 +206,57 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
   }, [counselorId]);
 
   useEffect(() => {
-    const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
-    setSaved(ids.includes(counselorId));
-  }, [counselorId]);
+    if (!user) {
+      const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
+      setSaved(ids.includes(counselorId));
+      return;
+    }
+
+    let cancelled = false;
+    request("/api/user/favorites")
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((d) => {
+        if (cancelled) return;
+        const list: { id: string }[] = d.counselors ?? [];
+        setSaved(list.some((item) => item.id === counselorId));
+      })
+      .catch(() => {
+        const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
+        if (!cancelled) setSaved(ids.includes(counselorId));
+      });
+
+    return () => { cancelled = true; };
+  }, [counselorId, user]);
+
+  async function toggleFavorite() {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (savingFavorite) return;
+
+    const nextSaved = !saved;
+    setSavingFavorite(true);
+    setSaved(nextSaved);
+    try {
+      const res = await request("/api/user/favorites", {
+        method: nextSaved ? "POST" : "DELETE",
+        body: JSON.stringify({ counselorId: c?.id ?? counselorId }),
+      });
+      if (!res.ok) throw new Error("收藏操作失败");
+
+      const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
+      const nextIds = nextSaved
+        ? Array.from(new Set([...ids, counselorId]))
+        : ids.filter((id) => id !== counselorId);
+      localStorage.setItem("favorite_counselors", JSON.stringify(nextIds));
+    } catch (err) {
+      setSaved(!nextSaved);
+      window.alert(err instanceof Error ? err.message : "收藏操作失败，请重试");
+    } finally {
+      setSavingFavorite(false);
+    }
+  }
 
   if (loading) return (
     <div className="min-h-svh flex items-center justify-center" style={{ background: "#F5F0E8" }}>
@@ -438,14 +488,10 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           </motion.button>
           {/* 收藏 */}
           <motion.button whileTap={{ scale: 0.92 }}
-            onClick={() => {
-              const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
-              const next = saved ? ids.filter(i => i !== c.id) : [...ids, c.id];
-              localStorage.setItem("favorite_counselors", JSON.stringify(next));
-              setSaved(!saved);
-            }}
+            onClick={toggleFavorite}
+            disabled={savingFavorite}
             className="flex flex-col items-center gap-1 w-12"
-            style={{ color: saved ? "#9CB48A" : "#6B5E52" }}>
+            style={{ color: saved ? "#9CB48A" : "#6B5E52", opacity: savingFavorite ? 0.7 : 1 }}>
             <Bookmark className={`w-5 h-5 ${saved ? "fill-current" : ""}`} />
             <span className="text-[10px]">{saved ? "已收藏" : "收藏"}</span>
           </motion.button>
