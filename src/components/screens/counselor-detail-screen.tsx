@@ -25,7 +25,7 @@ function AvailableTimesButton({ counselorId, isAccepting }: { counselorId: strin
     return (
       <div className="mt-3 rounded-2xl px-4 py-4 text-center"
         style={{ background: "#F0EDE8", border: "1px solid #DDD8D0" }}>
-        <p className="text-sm font-semibold mb-1" style={{ color: "#6B5E52" }}>暂停约满</p>
+        <p className="text-sm font-semibold mb-1" style={{ color: "#6B5E52" }}>已约满</p>
         <p className="text-xs leading-relaxed" style={{ color: "#9B8E82" }}>
           咨询师当前暂停接受新的预约，暂不显示可预约时间。
         </p>
@@ -103,6 +103,7 @@ type Counselor = {
   trainings?: (string | ListItem)[] | null;
   workExperiences?: (string | ListItem)[] | null;
   sessionDescription?: string | null;
+  pricingOptions?: { id: string; name: string; customName?: string; duration: number; price: number; sessions: number }[];
 };
 
 const AV_COLORS = [
@@ -385,54 +386,74 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
         {/* 咨询设置 */}
         <div className="py-5 border-b" style={{ borderColor: "#DDD8D0" }}>
           <SectionTitle>咨询设置</SectionTitle>
-          {/* 三格卡片 */}
-          <div className="grid grid-cols-3 gap-2.5 mb-4">
-            {/* 时长 */}
-            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
-              <svg viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mb-1.5">
-                <circle cx="10" cy="10" r="7.5"/><path d="M10 6v4l2.5 1.5"/>
-              </svg>
-              <span className="text-2xl font-bold leading-none" style={{ color: "#2C2420" }}>{c.sessionDuration}</span>
-              <span className="text-xs mt-1" style={{ color: "#7D736A" }}>分钟 / 次</span>
+          {c.pricingOptions && c.pricingOptions.length > 0 ? (
+            <div className="space-y-3 mb-4">
+              {c.pricingOptions.map((opt, i) => {
+                const displayName = opt.name === "__custom__" ? (opt.customName || `方案 ${i + 1}`) : (opt.name || `方案 ${i + 1}`);
+                return (
+                  <div key={opt.id} className="rounded-2xl p-3.5" style={{ background: "#E8DFCC" }}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold" style={{ color: "#2C2420" }}>{displayName}</span>
+                      <span className="text-lg font-bold" style={{ color: "#2C2420" }}>¥{opt.price}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs" style={{ color: "#7D736A" }}>
+                      <span>{opt.duration} 分钟</span>
+                      <span>× {opt.sessions} 次</span>
+                      {opt.sessions > 1 && <span style={{ color: "#9CB48A", fontWeight: "500" }}>约 ¥{Math.round(opt.price / opt.sessions)}/次</span>}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            {/* 费用 */}
-            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
-              <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5 mb-1.5">
-                <text x="10" y="15" textAnchor="middle" fontSize="16" fontWeight="700" fill="#9CB48A">¥</text>
-              </svg>
-              <span className="text-2xl font-bold leading-none" style={{ color: "#2C2420" }}>{c.pricePerSession}</span>
-              <span className="text-xs mt-1" style={{ color: "#7D736A" }}>每次费用</span>
-            </div>
-            {/* 咨询方式 — 多模式图标 */}
-            <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
-              {/* 图标行：视频/电话/面对面 */}
-              <div className="flex items-center gap-1 mb-1.5">
-                {(c.sessionModes ?? []).map((mode: string) => {
-                  const m = mode.replace("咨询", "").trim();
-                  if (m === "视频" || mode === "视频咨询") return (
-                    <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
-                      <rect x="1" y="5" width="12" height="10" rx="2"/><path d="M13 8l6-3v10l-6-3"/>
-                    </svg>
-                  );
-                  if (m === "语音" || m === "电话" || mode === "语音咨询") return (
-                    <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
-                      <path d="M5 2a2 2 0 011.5.7l2 2.5a2 2 0 010 2.5l-.7.7a8 8 0 004.8 4.8l.7-.7a2 2 0 012.5 0l2.5 2a2 2 0 01.7 1.5c0 3-2.5 4-5 4C8 20 0 12 0 7c0-2.5 1-5 4-5h1z"/>
-                    </svg>
-                  );
-                  if (m === "面对面" || m === "面谈" || mode === "面对面咨询") return (
-                    <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
-                      <circle cx="10" cy="6" r="4"/><path d="M2 18c0-4 3.6-7 8-7s8 3 8 7"/>
-                    </svg>
-                  );
-                  return null;
-                })}
+          ) : (
+            <div className="grid grid-cols-3 gap-2.5 mb-4">
+              {/* 时长 */}
+              <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
+                <svg viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mb-1.5">
+                  <circle cx="10" cy="10" r="7.5"/><path d="M10 6v4l2.5 1.5"/>
+                </svg>
+                <span className="text-2xl font-bold leading-none" style={{ color: "#2C2420" }}>{c.sessionDuration}</span>
+                <span className="text-xs mt-1" style={{ color: "#7D736A" }}>分钟 / 次</span>
               </div>
-              <span className="text-xs font-semibold text-center leading-snug" style={{ color: "#2C2420" }}>
-                {(c.sessionModes ?? []).map((m: string) => m.replace("咨询", "")).join(" /\n")}
-              </span>
-              <span className="text-xs mt-1" style={{ color: "#7D736A" }}>咨询方式</span>
+              {/* 费用 */}
+              <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
+                <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5 mb-1.5">
+                  <text x="10" y="15" textAnchor="middle" fontSize="16" fontWeight="700" fill="#9CB48A">¥</text>
+                </svg>
+                <span className="text-2xl font-bold leading-none" style={{ color: "#2C2420" }}>{c.pricePerSession}</span>
+                <span className="text-xs mt-1" style={{ color: "#7D736A" }}>每次费用</span>
+              </div>
+              {/* 咨询方式 — 多模式图标 */}
+              <div className="flex flex-col items-center justify-center py-4 px-2 rounded-2xl" style={{ background: "#E8DFCC" }}>
+                {/* 图标行：视频/电话/面对面 */}
+                <div className="flex items-center gap-1 mb-1.5">
+                  {(c.sessionModes ?? []).map((mode: string) => {
+                    const m = mode.replace("咨询", "").trim();
+                    if (m === "视频" || mode === "视频咨询") return (
+                      <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
+                        <rect x="1" y="5" width="12" height="10" rx="2"/><path d="M13 8l6-3v10l-6-3"/>
+                      </svg>
+                    );
+                    if (m === "语音" || m === "电话" || mode === "语音咨询") return (
+                      <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
+                        <path d="M5 2a2 2 0 011.5.7l2 2.5a2 2 0 010 2.5l-.7.7a8 8 0 004.8 4.8l.7-.7a2 2 0 012.5 0l2.5 2a2 2 0 01.7 1.5c0 3-2.5 4-5 4C8 20 0 12 0 7c0-2.5 1-5 4-5h1z"/>
+                      </svg>
+                    );
+                    if (m === "面对面" || m === "面谈" || mode === "面对面咨询") return (
+                      <svg key={mode} viewBox="0 0 20 20" fill="none" stroke="#9CB48A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
+                        <circle cx="10" cy="6" r="4"/><path d="M2 18c0-4 3.6-7 8-7s8 3 8 7"/>
+                      </svg>
+                    );
+                    return null;
+                  })}
+                </div>
+                <span className="text-xs font-semibold text-center leading-snug" style={{ color: "#2C2420" }}>
+                  {(c.sessionModes ?? []).map((m: string) => m.replace("咨询", "")).join(" /\n")}
+                </span>
+                <span className="text-xs mt-1" style={{ color: "#7D736A" }}>咨询方式</span>
+              </div>
             </div>
-          </div>
+          )}
           {/* 接待语言 */}
           {c.languages?.length > 0 && (
             <p className="text-sm mb-3" style={{ color: "#6B5E52" }}>
@@ -504,7 +525,7 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
               if (!user) { router.push("/login"); return; }
               window.location.href = `/booking/${c.id}`;
             }}>
-            {c.isAccepting ? "预约咨询" : "暂停约满"}
+            {c.isAccepting ? "预约咨询" : "已约满"}
           </motion.button>
         </div>
       </div>

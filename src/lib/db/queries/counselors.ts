@@ -20,7 +20,9 @@ export async function getCounselors(filters?: {
     query = query.where(
       or(
         ilike(counselors.displayName, `%${filters.search}%`),
-        ilike(counselors.bio, `%${filters.search}%`)
+        ilike(counselors.bio, `%${filters.search}%`),
+        ilike(sql`array_to_string(${counselors.specialties}, ',')`, `%${filters.search}%`),
+        ilike(sql`array_to_string(${counselors.counselorTypes}, ',')`, `%${filters.search}%`)
       )
     );
   }

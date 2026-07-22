@@ -13,6 +13,7 @@ type Counselor = {
   qualifications: ListItem[]; education: ListItem[]; trainings: ListItem[]; workExperiences: ListItem[];
   sessionDescription: string; sessionSettings: string;
   reviewStatus: string; email: string; userName: string; avatarUrl: string;
+  pricingOptions?: { id: string; name: string; customName?: string; duration: number; price: number; sessions: number }[];
 };
 
 function Section({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) {
@@ -142,8 +143,6 @@ export default function AdminCounselorDetailScreen({ id }: { id: string }) {
             {[
               ["咨询师类别", (c.counselorTypes ?? []).join("、")],
               ["所在地区", c.location || "未填写"],
-              ["每次时长", `${c.sessionDuration} 分钟`],
-              ["收费金额", c.pricePerSession ? `¥${c.pricePerSession} / 次` : "未填写"],
               ["接受来访", c.isAccepting ? "是" : "否"],
               ["督导身份", c.isSupervisor ? "是" : "否"],
             ].map(([label, val]) => (
@@ -152,6 +151,40 @@ export default function AdminCounselorDetailScreen({ id }: { id: string }) {
                 <span className="flex-1" style={{ color: "#2C2420" }}>{val}</span>
               </div>
             ))}
+            {/* 定价方案 */}
+            {c.pricingOptions && c.pricingOptions.length > 0 ? (
+              <div className="pt-2">
+                <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>定价方案</p>
+                <div className="space-y-2">
+                  {c.pricingOptions.map((opt, i) => {
+                    const displayName = opt.name === "__custom__" ? (opt.customName || `方案 ${i + 1}`) : (opt.name || `方案 ${i + 1}`);
+                    return (
+                      <div key={opt.id} className="rounded-xl p-3" style={{ background: "#F8F5F0" }}>
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className="text-sm font-medium" style={{ color: "#2C2420" }}>{displayName}</span>
+                          <span className="text-sm font-bold" style={{ color: "#2C2420" }}>¥{opt.price}</span>
+                        </div>
+                        <p className="text-xs" style={{ color: "#9B8E82" }}>
+                          {opt.duration} 分钟 × {opt.sessions} 次
+                          {opt.sessions > 1 && `（约 ¥${Math.round(opt.price / opt.sessions)}/次）`}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-start gap-2">
+                  <span className="flex-none text-xs pt-0.5 w-20" style={{ color: "#9B8E82" }}>每次时长</span>
+                  <span className="flex-1" style={{ color: "#2C2420" }}>{c.sessionDuration} 分钟</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="flex-none text-xs pt-0.5 w-20" style={{ color: "#9B8E82" }}>收费金额</span>
+                  <span className="flex-1" style={{ color: "#2C2420" }}>{c.pricePerSession ? `¥${c.pricePerSession} / 次` : "未填写"}</span>
+                </div>
+              </>
+            )}
             <div className="flex items-start gap-2">
               <span className="flex-none text-xs pt-0.5 w-20" style={{ color: "#9B8E82" }}>咨询方式</span>
               <div className="flex flex-wrap gap-1.5">

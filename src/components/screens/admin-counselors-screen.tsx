@@ -11,12 +11,7 @@ type Counselor = {
   bio: string | null; qualifications: {id:string;value:string}[] | null;
 };
 
-const STATUS_COLOR: Record<string, { bg: string; text: string; label: string }> = {
-  pending:  { bg: "#FEF3C7", text: "#D97706", label: "待审核" },
-  approved: { bg: "#DCFCE7", text: "#16A34A", label: "已通过" },
-  rejected: { bg: "#FEE2E2", text: "#DC2626", label: "已拒绝" },
-  active:   { bg: "#DCFCE7", text: "#16A34A", label: "已上线" },
-};
+const ADMIN_AVATAR_BG = "var(--color-primary)";
 
 export default function AdminCounselorsScreen() {
   const router = useRouter();
@@ -74,17 +69,20 @@ export default function AdminCounselorsScreen() {
           <p className="text-center text-sm py-10" style={{ color: "#9B8E82" }}>暂无记录</p>
         )}
         {counselors.map(c => {
-          const st = STATUS_COLOR[c.status ?? "pending"] ?? STATUS_COLOR.pending;
+          const showBadge = tab === "pending";
           return (
             <div key={c.id} onClick={() => router.push(`/admin/counselors/${c.id}`)}
               className="rounded-2xl p-4 flex items-center gap-3 cursor-pointer"
               style={{ background: "white", border: "1px solid #EBE7DF" }}>
               <div className="w-11 h-11 rounded-full flex items-center justify-center text-lg font-bold text-white flex-none"
-                style={{ background: "var(--color-primary)" }}>{(c.displayName || "?")[0]}</div>
+                style={{ background: ADMIN_AVATAR_BG }}>{(c.displayName || "?")[0]}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <p className="text-sm font-bold" style={{ color: "#2C2420" }}>{c.displayName || "未填写"}</p>
-                  <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: st.bg, color: st.text }}>{st.label}</span>
+                  {showBadge && (
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ background: "#FEF3C7", color: "#D97706" }}>待审核</span>
+                  )}
                 </div>
                 <p className="text-xs" style={{ color: "#9B8E82" }}>
                   {(c.counselorTypes ?? []).join(" · ")} {c.location ? `· ${c.location}` : ""}

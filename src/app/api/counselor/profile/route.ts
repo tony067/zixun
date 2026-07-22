@@ -12,10 +12,17 @@ export async function GET(request: NextRequest) {
 
   const rows = await db.select().from(counselors).where(eq(counselors.userId, userId)).limit(1);
   if (rows.length === 0) {
-    // 返回空档案
     return NextResponse.json({ exists: false, profile: null });
   }
-  return NextResponse.json({ exists: true, profile: rows[0] });
+  const profile = rows[0];
+  const formatted = {
+    ...profile,
+    qualifications:     profile.qualifications?.map((v: string, i: number) => ({ id: `li_${i}`, value: v })) ?? [],
+    education:          profile.education?.map((v: string, i: number) => ({ id: `li_${i}`, value: v })) ?? [],
+    trainings:          profile.trainings?.map((v: string, i: number) => ({ id: `li_${i}`, value: v })) ?? [],
+    workExperiences:    profile.workExperiences?.map((v: string, i: number) => ({ id: `li_${i}`, value: v })) ?? [],
+  };
+  return NextResponse.json({ exists: true, profile: formatted });
 }
 
 export async function PUT(request: NextRequest) {
@@ -53,6 +60,7 @@ export async function PUT(request: NextRequest) {
     sessionModes:       fields.sessionModes ?? [],
     sessionDuration:    fields.sessionDuration ? parseInt(fields.sessionDuration) : 50,
     pricePerSession:    fields.pricePerSession ? parseInt(fields.pricePerSession) : 0,
+    pricingOptions:     fields.pricingOptions ?? [],
     languages:          fields.languages ?? [],
     sessionDescription: fields.sessionDescription ?? "",
     qualifications:     (fields.qualifications ?? []).map((x: unknown) =>

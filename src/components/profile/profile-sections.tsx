@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X } from "lucide-react";
-import type { ProfileForm, SectionKey, ListItem } from "@/lib/counselor-profile-data";
+import type { ProfileForm, SectionKey, ListItem, PricingOption } from "@/lib/counselor-profile-data";
 import {
   SPECIALTY_OPTIONS, WORKING_GROUP_OPTIONS, APPROACH_OPTIONS,
   LANGUAGE_OPTIONS, SESSION_MODE_OPTIONS, SECTION_META,
+  PROVINCE_CITY_MAP, PROVINCE_OPTIONS, findProvinceByCity,
 } from "@/lib/counselor-profile-data";
 
 /* ── Icon helper ── */
@@ -182,22 +183,88 @@ export function SectionContent({ skey, form, setForm }: {
           </div>
         </div>
         <div>
-          <p className="text-xs font-medium text-[#2C2420] mb-2">单次时长（分钟）</p>
-          <div className="flex gap-2 flex-wrap">
-            {[50, 60, 90].map(d => (
-              <button key={d} onClick={() => set("sessionDuration", d)}
-                className="px-5 py-2 rounded-full text-sm border transition-all"
-                style={{ background: form.sessionDuration === d ? "#9CB48A" : "white", color: form.sessionDuration === d ? "white" : "#6B5E52", borderColor: form.sessionDuration === d ? "#9CB48A" : "#DDD8D0" }}>
-                {d} 分钟
-              </button>
+          <p className="text-xs font-medium text-[#2C2420] mb-2">定价方案</p>
+          <p className="text-xs text-[#9B8E82] mb-2">添加不同类型的咨询服务及其价格，如个体咨询、家庭咨询、套餐等</p>
+          <div className="space-y-3">
+            {form.pricingOptions.map((opt, idx) => (
+              <motion.div key={opt.id}
+                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                className="rounded-2xl border border-[#DDD8D0] overflow-hidden">
+                <div className="px-4 py-3" style={{ background: "#F8F5F0" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <select value={opt.name} onChange={e => {
+                      const opts = [...form.pricingOptions];
+                      opts[idx] = { ...opts[idx], name: e.target.value };
+                      set("pricingOptions", opts);
+                    }}
+                      className="flex-1 text-sm font-medium px-2.5 py-1.5 rounded-xl border border-[#DDD8D0] bg-white outline-none"
+                      style={{ color: "#2C2420" }}>
+                      <option value="">请选择方案类型</option>
+                      <option value="个体咨询">个体咨询</option>
+                      <option value="团体/家庭咨询">团体/家庭咨询</option>
+                      <option value="教练套餐">教练套餐</option>
+                      <option value="__custom__">自定义...</option>
+                    </select>
+                    {opt.name === "__custom__" && (
+                      <input value={opt.customName ?? ""} onChange={e => {
+                        const opts = [...form.pricingOptions];
+                        opts[idx] = { ...opts[idx], customName: e.target.value };
+                        set("pricingOptions", opts);
+                      }}
+                        placeholder="自定义名称"
+                        className="flex-1 text-sm font-medium px-2.5 py-1.5 rounded-xl border border-[#DDD8D0] bg-white outline-none"
+                        style={{ color: "#2C2420" }} />
+                    )}
+                    <button onClick={() => set("pricingOptions", form.pricingOptions.filter((_, i) => i !== idx))}
+                      className="p-1 rounded-full hover:bg-white/50">
+                      <X className="w-4 h-4 text-[#9B8E82]" />
+                    </button>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <p className="text-[10px] text-[#9B8E82] mb-0.5">时长（分钟）</p>
+                      <input value={opt.duration} onChange={e => {
+                        const opts = [...form.pricingOptions];
+                        opts[idx] = { ...opts[idx], duration: parseInt(e.target.value) || 0 };
+                        set("pricingOptions", opts);
+                      }}
+                        type="number" placeholder="50"
+                        className="w-full px-2.5 py-1.5 rounded-xl text-sm border border-[#DDD8D0] bg-white outline-none" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[10px] text-[#9B8E82] mb-0.5">次数</p>
+                      <input value={opt.sessions} onChange={e => {
+                        const opts = [...form.pricingOptions];
+                        opts[idx] = { ...opts[idx], sessions: parseInt(e.target.value) || 1 };
+                        set("pricingOptions", opts);
+                      }}
+                        type="number" placeholder="1"
+                        className="w-full px-2.5 py-1.5 rounded-xl text-sm border border-[#DDD8D0] bg-white outline-none" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[10px] text-[#9B8E82] mb-0.5">价格（元）</p>
+                      <input value={opt.price} onChange={e => {
+                        const opts = [...form.pricingOptions];
+                        opts[idx] = { ...opts[idx], price: parseInt(e.target.value) || 0 };
+                        set("pricingOptions", opts);
+                      }}
+                        type="number" placeholder="400"
+                        className="w-full px-2.5 py-1.5 rounded-xl text-sm border border-[#DDD8D0] bg-white outline-none" />
+                    </div>
+                  </div>
+                  <p className="text-[11px] mt-2 text-[#9B8E82]">
+                    ¥{opt.price} / {opt.sessions}次 × {opt.duration}分钟
+                  </p>
+                </div>
+              </motion.div>
             ))}
+            <button onClick={() => set("pricingOptions", [...form.pricingOptions, {
+              id: `po_${Date.now()}`, name: "", duration: 50, price: 0, sessions: 1,
+            }])}
+              className="w-full py-3 rounded-2xl border border-dashed border-[#DDD8D0] flex items-center justify-center gap-2 text-sm text-[#9B8E82]">
+              <Plus className="w-4 h-4" /> 添加定价方案
+            </button>
           </div>
-        </div>
-        <div>
-          <p className="text-xs font-medium text-[#2C2420] mb-1.5">每次费用（元）*</p>
-          <input value={form.pricePerSession} onChange={e => set("pricePerSession", e.target.value)}
-            type="number" placeholder="例：400"
-            className="w-full px-4 py-2.5 rounded-2xl text-sm border border-[#DDD8D0] bg-[#FAFAF8] outline-none" />
         </div>
         <div>
           <p className="text-xs font-medium text-[#2C2420] mb-2">接待语言</p>
@@ -325,10 +392,41 @@ export function BasicSection({ form, setForm, open, onToggle, AvatarUploader }: 
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium text-[#2C2420] mb-0.5">所在地</p>
-            <p className="text-xs text-[#9B8E82] mb-1.5">填写城市名，平台会自动按省份归类（例：上海、广州）</p>
-            <input value={form.location} onChange={e => set("location", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-2xl text-sm border border-[#DDD8D0] bg-[#FAFAF8] outline-none" placeholder="例：北京" />
+            <p className="text-xs font-medium text-[#2C2420] mb-0.5">所在地 *</p>
+            <p className="text-xs text-[#9B8E82] mb-1.5">选择省份和城市，便于来访按地区筛选找到你</p>
+            <div className="flex gap-2">
+              <select
+                value={(() => {
+                  if (!form.location) return "";
+                  const prov = findProvinceByCity(form.location);
+                  return prov ?? "";
+                })()}
+                onChange={e => {
+                  const prov = e.target.value;
+                  if (!prov) { set("location", ""); return; }
+                  const cities = PROVINCE_CITY_MAP[prov];
+                  set("location", cities && cities.length > 0 ? cities[0] : prov);
+                }}
+                className="flex-1 px-4 py-2.5 rounded-2xl text-sm border border-[#DDD8D0] bg-[#FAFAF8] outline-none appearance-none cursor-pointer"
+                style={{ color: "#2C2420" }}>
+                <option value="">选择省份</option>
+                {PROVINCE_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              {(() => {
+                const currentProv = form.location ? findProvinceByCity(form.location) : "";
+                const cities = currentProv ? PROVINCE_CITY_MAP[currentProv] : null;
+                if (!cities || cities.length <= 1) return null;
+                return (
+                  <select
+                    value={form.location}
+                    onChange={e => set("location", e.target.value)}
+                    className="flex-1 px-4 py-2.5 rounded-2xl text-sm border border-[#DDD8D0] bg-[#FAFAF8] outline-none appearance-none cursor-pointer"
+                    style={{ color: "#2C2420" }}>
+                    {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                );
+              })()}
+            </div>
           </div>
           <div>
             <p className="text-xs font-medium text-[#2C2420] mb-1.5">累计咨询小时数</p>

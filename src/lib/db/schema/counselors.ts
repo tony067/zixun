@@ -1,4 +1,4 @@
-import { pgTable, text, integer, boolean, timestamp, real } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, boolean, timestamp, real, json } from "drizzle-orm/pg-core";
 
 export const counselors = pgTable("counselors", {
   id: text("id").primaryKey(),
@@ -17,6 +17,7 @@ export const counselors = pgTable("counselors", {
   sessionDuration: integer("session_duration").default(50),
   pricePerSession: integer("price_per_session").default(300),
   currency: text("currency").default("CNY"),
+  pricingOptions: json("pricing_options").default([]),       // 多价格配置 [{name, duration, price, sessions}]
   languages: text("languages").array().default([]),
   location: text("location").default(""),
   avatarUrl: text("avatar_url"),
