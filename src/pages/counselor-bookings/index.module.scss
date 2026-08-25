@@ -1,0 +1,113 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  padding: 32rpx $page-padding;
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.scrollContent {
+  padding-bottom: 120rpx;
+}
+
+.loading, .empty, .unauthorized {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.loadingText, .emptyText, .unauthorizedText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.bookingList {
+  padding: 0 $page-padding;
+}
+
+.bookingCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.bookingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.bookingStatus {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.bookingDate {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.bookingInfo {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.clientName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sessionMode {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  background: $color-bg-muted;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+}
+
+.bookingPrice {
+  margin-bottom: 16rpx;
+}
+
+.priceText {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.bookingActions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.actionButton {
+  flex: 1;
+  background: $color-primary;
+  border-radius: $radius-md;
+  padding: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}

@@ -16,11 +16,15 @@
 .logo {
   width: 160rpx;
   height: 160rpx;
-  border-radius: $radius-round;
+  border-radius: 48rpx;
   background: $color-primary;
   @include flex-center;
-  font-size: 80rpx;
   margin-bottom: 32rpx;
+}
+
+.logoIcon {
+  font-size: 72rpx;
+  color: $color-text-white;
 }
 
 .appName {
@@ -43,29 +47,84 @@
   box-shadow: $shadow-card;
 }
 
-.title {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-  margin-bottom: 16rpx;
-}
-
-.desc {
-  font-size: $font-size-md;
-  color: $color-text-secondary;
+.tabBar {
+  display: flex;
+  background: $color-bg-muted;
+  border-radius: $radius-button;
   margin-bottom: 48rpx;
 }
 
-.loginButton {
-  @include button-reset;
-  width: 100%;
-  height: $button-height-md;
-  background: #07C160;
+.tabItem {
+  flex: 1;
+  height: 72rpx;
+  @include flex-center;
   border-radius: $radius-button;
+  transition: all $transition-fast;
+}
+
+.tabActive {
+  background: $color-bg-card;
+  box-shadow: $shadow-sm;
+}
+
+.tabText {
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
-  color: $color-text-white;
+  color: $color-text-secondary;
+}
+
+.tabActive .tabText {
+  color: $color-text-primary;
+}
+
+.errorBox {
+  padding: 20rpx 24rpx;
+  background: rgba($color-error, 0.1);
+  border-radius: $radius-sm;
   margin-bottom: 24rpx;
+}
+
+.errorText {
+  font-size: $font-size-sm;
+  color: $color-error;
+}
+
+.formItem {
+  margin-bottom: 28rpx;
+}
+
+.formLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.formInput {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 28rpx;
+  background: $color-bg-muted;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  line-height: 88rpx;
+}
+
+.formPlaceholder {
+  color: $color-text-tertiary;
+}
+
+.submitButton {
+  @include button-reset;
+  width: 100%;
+  height: 96rpx;
+  background: $color-primary;
+  border-radius: $radius-button;
+  margin-bottom: 32rpx;
 
   &:active {
     opacity: 0.9;
@@ -73,9 +132,61 @@
   }
 }
 
-.tip {
+.submitButtonText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1rpx;
+  background: $color-border;
+}
+
+.dividerText {
+  padding: 0 24rpx;
   font-size: $font-size-sm;
   color: $color-text-tertiary;
+}
+
+.wechatButton {
+  @include button-reset;
+  width: 100%;
+  height: 96rpx;
+  background: $color-bg-card;
+  border: 1rpx solid $color-border;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.wechatIcon {
+  font-size: 36rpx;
+}
+
+.wechatText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.footer {
+  display: block;
   text-align: center;
-  line-height: $line-height-normal;
+  margin-top: 64rpx;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
 }

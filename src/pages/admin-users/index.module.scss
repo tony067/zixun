@@ -1,0 +1,136 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  padding: 32rpx $page-padding;
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.tabBar {
+  display: flex;
+  padding: 0 $page-padding;
+  background: $color-bg-card;
+}
+
+.tabItem {
+  flex: 1;
+  padding: 20rpx 0;
+  text-align: center;
+}
+
+.tabActive {
+  .tabText {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.tabText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.scrollContent {
+  padding-bottom: 120rpx;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+  
+  .emptyText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}
+
+.userList {
+  padding: 24rpx $page-padding;
+}
+
+.userCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.userHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+
+.avatarText {
+  font-size: 32rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.userEmail {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.userRole {
+  font-size: $font-size-xs;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+}
+
+.userFooter {
+  border-top: 1rpx solid $color-border;
+  padding-top: 12rpx;
+}
+
+.userDate {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.unauthorized {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+  
+  .unauthorizedText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}

@@ -7,20 +7,25 @@ export type BookingStatus =
   | 'cancelled'
   | 'rejected';
 
+export interface BookingCounselor {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  title: string;
+}
+
 export interface Booking {
   id: string;
-  clientId: string;
   counselorId: string;
-  counselorName: string;
-  counselorAvatar: string | null;
+  counselor: BookingCounselor;
   scheduledAt: string;
   durationMinutes: number;
   sessionMode: string;
   priceAmount: number;
   status: BookingStatus;
   clientNote?: string;
-  rescheduleStatus?: 'none' | 'pending' | 'approved' | 'rejected';
-  rescheduleNewTime?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const bookingStatusText: Record<BookingStatus, string> = {

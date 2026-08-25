@@ -159,3 +159,13 @@
     transform: scale(0.98);
   }
 }
+
+.bookButtonDisabled {
+  background: #C2BDB7;
+  color: rgba(255, 255, 255, 0.7);
+
+  &:active {
+    opacity: 1;
+    transform: none;
+  }
+}

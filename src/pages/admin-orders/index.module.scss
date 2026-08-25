@@ -1,0 +1,137 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  padding: 32rpx $page-padding;
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.tabBar {
+  display: flex;
+  padding: 0 $page-padding;
+  background: $color-bg-card;
+}
+
+.tabItem {
+  flex: 1;
+  padding: 20rpx 0;
+  text-align: center;
+}
+
+.tabActive {
+  .tabText {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.tabText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.scrollContent {
+  padding-bottom: 120rpx;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+  
+  .emptyText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}
+
+.orderList {
+  padding: 24rpx $page-padding;
+}
+
+.orderCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.orderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.orderId {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.orderStatus {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.orderInfo {
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 8rpx 0;
+  margin-bottom: 16rpx;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 20rpx;
+  
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $color-border;
+  }
+}
+
+.infoLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.infoValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.orderFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.orderPrice {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.unauthorized {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+  
+  .unauthorizedText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}

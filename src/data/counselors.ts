@@ -6,6 +6,7 @@ export const mockCounselors: Counselor[] = [
     displayName: '林晓然',
     title: '国家二级心理咨询师',
     bio: '专注 ADHD 成人咨询与家庭教育支持，8 年临床经验，擅长认知行为疗法与正念训练。',
+    tagline: '每一个独特的大脑都值得被理解和尊重',
     specialties: ['ADHD', '情绪问题', '家长支持'],
     counselorTypes: ['心理咨询师'],
     isSupervisor: false,
@@ -18,13 +19,21 @@ export const mockCounselors: Counselor[] = [
     location: '北京',
     avatarUrl: 'https://picsum.photos/id/64/200/200',
     approaches: ['认知行为', '正念'],
-    workingGroups: ['成人', '儿童青少年']
+    workingGroups: ['成人', '儿童青少年'],
+    languages: ['普通话'],
+    qualifications: ['国家二级心理咨询师', 'ADHD 专业培训认证'],
+    education: ['北京师范大学心理学硕士'],
+    trainings: ['认知行为疗法（CBT）进阶培训', '正念减压（MBSR）认证'],
+    workExperiences: ['北京某三甲医院心理科工作 5 年', 'ADHD 家庭支持中心咨询师 3 年'],
+    sessionSettings: '首次咨询为初始访谈，主要了解你的情况和咨询目标。后续咨询会根据你的需求制定个性化方案。',
+    sessionDescription: '咨询过程中，我会采用认知行为疗法帮助你识别和改变无效的思维模式，结合正念练习提升专注力和情绪调节能力。'
   },
   {
     id: 'c2',
     displayName: '陈牧之',
     title: 'ADHD 认证教练',
     bio: 'ICF 认证教练，专注 ADHD 青少年与成人的执行功能训练、时间管理和生活技能提升。',
+    tagline: '找到属于你的节奏，发挥独特的优势',
     specialties: ['ADHD', '职场困境', '时间管理'],
     counselorTypes: ['ADHD教练'],
     isSupervisor: false,
@@ -37,13 +46,21 @@ export const mockCounselors: Counselor[] = [
     location: '上海',
     avatarUrl: 'https://picsum.photos/id/91/200/200',
     approaches: ['教练技术', '执行功能训练'],
-    workingGroups: ['青少年', '成人']
+    workingGroups: ['青少年', '成人'],
+    languages: ['普通话', '英语'],
+    qualifications: ['ICF ACC 认证教练', 'ADHD 教练专业认证'],
+    education: ['华东师范大学应用心理学学士'],
+    trainings: ['ADHD 执行功能教练培训', '时间管理与拖延干预工作坊'],
+    workExperiences: ['企业培训师 6 年', 'ADHD 教练 4 年'],
+    sessionSettings: '每次教练会聚焦一个具体目标（如时间管理、任务分解、情绪调节），通过对话和练习帮助你找到适合自己的方法。',
+    sessionDescription: '教练过程强调你的自主性和资源，我会帮助你发现自己的优势，建立有效的策略来应对 ADHD 带来的挑战。'
   },
   {
     id: 'c3',
     displayName: '王静宜',
     title: '特殊教育老师',
     bio: '12 年特教经验，擅长 ASD 儿童早期干预、感觉统合训练和家庭融合支持。',
+    tagline: '每个孩子都有自己的成长节奏',
     specialties: ['ASD', '感官敏感', '儿童青少年'],
     counselorTypes: ['特教老师'],
     isSupervisor: false,
@@ -56,13 +73,21 @@ export const mockCounselors: Counselor[] = [
     location: '广州',
     avatarUrl: 'https://picsum.photos/id/177/200/200',
     approaches: ['应用行为分析', '感觉统合'],
-    workingGroups: ['儿童青少年']
+    workingGroups: ['儿童青少年'],
+    languages: ['普通话'],
+    qualifications: ['特殊教育教师资格证', 'ABA 二级认证'],
+    education: ['华南师范大学特殊教育硕士'],
+    trainings: ['应用行为分析（ABA）培训', '感觉统合训练认证'],
+    workExperiences: ['特殊教育学校教师 8 年', '自闭症康复中心督导 4 年'],
+    sessionSettings: '首次评估约 60 分钟，了解孩子的发展情况和家庭需求。后续会制定个性化干预计划。',
+    sessionDescription: '干预过程结合结构化教学和游戏化方式，注重孩子的兴趣和动机，帮助孩子在自然环境中学习和成长。'
   },
   {
     id: 'c4',
     displayName: '张维宁',
     title: '注册心理师 / 督导师',
     bio: '20 年心理咨询临床经验，擅长创伤疗愈、情绪障碍与复杂家庭关系处理。',
+    tagline: '穿越黑暗，看见自己的力量',
     specialties: ['创伤', '情绪问题', '人际关系'],
     counselorTypes: ['心理咨询师'],
     isSupervisor: true,
@@ -75,13 +100,21 @@ export const mockCounselors: Counselor[] = [
     location: '深圳',
     avatarUrl: 'https://picsum.photos/id/338/200/200',
     approaches: ['心理动力学', 'EMDR'],
-    workingGroups: ['成人']
+    workingGroups: ['成人'],
+    languages: ['普通话', '英语'],
+    qualifications: ['中国心理学会注册心理师', 'EMDR 认证治疗师', '心理咨询督导师'],
+    education: ['北京大学心理学博士'],
+    trainings: ['心理动力学治疗培训', 'EMDR 创伤治疗认证', '家庭系统治疗培训'],
+    workExperiences: ['深圳某精神卫生中心心理科主任 10 年', '私人执业心理咨询师 10 年'],
+    sessionSettings: '咨询前会进行一次 30 分钟的初步访谈，了解你的情况和咨询目标。首次咨询为 50 分钟的深入评估。',
+    sessionDescription: '咨询过程注重安全和信任关系的建立，通过探索潜意识和处理创伤，帮助你获得深层的自我理解和成长。'
   },
   {
     id: 'c5',
     displayName: '李悦心',
     title: '儿童青少年心理咨询师',
     bio: '专注儿童青少年情绪与行为问题，擅长游戏治疗、家庭治疗与学校适应支持。',
+    tagline: '孩子的心声，需要被听见',
     specialties: ['儿童青少年', '情绪问题', '学校适应'],
     counselorTypes: ['心理咨询师'],
     isSupervisor: false,
@@ -94,13 +127,21 @@ export const mockCounselors: Counselor[] = [
     location: '杭州',
     avatarUrl: 'https://picsum.photos/id/1027/200/200',
     approaches: ['游戏治疗', '家庭治疗'],
-    workingGroups: ['儿童青少年']
+    workingGroups: ['儿童青少年'],
+    languages: ['普通话'],
+    qualifications: ['国家二级心理咨询师', '游戏治疗认证'],
+    education: ['浙江大学应用心理学硕士'],
+    trainings: ['游戏治疗系统培训', '家庭治疗基础培训'],
+    workExperiences: ['中小学心理健康教师 5 年', '儿童心理咨询师 4 年'],
+    sessionSettings: '首次咨询会邀请家长参与，了解孩子的成长背景和家庭情况。后续根据孩子年龄采用游戏或谈话方式。',
+    sessionDescription: '通过游戏、绘画等方式帮助孩子表达内心世界，同时与家长合作，共同支持孩子的成长和改变。'
   },
   {
     id: 'c6',
     displayName: '赵知行',
     title: 'ADHD 教练 / 职业咨询师',
     bio: '帮助 ADHD 成人探索职业方向、改善职场表现，提供简历优化与面试辅导。',
+    tagline: '找到适合你大脑的工作方式',
     specialties: ['ADHD', '职场困境', '职业规划'],
     counselorTypes: ['ADHD教练'],
     isSupervisor: false,
@@ -113,13 +154,21 @@ export const mockCounselors: Counselor[] = [
     location: '成都',
     avatarUrl: 'https://picsum.photos/id/1/200/200',
     approaches: ['教练技术', '职业咨询'],
-    workingGroups: ['成人']
+    workingGroups: ['成人'],
+    languages: ['普通话'],
+    qualifications: ['职业规划师认证', 'ADHD 教练认证'],
+    education: ['西南大学心理学学士'],
+    trainings: ['职业咨询实务培训', 'ADHD 职场适应工作坊'],
+    workExperiences: ['人力资源经理 8 年', '职业咨询师 4 年'],
+    sessionSettings: '首次咨询了解你的职业现状和目标，后续会进行职业测评、简历优化、面试模拟等具体工作。',
+    sessionDescription: '结合 ADHD 大脑特点，帮助你识别职业优势，制定适合自己的职业发展路径，并提供实际的职场策略支持。'
   },
   {
     id: 'c7',
     displayName: '孙暖阳',
     title: '心理咨询师',
     bio: '温暖抱持的咨询风格，擅长女性成长、性议题与亲密关系议题。',
+    tagline: '你的身体和感受，值得被温柔对待',
     specialties: ['女性成长', '性议题', '人际关系'],
     counselorTypes: ['心理咨询师'],
     isSupervisor: false,
@@ -132,13 +181,21 @@ export const mockCounselors: Counselor[] = [
     location: '南京',
     avatarUrl: 'https://picsum.photos/id/177/200/200',
     approaches: ['人本主义', '情绪聚焦'],
-    workingGroups: ['成人']
+    workingGroups: ['成人'],
+    languages: ['普通话'],
+    qualifications: ['国家二级心理咨询师', '性教育讲师认证'],
+    education: ['南京大学应用心理学硕士'],
+    trainings: ['人本主义心理咨询培训', '情绪聚焦治疗（EFT）培训', '性心理咨询培训'],
+    workExperiences: ['高校心理咨询中心咨询师 6 年', '女性心理支持中心咨询师 5 年'],
+    sessionSettings: '咨询环境注重安全和隐私保护，我会以尊重和接纳的态度陪伴你探索敏感议题。',
+    sessionDescription: '咨询过程强调你的主体经验和感受，帮助你建立与自己身体、情绪和关系的健康连接。'
   },
   {
     id: 'c8',
     displayName: '周安和',
     title: '睡眠与情绪专科咨询师',
     bio: '专注睡眠问题、焦虑抑郁情绪调节，结合正念与认知行为技术改善睡眠质量。',
+    tagline: '安睡一夜，是对自己最好的照顾',
     specialties: ['睡眠问题', '情绪问题', '焦虑'],
     counselorTypes: ['心理咨询师'],
     isSupervisor: false,
@@ -151,7 +208,14 @@ export const mockCounselors: Counselor[] = [
     location: '武汉',
     avatarUrl: 'https://picsum.photos/id/64/200/200',
     approaches: ['认知行为', '正念'],
-    workingGroups: ['成人']
+    workingGroups: ['成人'],
+    languages: ['普通话'],
+    qualifications: ['国家二级心理咨询师', 'CBT-I 失眠治疗认证'],
+    education: ['华中科技大学心理学硕士'],
+    trainings: ['CBT-I 失眠认知行为治疗培训', '正念睡眠干预工作坊'],
+    workExperiences: ['睡眠医学中心心理师 4 年', '情绪管理咨询师 3 年'],
+    sessionSettings: '首次咨询会进行睡眠评估和情绪筛查，后续制定个性化的睡眠改善计划，通常需要 4-6 次咨询。',
+    sessionDescription: '通过认知行为技术调整睡眠习惯和思维模式，结合正念练习帮助你放松身心，重建健康的睡眠节律。'
   }
 ];
 
@@ -167,13 +231,46 @@ export const categoryOptions = [
 ];
 
 export const provinceOptions = [
-  '全国/线上', '北京', '上海', '广州', '深圳', '杭州', '成都', '南京', '武汉'
+  '全国/线上', '北京', '天津', '上海', '重庆',
+  '河北', '山西', '辽宁', '吉林', '黑龙江',
+  '江苏', '浙江', '安徽', '福建', '江西', '山东',
+  '河南', '湖北', '湖南', '广东', '海南',
+  '四川', '贵州', '云南', '陕西', '甘肃',
+  '青海', '广西', '内蒙古', '西藏', '宁夏', '新疆',
+  '香港', '澳门', '台湾'
 ];
 
 export const priceOptions = ['不限', '300 以下', '300－500', '500 以上'];
 
 export const directionOptions = [
   'ADHD', 'ASD', '情绪问题', '睡眠问题', '感官敏感', '创伤',
-  '读写障碍', '女性成长', '人际关系', '职场困境', '儿童青少年',
+  '读写障碍', '女性成长', '人际关系', '职场困境', '儿童/青少年',
   '家长支持', '性议题', 'ADHD教练', '特教老师'
+];
+
+export const GUIDE_SECTIONS = [
+  {
+    title: '什么是心理咨询？',
+    content: '心理咨询是一个安全、保密的空间，由经过专业训练的咨询师陪伴你探索内心、处理困扰。它不是「聊天」，也不是「被教导」，而是帮助你更了解自己、找到属于自己的方式。'
+  },
+  {
+    title: '神经多样性是什么？',
+    content: '神经多样性（Neurodiversity）指的是人类大脑和神经系统的自然多样性，包括 ADHD、ASD（自闭症谱系）、读写障碍等。这些不是「病」，而是不同的认知和感知方式。'
+  },
+  {
+    title: '如何选择咨询师？',
+    content: '你可以关注：① 咨询师的擅长领域是否和你的困扰匹配；② 咨询方式（视频/语音/面谈）是否适合你；③ 价格是否在你的预算内。第一次可以选几位都看看，感受一下是否「合得来」。'
+  },
+  {
+    title: '第一次咨询会发生什么？',
+    content: '第一次通常是「初始访谈」——咨询师会了解你来访的原因、背景和期望。你不需要准备很多，放松地说说自己的情况就好。这也是你评估咨询师是否适合自己的机会。'
+  },
+  {
+    title: '咨询的频率和周期？',
+    content: '大多数咨询每1-2周一次，每次50分钟左右。一般建议先做3-6次，再决定是否继续。有的人咨询几次就有很大收获，有的人会长期咨询陪伴自己成长——没有固定标准。'
+  },
+  {
+    title: '关于保密原则',
+    content: '咨询内容严格保密。只有在你有伤害自己或他人的紧急风险时，咨询师才会打破保密。你在咨询室说的话，不会传到任何其他人那里。'
+  }
 ];

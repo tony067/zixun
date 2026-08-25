@@ -1,0 +1,150 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 20rpx $page-padding;
+  background: rgba(245, 240, 232, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1rpx solid $color-border;
+}
+
+.backButton {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  background: $color-bg-muted;
+  @include flex-center;
+}
+
+.backIcon {
+  font-size: 36rpx;
+  color: $color-text-secondary;
+}
+
+.headerTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.banner {
+  margin: 24rpx $page-padding;
+  padding: 40rpx;
+  border-radius: $radius-lg;
+  background: linear-gradient(160deg, #8BAE80 0%, #9BBC90 35%, #B8D0AA 65%, #C9DAB8 100%);
+}
+
+.bannerTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.bannerDesc {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.sectionList {
+  padding: 0 $page-padding;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.sectionItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  border: 1rpx solid $color-border;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+}
+
+.sectionLeft {
+  flex: 1;
+  padding-right: 16rpx;
+}
+
+.sectionIcon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: block;
+}
+
+.sectionShort {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: 4rpx;
+}
+
+.sectionArrow {
+  font-size: 24rpx;
+  color: $color-text-tertiary;
+  transition: transform $transition-fast;
+}
+
+.sectionArrowUp {
+  transform: rotate(180deg);
+}
+
+.sectionContent {
+  padding: 0 24rpx 24rpx;
+  border-top: 1rpx solid $color-bg-muted;
+}
+
+.sectionText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.8;
+  white-space: pre-line;
+  padding-top: 16rpx;
+}
+
+.actionSection {
+  padding: 32rpx $page-padding;
+}
+
+.actionButton {
+  @include button-reset;
+  width: 100%;
+  height: $button-height-lg;
+  background: $color-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.hintText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  text-align: center;
+  margin-top: 20rpx;
+  display: block;
+}

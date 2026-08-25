@@ -1,20 +1,21 @@
 import React, { useEffect, type ReactNode } from 'react';
 import { useDidShow, useDidHide } from '@tarojs/taro';
-// 全局样式
 import './app.scss';
+import { useUserStore } from '@/stores/user';
 
 interface AppProps {
   children: ReactNode;
 }
 
 function App(props: AppProps) {
-  // 可以使用所有的 React Hooks
-  useEffect(() => {});
+  const { init } = useUserStore();
 
-  // 对应 onShow
+  useEffect(() => {
+    init();
+  }, []);
+
   useDidShow(() => {});
 
-  // 对应 onHide
   useDidHide(() => {});
 
   return props.children;

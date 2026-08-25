@@ -40,9 +40,16 @@ const CounselorCard: React.FC<CounselorCardProps> = ({ counselor, index = 0, onC
   const typeTag = counselor.counselorTypes[0] || '心理咨询师';
   const typeColor = TYPE_COLORS[typeTag] || { bg: '#F5F5F0', text: '#7D736A' };
 
+  const hasPricingOptions = counselor.pricingOptions && counselor.pricingOptions.length > 0;
+  const minPrice = hasPricingOptions
+    ? Math.min(...counselor.pricingOptions.map(opt => opt.price))
+    : counselor.pricePerSession;
+
   const handleBook = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
-    onBook?.(counselor, e);
+    if (counselor.isAccepting) {
+      onBook?.(counselor, e);
+    }
   };
 
   return (
@@ -98,11 +105,19 @@ const CounselorCard: React.FC<CounselorCardProps> = ({ counselor, index = 0, onC
 
       <View className={styles.footer}>
         <View className={styles.priceRow}>
-          <Text className={styles.price}>¥{counselor.pricePerSession}</Text>
-          <Text className={styles.priceUnit}>/ 次</Text>
+          <Text className={styles.price}>¥{minPrice}</Text>
+          {hasPricingOptions ? (
+            <Text className={styles.priceUnit}>起</Text>
+          ) : (
+            <Text className={styles.priceUnit}>/ 次</Text>
+          )}
         </View>
-        <Button className={styles.bookButton} onClick={handleBook}>
-          预约咨询
+        <Button
+          className={`${styles.bookButton} ${!counselor.isAccepting ? styles.bookButtonDisabled : ''}`}
+          onClick={handleBook}
+          disabled={!counselor.isAccepting}
+        >
+          {counselor.isAccepting ? '预约咨询' : '已约满'}
         </Button>
       </View>
     </View>

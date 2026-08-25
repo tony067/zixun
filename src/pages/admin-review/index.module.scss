@@ -1,0 +1,194 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  padding: 32rpx $page-padding;
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.tabBar {
+  display: flex;
+  padding: 0 $page-padding;
+  background: $color-bg-card;
+  gap: 16rpx;
+}
+
+.tabItem {
+  flex: 1;
+  padding: 20rpx 0;
+  text-align: center;
+  position: relative;
+}
+
+.tabActive {
+  .tabText {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.tabText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.tabBadge {
+  background: $color-error;
+  color: $color-text-white;
+  font-size: $font-size-xs;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-round;
+  margin-left: 8rpx;
+}
+
+.scrollContent {
+  padding-bottom: 120rpx;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+  
+  .emptyText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}
+
+.applicationList {
+  padding: 24rpx $page-padding;
+}
+
+.applicationCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.applicationHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+
+.avatarText {
+  font-size: 32rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.applicationInfo {
+  flex: 1;
+}
+
+.applicationName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.applicationTitle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.applicationTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.tag {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  background: $color-bg-muted;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+}
+
+.applicationActions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.rejectButton {
+  flex: 1;
+  padding: 16rpx;
+  border-radius: $radius-md;
+  background: $color-bg-muted;
+  text-align: center;
+}
+
+.approveButton {
+  flex: 1;
+  padding: 16rpx;
+  border-radius: $radius-md;
+  background: $color-primary;
+  text-align: center;
+  
+  .buttonText {
+    color: $color-text-white;
+  }
+}
+
+.buttonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.statusText {
+  font-size: $font-size-sm;
+  padding: 8rpx 16rpx;
+  border-radius: $radius-sm;
+  display: inline-block;
+  
+  &.approved {
+    color: $color-primary;
+    background: rgba($color-primary, 0.1);
+  }
+  
+  &.rejected {
+    color: $color-error;
+    background: rgba($color-error, 0.1);
+  }
+}
+
+.unauthorized {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+  
+  .unauthorizedText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}

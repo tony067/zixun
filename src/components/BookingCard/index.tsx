@@ -28,14 +28,14 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, onClick }) => {
       <View className={styles.header}>
         <View className={styles.counselorInfo}>
           <View className={styles.avatarWrapper}>
-            {booking.counselorAvatar ? (
-              <Image className={styles.avatar} src={booking.counselorAvatar} mode="aspectFill" />
+            {booking.counselor.avatarUrl ? (
+              <Image className={styles.avatar} src={booking.counselor.avatarUrl} mode="aspectFill" />
             ) : (
-              <Text className={styles.avatarText}>{booking.counselorName.charAt(0)}</Text>
+              <Text className={styles.avatarText}>{booking.counselor.name.charAt(0)}</Text>
             )}
           </View>
           <View className={styles.meta}>
-            <Text className={styles.name}>{booking.counselorName}</Text>
+            <Text className={styles.name}>{booking.counselor.name}</Text>
             <Text className={styles.mode}>{booking.sessionMode} · {booking.durationMinutes}分钟</Text>
           </View>
         </View>

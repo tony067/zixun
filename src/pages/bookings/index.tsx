@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import BookingCard from '@/components/BookingCard';
 import { fetchMyBookings } from '@/services/api';
 import type { Booking, BookingStatus } from '@/types/booking';
+import Icon from '@/components/Icon';
 
 const tabs: { key: BookingStatus | 'all'; label: string }[] = [
   { key: 'all', label: '全部' },
@@ -40,6 +42,9 @@ const BookingsPage: React.FC = () => {
   return (
     <View className={styles.container}>
       <View className={styles.header}>
+        <View className={styles.backButton} onClick={() => Taro.navigateBack()}>
+          <Text className={styles.backIcon}>‹</Text>
+        </View>
         <Text className={styles.title}>我的预约</Text>
       </View>
 
@@ -64,7 +69,7 @@ const BookingsPage: React.FC = () => {
           ))
         ) : (
           <View className={styles.empty}>
-            <Text className={styles.emptyIcon}>📅</Text>
+            <Icon name="calendar" size={48} color="#C2BDB7" />
             <Text className={styles.emptyText}>暂无{activeTab === 'all' ? '' : tabs.find(t => t.key === activeTab)?.label}预约</Text>
           </View>
         )}

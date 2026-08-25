@@ -1,0 +1,197 @@
+@use '@/styles/variables.scss' as *;
+
+.tabBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(100rpx + env(safe-area-inset-bottom));
+  background: rgba(245, 241, 232, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1rpx solid #EBE7DF;
+  z-index: 999;
+}
+
+.tabBarContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 100rpx;
+}
+
+.tabItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.tabIcon {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4rpx;
+}
+
+.tabIconText {
+  font-size: 32rpx;
+}
+
+.tabText {
+  font-size: 20rpx;
+  color: #9B8E82;
+}
+
+.tabTextActive {
+  color: #9CB48A;
+  font-weight: 500;
+}
+
+.roleSwitch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 16rpx;
+  border-left: 1rpx solid #EBE7DF;
+  min-width: 80rpx;
+}
+
+.roleSwitchIcon {
+  font-size: 28rpx;
+  margin-bottom: 4rpx;
+}
+
+.roleSwitchText {
+  font-size: 20rpx;
+  color: #9B8E82;
+  font-weight: 500;
+}
+
+.modalMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.rolePicker {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #FDFBF7;
+  border-radius: 48rpx 48rpx 0 0;
+  z-index: 1001;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.rolePickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 40rpx 16rpx;
+}
+
+.rolePickerTitle {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2C2420;
+}
+
+.rolePickerClose {
+  font-size: 32rpx;
+  color: #9B8E82;
+  padding: 8rpx;
+}
+
+.rolePickerContent {
+  padding: 0 40rpx 16rpx;
+}
+
+.roleItem {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  border-radius: 32rpx;
+  margin-bottom: 16rpx;
+  background: #F9F6F1;
+  border: 1rpx solid #EBE7DF;
+  transition: all 0.2s;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.roleItemActive {
+  background: #F0F7EC;
+  border-color: #9CB48A;
+}
+
+.roleItemIcon {
+  font-size: 40rpx;
+  margin-right: 24rpx;
+}
+
+.roleItemInfo {
+  flex: 1;
+}
+
+.roleItemLabel {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2C2420;
+  display: block;
+}
+
+.roleItemSub {
+  font-size: 22rpx;
+  color: #9B8E82;
+  margin-top: 4rpx;
+  display: block;
+}
+
+.roleItemCurrent {
+  font-size: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  background: #9CB48A;
+  color: #fff;
+  font-weight: 500;
+}
+
+.roleItemArrow {
+  font-size: 32rpx;
+  color: #C2BDB7;
+}
+
+.rolePickerFooter {
+  padding: 16rpx 40rpx 32rpx;
+}
+
+.rolePickerCancel {
+  padding: 24rpx;
+  border-radius: 32rpx;
+  background: #F0EDE8;
+  text-align: center;
+}
+
+.rolePickerCancelText {
+  font-size: 28rpx;
+  color: #7D736A;
+  font-weight: 500;
+}

@@ -3,24 +3,20 @@ import { View, Text, Input, ScrollView, Swiper, SwiperItem } from '@tarojs/compo
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import CategoryGrid, { type Category } from '@/components/CategoryGrid';
-import FilterBar, { type FilterOption } from '@/components/FilterBar';
 import CounselorCard from '@/components/CounselorCard';
+import CustomTabBar from '@/custom-tab-bar';
 import { fetchCounselors } from '@/services/api';
 import { getGreeting } from '@/utils/date';
+import { useUserStore } from '@/stores/user';
 import {
-  mockCounselors,
   categoryOptions,
   provinceOptions,
   priceOptions,
-  directionOptions
+  directionOptions,
+  GUIDE_SECTIONS
 } from '@/data/counselors';
 import type { Counselor } from '@/types/counselor';
-
-const filters: FilterOption[] = [
-  { key: 'province', label: '地区', options: provinceOptions },
-  { key: 'price', label: '价格', options: priceOptions },
-  { key: 'direction', label: '咨询方向', options: directionOptions }
-];
+import Icon from '@/components/Icon';
 
 const bannerList = [
   {
@@ -43,16 +39,31 @@ const bannerList = [
   }
 ];
 
+const timeOptions = ['上午（9-12时）', '下午（12-18时）', '晚上（18时以后）'];
+const genderOptions = ['不限', '女性咨询师', '男性咨询师'];
+const modeOptions = ['视频', '语音', '面谈'];
+
 const IndexPage: React.FC = () => {
+  const { user, isLoggedIn } = useUserStore();
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [filterValues, setFilterValues] = useState<Record<string, string>>({
-    province: provinceOptions[0],
-    direction: directionOptions[0],
-    price: priceOptions[0]
-  });
+  const [filterCity, setFilterCity] = useState('');
+  const [filterPrice, setFilterPrice] = useState('');
+  const [filterDir, setFilterDir] = useState<string[]>([]);
+  const [filterTime, setFilterTime] = useState('');
+  const [filterGender, setFilterGender] = useState('');
+  const [filterMode, setFilterMode] = useState<string[]>([]);
   const [searchKeyword, setSearchKeyword] = useState('');
+
+  const [showFilter, setShowFilter] = useState(false);
+  const [filterTab, setFilterTab] = useState<string | null>(null);
+  const [showMoreProvinces, setShowMoreProvinces] = useState(false);
+  const [openModal, setOpenModal] = useState<'guide' | null>(null);
+
+  const handleLoginClick = () => {
+    Taro.navigateTo({ url: '/pages/login/index' });
+  };
 
   useEffect(() => {
     loadCounselors();
@@ -65,7 +76,7 @@ const IndexPage: React.FC = () => {
       setCounselors(data);
     } catch (err) {
       console.error('[Index] 加载咨询师失败', err);
-      setCounselors(mockCounselors);
+      setCounselors([]);
     } finally {
       setLoading(false);
     }
@@ -89,27 +100,48 @@ const IndexPage: React.FC = () => {
         }
       }
 
-      if (filterValues.province && filterValues.province !== '全国/线上') {
-        if (!item.location.includes(filterValues.province)) {
+      if (filterCity && filterCity !== '全国/线上') {
+        if (!item.location.includes(filterCity)) {
           return false;
         }
       }
 
-      if (filterValues.direction && filterValues.direction !== directionOptions[0]) {
-        if (!item.specialties.includes(filterValues.direction) && !item.counselorTypes.includes(filterValues.direction)) {
-          return false;
-        }
+      if (filterDir.length > 0) {
+        const hasDir = filterDir.some(d => item.specialties.includes(d) || item.counselorTypes.includes(d));
+        if (!hasDir) return false;
       }
 
-      if (filterValues.price && filterValues.price !== '不限') {
-        if (filterValues.price === '300 以下' && item.pricePerSession >= 300) return false;
-        if (filterValues.price === '300－500' && (item.pricePerSession < 300 || item.pricePerSession > 500)) return false;
-        if (filterValues.price === '500 以上' && item.pricePerSession <= 500) return false;
+      if (filterPrice && filterPrice !== '不限') {
+        if (filterPrice === '300 以下' && item.pricePerSession >= 300) return false;
+        if (filterPrice === '300－500' && (item.pricePerSession < 300 || item.pricePerSession > 500)) return false;
+        if (filterPrice === '500 以上' && item.pricePerSession <= 500) return false;
+      }
+
+      if (filterTime) {
+        if (!item.isAccepting) return false;
+      }
+
+      if (filterGender && filterGender !== '不限') {
+        const gender = (item.gender || '').toLowerCase();
+        if (filterGender === '女性咨询师' && gender !== 'female' && gender !== '女') return false;
+        if (filterGender === '男性咨询师' && gender !== 'male' && gender !== '男') return false;
+      }
+
+      if (filterMode.length > 0) {
+        const hasMode = filterMode.some(m => item.sessionModes.includes(m));
+        if (!hasMode) return false;
       }
 
       return true;
     });
-  }, [counselors, searchKeyword, selectedCategory, filterValues]);
+  }, [counselors, searchKeyword, selectedCategory, filterCity, filterPrice, filterDir, filterTime, filterGender, filterMode]);
+
+  const activeFilterCount = (filterCity && filterCity !== '全国/线上' ? 1 : 0)
+    + (filterPrice && filterPrice !== '不限' ? 1 : 0)
+    + (filterTime ? 1 : 0)
+    + (filterGender && filterGender !== '不限' ? 1 : 0)
+    + filterDir.length
+    + filterMode.length;
 
   const handleCounselorClick = (counselor: Counselor) => {
     Taro.navigateTo({
@@ -124,34 +156,53 @@ const IndexPage: React.FC = () => {
     });
   };
 
-  const handleFilterChange = (key: string, value: string) => {
-    setFilterValues(prev => ({ ...prev, [key]: value }));
+  const handleClearFilters = () => {
+    setSelectedCategory('');
+    setSearchKeyword('');
+    setFilterCity('');
+    setFilterPrice('');
+    setFilterDir([]);
+    setFilterTime('');
+    setFilterGender('');
+    setFilterMode([]);
+    setShowFilter(false);
+    setShowMoreProvinces(false);
+  };
+
+  const applyFilters = () => {
+    setShowFilter(false);
   };
 
   return (
     <View className={styles.container}>
       <ScrollView scrollY className={styles.scrollView}>
-        {/* 顶部登录信息 */}
         <View className={styles.topBar}>
           <View className={styles.userInfo}>
-            <Text className={styles.greeting}>{getGreeting()} 511099828</Text>
+            <Text className={styles.greeting}>
+              {getGreeting()}{isLoggedIn && user?.name ? ` ${user.name}` : ''}
+            </Text>
             <Text className={styles.brand}>MindPace</Text>
           </View>
           <View className={styles.topActions}>
-            <View className={styles.guideButton}>
-              <Text className={styles.guideIcon}>📖</Text>
+            <View className={styles.guideButton} onClick={() => setOpenModal('guide')}>
+              <Icon name="book" size={20} color="#9B8E82" />
               <Text className={styles.guideText}>新手必读</Text>
             </View>
-            <View className={styles.noticeButton}>
-              <Text className={styles.noticeIcon}>🔔</Text>
-              <View className={styles.noticeBadge}>
-                <Text className={styles.noticeBadgeText}>5</Text>
+            {isLoggedIn ? (
+              <View className={styles.noticeButton}>
+                <Icon name="bell" size={20} color="#9B8E82" />
+                <View className={styles.noticeBadge}>
+                  <Text className={styles.noticeBadgeText}>5</Text>
+                </View>
               </View>
-            </View>
+            ) : (
+              <View className={styles.loginButton} onClick={handleLoginClick}>
+                <Text className={styles.loginButtonText}>登录</Text>
+              </View>
+            )}
           </View>
         </View>
 
-        {/* Banner */}
         <View className={styles.bannerSection}>
           <Swiper
             className={styles.bannerSwiper}
@@ -183,10 +234,9 @@ const IndexPage: React.FC = () => {
           </Swiper>
         </View>
 
-        {/* 搜索框 */}
         <View className={styles.searchSection}>
           <View className={styles.searchBox}>
-            <Text className={styles.searchIcon}>🔍</Text>
+            <Icon name="search" size={20} color="#9B8E82" />
             <Input
               className={styles.searchInput}
               placeholder="搜索名字、擅长..."
@@ -200,7 +250,6 @@ const IndexPage: React.FC = () => {
           </View>
         </View>
 
-        {/* 快速分类 */}
         <View className={styles.categorySection}>
           <CategoryGrid
             categories={categoryOptions as Category[]}
@@ -209,13 +258,48 @@ const IndexPage: React.FC = () => {
           />
         </View>
 
-        {/* 筛选栏 */}
-        <FilterBar filters={filters} values={filterValues} onChange={handleFilterChange} />
+        <View className={styles.filterBar}>
+          {[
+            { key: 'city', label: filterCity || '地区', active: !!filterCity },
+            { key: 'price', label: filterPrice || '价格', active: !!filterPrice },
+            { key: 'direction', label: filterDir.length ? `方向(${filterDir.length})` : '咨询方向', active: filterDir.length > 0 },
+          ].map(f => (
+            <View
+              key={f.key}
+              className={`${styles.filterItem} ${f.active ? styles.filterActive : ''}`}
+              onClick={() => {
+                setFilterTab(f.key);
+                setShowFilter(true);
+              }}
+            >
+              <Text className={styles.filterText}>{f.label}</Text>
+              <Text className={styles.filterArrow}>›</Text>
+            </View>
+          ))}
+          {(selectedCategory || activeFilterCount > 0 || searchKeyword) && (
+            <View className={styles.filterClear} onClick={handleClearFilters}>
+              <Text className={styles.filterClearText}>清除</Text>
+            </View>
+          )}
+          <View
+            className={`${styles.filterFunnel} ${activeFilterCount > 0 ? styles.filterActive : ''}`}
+            onClick={() => {
+              setFilterTab(null);
+              setShowFilter(true);
+            }}
+          >
+            <Icon name="filter" size={20} color={activeFilterCount > 0 ? '#9CB48A' : '#9B8E82'} />
+          </View>
+        </View>
 
-        {/* 咨询师列表 */}
         <View className={styles.listSection}>
           {loading ? (
             <Text className={styles.loading}>正在加载...</Text>
+          ) : filteredCounselors.length === 0 ? (
+            <View className={styles.emptyState}>
+              <Text className={styles.emptyText}>暂无匹配的咨询师</Text>
+              <Text className={styles.emptyAction} onClick={handleClearFilters}>清除筛选</Text>
+            </View>
           ) : (
             filteredCounselors.map((counselor, idx) => (
               <CounselorCard
@@ -229,6 +313,177 @@ const IndexPage: React.FC = () => {
           )}
         </View>
       </ScrollView>
+
+      {openModal === 'guide' && (
+        <View className={styles.modalOverlay} onClick={() => setOpenModal(null)}>
+          <View className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <View className={styles.modalHeader}>
+              <View className={styles.modalHandle} />
+              <Text className={styles.modalTitle}>新手必读</Text>
+              <View className={styles.modalClose} onClick={() => setOpenModal(null)}>
+                <Text className={styles.modalCloseText}>×</Text>
+              </View>
+            </View>
+            <ScrollView scrollY className={styles.modalBody}>
+              <View className={styles.guideContent}>
+                {GUIDE_SECTIONS.map((section, idx) => (
+                  <View key={idx} className={styles.guideItem}>
+                    <View className={styles.guideNumber}>{idx + 1}</View>
+                    <View className={styles.guideInfo}>
+                      <Text className={styles.guideTitle}>{section.title}</Text>
+                      <Text className={styles.guideDesc}>{section.content}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      )}
+
+      {showFilter && (
+        <View className={styles.modalOverlay} onClick={() => setShowFilter(false)}>
+          <View className={styles.filterPanel} onClick={e => e.stopPropagation()}>
+            <View className={styles.modalHandle} />
+            <View className={styles.filterPanelHeader}>
+              <Text className={styles.filterPanelTitle}>筛选</Text>
+              <View className={styles.modalClose} onClick={() => setShowFilter(false)}>
+                <Text className={styles.modalCloseText}>×</Text>
+              </View>
+            </View>
+            <ScrollView scrollY className={styles.filterPanelBody}>
+              {(filterTab === null || filterTab === 'city') && (
+                <View className={styles.filterSection}>
+                  <Text className={styles.filterSectionTitle}>地区</Text>
+                  <View className={styles.optionWrap}>
+                    {provinceOptions.slice(0, showMoreProvinces ? provinceOptions.length : 8).map(p => (
+                      <View
+                        key={p}
+                        className={`${styles.optionItem} ${filterCity === p ? styles.optionActive : ''}`}
+                        onClick={() => {
+                          setFilterCity(filterCity === p ? '' : p);
+                        }}
+                      >
+                        <Text className={styles.optionText}>{p}</Text>
+                      </View>
+                    ))}
+                  </View>
+                  {provinceOptions.length > 8 && (
+                    <View className={styles.filterMore} onClick={() => setShowMoreProvinces(!showMoreProvinces)}>
+                      <Text className={styles.filterMoreText}>{showMoreProvinces ? '收起' : '更多'}</Text>
+                      <Text className={styles.filterMoreArrow}>›</Text>
+                    </View>
+                  )}
+                </View>
+              )}
+
+              {(filterTab === null || filterTab === 'price') && (
+                <View className={styles.filterSection}>
+                  <Text className={styles.filterSectionTitle}>费用</Text>
+                  <View className={styles.optionWrap}>
+                    {priceOptions.map(p => (
+                      <View
+                        key={p}
+                        className={`${styles.optionItem} ${filterPrice === p ? styles.optionActive : ''}`}
+                        onClick={() => {
+                          setFilterPrice(filterPrice === p ? '' : p);
+                        }}
+                      >
+                        <Text className={styles.optionText}>{p}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {filterTab === null && (
+                <>
+                  <View className={styles.filterSection}>
+                    <Text className={styles.filterSectionTitle}>可选时间</Text>
+                    <View className={styles.optionWrap}>
+                      {timeOptions.map(t => (
+                        <View
+                          key={t}
+                          className={`${styles.optionItem} ${filterTime === t ? styles.optionActive : ''}`}
+                          onClick={() => {
+                            setFilterTime(filterTime === t ? '' : t);
+                          }}
+                        >
+                          <Text className={styles.optionText}>{t}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
+                  <View className={styles.filterSection}>
+                    <Text className={styles.filterSectionTitle}>性别偏好</Text>
+                    <View className={styles.optionWrap}>
+                      {genderOptions.map(g => (
+                        <View
+                          key={g}
+                          className={`${styles.optionItem} ${filterGender === g ? styles.optionActive : ''}`}
+                          onClick={() => {
+                            setFilterGender(filterGender === g ? '' : g);
+                          }}
+                        >
+                          <Text className={styles.optionText}>{g}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                </>
+              )}
+
+              {(filterTab === null || filterTab === 'direction') && (
+                <View className={styles.filterSection}>
+                  <Text className={styles.filterSectionTitle}>咨询方向</Text>
+                  <View className={styles.optionWrap}>
+                    {directionOptions.map(d => (
+                      <View
+                        key={d}
+                        className={`${styles.optionItem} ${filterDir.includes(d) ? styles.optionActive : ''}`}
+                        onClick={() => {
+                          setFilterDir(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
+                        }}
+                      >
+                        <Text className={styles.optionText}>{d}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {filterTab === null && (
+                <View className={styles.filterSection}>
+                  <Text className={styles.filterSectionTitle}>咨询方式</Text>
+                  <View className={styles.optionWrap}>
+                    {modeOptions.map(m => (
+                      <View
+                        key={m}
+                        className={`${styles.optionItem} ${filterMode.includes(m) ? styles.optionActive : ''}`}
+                        onClick={() => {
+                          setFilterMode(prev => prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m]);
+                        }}
+                      >
+                        <Text className={styles.optionText}>{m}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+            </ScrollView>
+            <View className={styles.filterPanelFooter}>
+              <View className={styles.filterPanelButton} onClick={handleClearFilters}>
+                <Text className={styles.filterPanelButtonText}>清除全部</Text>
+              </View>
+              <View className={styles.filterPanelButtonPrimary} onClick={applyFilters}>
+                <Text className={styles.filterPanelButtonPrimaryText}>应用筛选</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+      <CustomTabBar />
     </View>
   );
 };

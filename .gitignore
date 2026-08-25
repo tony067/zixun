@@ -33,3 +33,16 @@ Thumbs.db
 .vscode/settings.json
 *.swp
 *.swo
+
+# SWC cache
+.swc/
+
+# Local docs backup
+api_backup.docx
+咨询平台接口.docx
+
+# Taro build output
+build/
+
+# Local npm config (proxy/registry)
+.npmrc

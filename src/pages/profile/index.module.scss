@@ -3,7 +3,10 @@
 .container {
   min-height: 100vh;
   background: $color-bg-page;
-  padding-bottom: 40rpx;
+}
+
+.scrollContent {
+  height: calc(100vh - 160rpx);
 }
 
 .header {
@@ -57,6 +60,21 @@
   color: $color-text-secondary;
 }
 
+.logoutButton {
+  padding: 12rpx 24rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-button;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.logoutText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
 .menuSection {
   margin-top: 24rpx;
   padding: 0 $page-padding;
@@ -103,4 +121,220 @@
 .menuArrow {
   font-size: 28rpx;
   color: $color-text-tertiary;
+}
+
+.guideCard {
+  margin: 24rpx $page-padding;
+  padding: 28rpx 32rpx;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.guideLeft {
+  display: flex;
+  align-items: center;
+}
+
+.guideIcon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.guideInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.guideTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.guideDesc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.favoritesSection {
+  margin: 24rpx $page-padding;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.favoritesList {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.favoriteItem {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.favoriteAvatarWrapper {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: $radius-round;
+  background: $color-bg-hover;
+  margin-right: 20rpx;
+  @include flex-center;
+  overflow: hidden;
+}
+
+.favoriteAvatar {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.favoriteAvatarText {
+  font-size: 32rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.favoriteInfo {
+  flex: 1;
+}
+
+.favoriteName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: block;
+}
+
+.favoriteTitle {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: 4rpx;
+}
+
+.favoriteTags {
+  display: flex;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+
+.favoriteTag {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  background: $color-bg-muted;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+}
+
+.favoritePrice {
+  display: flex;
+  align-items: baseline;
+  margin-right: 20rpx;
+}
+
+.favoritePriceValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-price;
+}
+
+.favoritePriceUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-left: 4rpx;
+}
+
+.favoriteRemove {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: $color-bg-muted;
+  @include flex-center;
+}
+
+.removeIcon {
+  font-size: 32rpx;
+  color: $color-text-tertiary;
+}
+
+.emptySection {
+  margin: 60rpx $page-padding;
+  padding: 60rpx;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 64rpx;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  display: block;
+}
+
+.emptyHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: 8rpx;
+}
+
+.bottomBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 24rpx $page-padding calc(24rpx + env(safe-area-inset-bottom));
+  background: $color-bg-card;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.loginButton {
+  @include button-reset;
+  width: 100%;
+  height: $button-height-lg;
+  background: $color-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
 }

@@ -1,0 +1,111 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  padding: 32rpx $page-padding;
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.daySelector {
+  display: flex;
+  padding: 16rpx $page-padding;
+  background: $color-bg-card;
+  gap: 8rpx;
+}
+
+.dayItem {
+  flex: 1;
+  padding: 12rpx 0;
+  border-radius: $radius-md;
+  text-align: center;
+  background: $color-bg-muted;
+}
+
+.dayActive {
+  background: $color-primary;
+  
+  .dayText {
+    color: $color-text-white;
+  }
+}
+
+.dayText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.scrollContent {
+  padding-bottom: 120rpx;
+}
+
+.timeList {
+  padding: 24rpx $page-padding;
+}
+
+.timeItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  border-radius: $radius-md;
+  margin-bottom: 16rpx;
+}
+
+.timeAvailable {
+  background: $color-bg-card;
+}
+
+.timeUnavailable {
+  background: $color-bg-muted;
+  
+  .timeText {
+    text-decoration: line-through;
+    color: $color-text-tertiary;
+  }
+  
+  .timeStatus {
+    color: $color-text-tertiary;
+  }
+}
+
+.timeText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.timeStatus {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+.tips {
+  text-align: center;
+  padding: 32rpx;
+}
+
+.tipsText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.unauthorized {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+  
+  .unauthorizedText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}
