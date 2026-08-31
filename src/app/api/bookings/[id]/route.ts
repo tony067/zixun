@@ -1,70 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
-import { bookings } from "@/lib/db/schema/scheduling";
-import { users } from "@/lib/db/schema/users";
+import { bookings } from "@/lib/db/schema";
 import { counselors } from "@/lib/db/schema/counselors";
+import { users } from "@/lib/db/schema/users";
 import { eq } from "drizzle-orm";
-import { updateBookingStatus } from "@/lib/db/queries/bookings";
-import {
-  notifyClientBookingConfirmed,
-  notifyClientRescheduleResult,
-  notifyCounselorBookingCancelled,
-} from "@/lib/notifications/notify";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth(req);
-  if (!auth.ok) return auth.response;
-  const { id } = await params;
-  const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
-  if (!booking) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const [counselor] = await db.select({
-    id: counselors.id, displayName: counselors.displayName,
-    counselorTypes: counselors.counselorTypes, avatarUrl: counselors.avatarUrl,
-  }).from(counselors).where(eq(counselors.id, booking.counselorId));
-  return NextResponse.json({ booking: { ...booking, counselor: counselor ?? null } });
-}
-
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const r = await requireAuth(req);
   if (!r.ok) return r.response;
   const { id } = await params;
-  const { status, counselorNote } = await req.json();
-  const updated = await updateBookingStatus(id, status, counselorNote);
 
-  // 咨询师接受预约时，把来访填的表单同步到用户档案（applicationForm 字段）
-  if (status === "confirmed") {
-    try {
-      const [bk] = await db.select({ clientId: bookings.clientId, applicationForm: bookings.applicationForm })
-        .from(bookings).where(eq(bookings.id, id));
-      if (bk?.clientId && bk.applicationForm) {
-        await db.update(users)
-          .set({ updatedAt: new Date() })
-          .where(eq(users.id, bk.clientId));
-        // 存入 users 表 extra JSON 字段（如果表没有此字段则此行静默忽略）
-      }
-    } catch (e) { console.error("[archive-sync]", e); }
+  const [row] = await db.select().from(bookings).where(eq(bookings.id, id));
+  if (!row) return NextResponse.json({ error: "not found" }, { status: 404 });
+
+  // 权限：来访者本人或咨询师本人或管理员可看
+  const isOwner = row.clientId === r.user.id;
+  let isCounselor = false;
+  if (!isOwner && row.counselorId) {
+    const [c] = await db.select().from(counselors).where(eq(counselors.id, row.counselorId));
+    isCounselor = c?.userId === r.user.id;
+  }
+  const isAdmin = r.user.role === "admin";
+  if (!isOwner && !isCounselor && !isAdmin) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  // 触发通知（不影响主流程）
-  try {
-    const [bk] = await db.select().from(bookings).where(eq(bookings.id, id));
-    const [c] = await db.select().from(counselors).where(eq(counselors.id, bk?.counselorId ?? ""));
-    const counselorName = c?.displayName ?? "咨询师";
-    const scheduledAt = bk?.scheduledAt
-      ? new Date(bk.scheduledAt).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })
-      : "";
+  // 关联咨询师信息
+  let counselorInfo: any = null;
+  if (row.counselorId) {
+    const [c] = await db.select().from(counselors).where(eq(counselors.id, row.counselorId));
+    if (c) {
+      counselorInfo = {
+        id: c.id,
+        displayName: c.displayName,
+        avatarUrl: c.avatarUrl,
+        counselorTypes: c.counselorTypes,
+      };
+    }
+  }
 
-    if (status === "pending_payment" && bk?.clientId) {
-      await notifyClientBookingConfirmed({ clientUserId: bk.clientId, counselorName, scheduledAt, bookingId: id });
-    }
-    if (status === "cancelled" && c?.userId) {
-      await notifyCounselorBookingCancelled({ counselorUserId: c.userId, clientName: "来访者", scheduledAt, bookingId: id });
-    }
-    if ((status === "reschedule_accepted" || status === "reschedule_rejected") && bk?.clientId) {
-      await notifyClientRescheduleResult({ clientUserId: bk.clientId, counselorName, accepted: status === "reschedule_accepted", newTime: scheduledAt, bookingId: id });
-    }
-  } catch (e) { console.error("[notify]", e); }
-
-  return NextResponse.json(updated);
+  return NextResponse.json({
+    id: row.id,
+    status: row.status,
+    scheduledAt: row.scheduledAt,
+    durationMinutes: row.durationMinutes ?? 50,
+    sessionMode: row.sessionMode ?? "video",
+    priceAmount: row.priceAmount ?? 0,
+    sessionNumber: row.sessionNumber ?? 1,
+    applicationForm: row.applicationForm,
+    agreementSigned: row.agreementSigned,
+    createdAt: row.createdAt,
+    clientNote: row.clientNote,
+    counselor: counselorInfo,
+  });
 }

@@ -127,7 +127,7 @@ export default function MyBookingsScreen() {
 
   useEffect(() => {
     if (!user) return;
-    request("/api/bookings/my").then(r => r.json()).then(d => {
+    request("/api/bookings").then(r => r.json()).then(d => {
       setAllBookings(Array.isArray(d) ? d : []);
     }).finally(() => setLoading(false));
   }, [user]);

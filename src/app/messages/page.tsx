@@ -9,6 +9,7 @@ import { request } from "@/lib/api/request";
 type Conv = {
   conv: { id: string; lastMessageAt: string };
   otherUser: { id: string; name: string | null; email: string | null } | null;
+  unreadCount?: number;
 };
 
 function timeAgo(dateStr: string) {
@@ -100,7 +101,7 @@ function MessagesPageInner() {
         </div>
       ) : (
         <div className="px-4 pt-4 space-y-2">
-          {convs.map(({ conv, otherUser }) => {
+          {convs.map(({ conv, otherUser, unreadCount }) => {
             if (!otherUser) return null;
             const name = otherUser.name || otherUser.email?.split("@")[0] || "用户";
             return (
@@ -116,7 +117,13 @@ function MessagesPageInner() {
                   </div>
                   <p className="text-xs truncate" style={{ color: "#9B8E82" }}>点击查看对话</p>
                 </div>
-                <ChevronRight className="w-4 h-4 flex-none" style={{ color: "#C4BDB5" }} />
+                {unreadCount && unreadCount > 0 ? (
+                  <span className="flex-none min-w-[20px] h-[20px] px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                ) : (
+                  <ChevronRight className="w-4 h-4 flex-none" style={{ color: "#C4BDB5" }} />
+                )}
               </motion.button>
             );
           })}

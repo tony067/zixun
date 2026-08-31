@@ -62,24 +62,10 @@ export const STEPS = [
   { num: 4, label: "支付" },
 ];
 
-/** 根据咨询师档期规则，生成未来14天的可约时段（模拟） */
-export function generateMockSlots(days: Date[]): Record<string, TimeSlot[]> {
-  const result: Record<string, TimeSlot[]> = {};
-  const morning = [{ start: "09:00", end: "09:50" }, { start: "10:00", end: "10:50" }, { start: "11:00", end: "11:50" }];
-  const afternoon = [{ start: "14:00", end: "14:50" }, { start: "15:00", end: "15:50" }, { start: "16:00", end: "16:50" }];
-  const evening = [{ start: "19:00", end: "19:50" }, { start: "20:00", end: "20:50" }];
-
-  days.forEach((d, i) => {
-    const key = d.toISOString().slice(0, 10);
-    const all = [
-      ...morning.map((t, j) => ({ id: `${key}-m${j}`, ...t, period: "morning" as const, available: Math.random() > 0.3 })),
-      ...afternoon.map((t, j) => ({ id: `${key}-a${j}`, ...t, period: "afternoon" as const, available: Math.random() > 0.3 })),
-      ...evening.map((t, j) => ({ id: `${key}-e${j}`, ...t, period: "evening" as const, available: i % 3 !== 0 })),
-    ];
-    result[key] = all;
-  });
-  return result;
-}
+/**
+ * 已废弃：原 generateMockSlots（假数据）已删除
+ * 真实档期数据请通过 /api/counselors/[id]/available-slots 拉取
+ */
 
 export function getNextDays(n = 14): Date[] {
   const days: Date[] = [];

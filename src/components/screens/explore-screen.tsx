@@ -251,6 +251,7 @@ export function ExploreScreen() {
   const [showFilter, setShowFilter] = useState(false);
   const [filterTab, setFilterTab] = useState<string | null>(null);
 
+  const [filterProvince, setFilterProvince] = useState("");
   const [filterCity, setFilterCity] = useState("");
   const [filterPrice, setFilterPrice] = useState("");
   const [filterTime, setFilterTime] = useState("");
@@ -279,10 +280,16 @@ export function ExploreScreen() {
       else if (activeCategory === "ASD") { if (!c.specialties?.some(s => s.includes("ASD") || s.includes("自闭"))) return false; }
       else { if (!c.counselorTypes?.includes(activeCategory) && !c.specialties?.includes(activeCategory)) return false; }
     }
-    if (filterCity && filterCity !== "全国/线上") {
-      const matchNames = getCitiesForProvince(filterCity);
-      const loc = c.location ?? "";
-      if (!matchNames.some(n => loc.includes(n) || n.includes(loc))) return false;
+    if (filterProvince && filterProvince !== "全国/线上") {
+      if (filterCity) {
+        if (!c.location?.includes(filterCity)) return false;
+      } else {
+        const matchNames = getCitiesForProvince(filterProvince);
+        const loc = c.location ?? "";
+        if (!matchNames.some(n => loc.includes(n))) return false;
+      }
+    } else if (filterCity && filterCity !== "全国/线上") {
+      if (!c.location?.includes(filterCity)) return false;
     }
     if (filterPrice && filterPrice !== "不限") {
       const price = c.pricePerSession;
@@ -309,7 +316,7 @@ export function ExploreScreen() {
     return true;
   });
 
-  const activeFilterCount = (filterCity && filterCity !== "全国/线上" ? 1 : 0)
+  const activeFilterCount = ((filterProvince && filterProvince !== "全国/线上") || (filterCity && filterCity !== "全国/线上") ? 1 : 0)
     + (filterPrice && filterPrice !== "不限" ? 1 : 0)
     + (filterTime ? 1 : 0)
     + (filterGender && filterGender !== "不限" ? 1 : 0)
@@ -319,6 +326,7 @@ export function ExploreScreen() {
   const hasFilters = activeFilterCount > 0 || activeCategory || search;
 
   const clearFilters = () => {
+    setFilterProvince("");
     setFilterCity("");
     setFilterPrice("");
     setFilterTime("");
@@ -458,7 +466,7 @@ export function ExploreScreen() {
 
         <div className="flex items-center gap-1.5 mb-3">
           {[
-            { key: "city",      label: filterCity || "地区",      active: !!filterCity },
+            { key: "city",      label: filterCity || filterProvince || "地区",      active: !!(filterCity || filterProvince) },
             { key: "price",     label: filterPrice || "价格",     active: !!filterPrice },
             { key: "direction", label: filterDir.length ? `方向(${filterDir.length})` : "咨询方向", active: filterDir.length > 0 },
           ].map(f => (
@@ -509,7 +517,7 @@ export function ExploreScreen() {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowFilter(false)} />
             <motion.div
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl"
+              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl flex flex-col"
               style={{ background: "#FDFBF7", maxHeight: "85svh" }}
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 34 }}
@@ -517,30 +525,58 @@ export function ExploreScreen() {
               onDragEnd={(_e, info) => { if (info.offset.y > 60) setShowFilter(false); }}
             >
               <div className="w-10 h-1 rounded-full mx-auto mt-3 mb-1" style={{ background: "#DDD8D0" }} />
-              <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: "#EBE7DF" }}>
+              <div className="flex items-center justify-between px-5 py-3 border-b flex-none" style={{ borderColor: "#EBE7DF" }}>
                 <span className="text-base font-semibold" style={{ color: "#2C2420" }}>筛选</span>
                 <button onClick={() => setShowFilter(false)} className="w-8 h-8 flex items-center justify-center rounded-full"
                   style={{ background: "#F5F1E8" }}>
                   <X className="w-4 h-4" style={{ color: "#7D736A" }} />
                 </button>
               </div>
-              <div className="overflow-y-auto px-5 py-4" style={{ maxHeight: "calc(85svh - 100px)" }}>
+              <div className="overflow-y-auto px-5 py-4 flex-1">
                 <div className="space-y-5">
                   {(filterTab === null || filterTab === "city") && (
                     <div>
                       <h3 className="text-sm font-semibold mb-3" style={{ color: "#2C2420" }}>地区</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {displayProvinces.map(p => (
-                          <OptionPill key={p} label={p}
-                            active={filterCity === p}
-                            onToggle={() => setFilterCity(filterCity === p ? "" : p)} />
-                        ))}
-                      </div>
-                      {PROVINCES.length > displayProvinces.length && (
-                        <button onClick={() => setShowMoreProvinces(!showMoreProvinces)}
-                          className="flex items-center gap-1 text-xs mt-2" style={{ color: "#9CB48A" }}>
-                          {showMoreProvinces ? "收起" : "更多"}<ChevronRight className="w-3 h-3" />
-                        </button>
+                      {!filterProvince || filterProvince === "全国/线上" ? (
+                        <>
+                          <div className="flex flex-wrap gap-2">
+                            {displayProvinces.map(p => (
+                              <OptionPill key={p} label={p}
+                                active={filterProvince === p}
+                                onToggle={() => {
+                                  setFilterProvince(p);
+                                  setFilterCity("");
+                                  if (filterTab === "city") setShowFilter(false);
+                                }} />
+                            ))}
+                          </div>
+                          {PROVINCES.length > displayProvinces.length && (
+                            <button onClick={() => setShowMoreProvinces(!showMoreProvinces)}
+                              className="flex items-center gap-1 text-xs mt-2" style={{ color: "#9CB48A" }}>
+                              {showMoreProvinces ? "收起" : "更多"}<ChevronRight className="w-3 h-3" />
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2 mb-3">
+                            <button onClick={() => { setFilterProvince(""); setFilterCity(""); }}
+                              className="text-xs flex items-center gap-0.5" style={{ color: "#9CB48A" }}>
+                              <ChevronRight className="w-3 h-3 rotate-180" />返回省份
+                            </button>
+                            <span className="text-xs" style={{ color: "#7D736A" }}>已选：{filterProvince}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {getCitiesForProvince(filterProvince).map(city => (
+                              <OptionPill key={city} label={city}
+                                active={filterCity === city}
+                                onToggle={() => {
+                                  setFilterCity(city);
+                                  if (filterTab === "city") setShowFilter(false);
+                                }} />
+                            ))}
+                          </div>
+                        </>
                       )}
                     </div>
                   )}
@@ -552,7 +588,10 @@ export function ExploreScreen() {
                         {PRICE_OPTIONS.map(p => (
                           <OptionPill key={p} label={p}
                             active={filterPrice === p}
-                            onToggle={() => setFilterPrice(filterPrice === p ? "" : p)} />
+                            onToggle={() => {
+                              setFilterPrice(p);
+                              if (filterTab === "price") setShowFilter(false);
+                            }} />
                         ))}
                       </div>
                     </div>
@@ -591,7 +630,10 @@ export function ExploreScreen() {
                         {DIRECTION_OPTIONS.map(d => (
                           <OptionPill key={d} label={d}
                             active={filterDir.includes(d)}
-                            onToggle={() => setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])} />
+                            onToggle={() => {
+                              setFilterDir(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]);
+                              if (filterTab === "direction") setShowFilter(false);
+                            }} />
                         ))}
                       </div>
                     </div>
@@ -612,20 +654,22 @@ export function ExploreScreen() {
                 </div>
               </div>
 
-              <div className="px-5 py-4 border-t" style={{ borderColor: "#EBE7DF", background: "#FDFBF7" }}>
-                <div className="flex gap-3">
-                  <button onClick={clearFilters}
-                    className="flex-1 py-3 rounded-2xl text-sm font-semibold"
-                    style={{ background: "#F5F1E8", color: "#7D736A", border: "1px solid #DDD8D0" }}>
-                    清除全部
-                  </button>
-                  <button onClick={applyFilters}
-                    className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white"
-                    style={{ background: "#9CB48A" }}>
-                    应用筛选
-                  </button>
+              {filterTab === null && (
+                <div className="px-5 py-4 border-t flex-none" style={{ borderColor: "#EBE7DF", background: "#FDFBF7" }}>
+                  <div className="flex gap-3">
+                    <button onClick={clearFilters}
+                      className="flex-1 py-3 rounded-2xl text-sm font-semibold"
+                      style={{ background: "#F5F1E8", color: "#7D736A", border: "1px solid #DDD8D0" }}>
+                      清除全部
+                    </button>
+                    <button onClick={applyFilters}
+                      className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white"
+                      style={{ background: "#9CB48A" }}>
+                      应用筛选
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           </>
         )}

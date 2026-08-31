@@ -61,6 +61,12 @@ export function ChatScreen() {
 
   useEffect(()=>{ load(); },[convId, user]);
 
+  // 进入会话时：标记所有"别人发的"消息为已读
+  useEffect(() => {
+    if (!user || !convId) return;
+    request(`/api/messages/${convId}/read`, { method: "POST" }).catch(() => {});
+  }, [convId, user]);
+
   // 5秒轮询
   useEffect(()=>{
     const t = setInterval(load, 5000);

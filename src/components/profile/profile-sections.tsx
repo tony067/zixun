@@ -223,9 +223,10 @@ export function SectionContent({ skey, form, setForm }: {
                   <div className="flex gap-3">
                     <div className="flex-1">
                       <p className="text-[10px] text-[#9B8E82] mb-0.5">时长（分钟）</p>
-                      <input value={opt.duration} onChange={e => {
+                      <input value={opt.duration === 0 ? "" : String(opt.duration)} onChange={e => {
                         const opts = [...form.pricingOptions];
-                        opts[idx] = { ...opts[idx], duration: parseInt(e.target.value) || 0 };
+                        const v = e.target.value;
+                        opts[idx] = { ...opts[idx], duration: v === "" ? 0 : (parseInt(v) || 0) };
                         set("pricingOptions", opts);
                       }}
                         type="number" placeholder="50"
@@ -233,9 +234,10 @@ export function SectionContent({ skey, form, setForm }: {
                     </div>
                     <div className="flex-1">
                       <p className="text-[10px] text-[#9B8E82] mb-0.5">次数</p>
-                      <input value={opt.sessions} onChange={e => {
+                      <input value={opt.sessions === 0 ? "" : String(opt.sessions)} onChange={e => {
                         const opts = [...form.pricingOptions];
-                        opts[idx] = { ...opts[idx], sessions: parseInt(e.target.value) || 1 };
+                        const v = e.target.value;
+                        opts[idx] = { ...opts[idx], sessions: v === "" ? 0 : (parseInt(v) || 0) };
                         set("pricingOptions", opts);
                       }}
                         type="number" placeholder="1"
@@ -243,9 +245,10 @@ export function SectionContent({ skey, form, setForm }: {
                     </div>
                     <div className="flex-1">
                       <p className="text-[10px] text-[#9B8E82] mb-0.5">价格（元）</p>
-                      <input value={opt.price} onChange={e => {
+                      <input value={opt.price === 0 ? "" : String(opt.price)} onChange={e => {
                         const opts = [...form.pricingOptions];
-                        opts[idx] = { ...opts[idx], price: parseInt(e.target.value) || 0 };
+                        const v = e.target.value;
+                        opts[idx] = { ...opts[idx], price: v === "" ? 0 : (parseInt(v) || 0) };
                         set("pricingOptions", opts);
                       }}
                         type="number" placeholder="400"

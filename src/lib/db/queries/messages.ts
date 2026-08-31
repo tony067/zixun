@@ -1,6 +1,6 @@
 import { db } from "@/lib/db/client";
 import { conversations, messages, users } from "@/lib/db/schema";
-import { eq, or, and, desc } from "drizzle-orm";
+import { eq, or, and, desc, sql, ne } from "drizzle-orm";
 
 export async function getOrCreateConversation(userAId: string, userBId: string) {
   const [existing] = await db.select().from(conversations)
@@ -18,6 +18,16 @@ export async function getOrCreateConversation(userAId: string, userBId: string) 
 }
 
 export async function getUserConversations(userId: string) {
+  // 每个会话：未读数 = 不是我发且 isRead=false 的消息数
+  const unreadSub = db.select({
+    conversationId: messages.conversationId,
+    cnt: sql<number>`count(*)::int`.as("cnt"),
+  })
+  .from(messages)
+  .where(and(eq(messages.isRead, false), ne(messages.senderId, userId)))
+  .groupBy(messages.conversationId)
+  .as("unread");
+
   const rows = await db.select({
     conv: conversations,
     otherUser: {
@@ -26,15 +36,44 @@ export async function getUserConversations(userId: string) {
       email: users.email,
       avatarUrl: users.avatarUrl,
     },
+    unreadCount: sql<number>`coalesce(${unreadSub.cnt}, 0)`.as("unreadCount"),
   })
   .from(conversations)
   .leftJoin(users, or(
     and(eq(conversations.participantAId, userId), eq(users.id, conversations.participantBId)),
     and(eq(conversations.participantBId, userId), eq(users.id, conversations.participantAId)),
   ))
+  .leftJoin(unreadSub, eq(unreadSub.conversationId, conversations.id))
   .where(or(eq(conversations.participantAId, userId), eq(conversations.participantBId, userId)))
   .orderBy(desc(conversations.lastMessageAt));
   return rows;
+}
+
+/** 总未读消息数（用于底部导航红点） */
+export async function getTotalUnreadCount(userId: string) {
+  const [row] = await db.select({ cnt: sql<number>`count(*)::int` })
+    .from(messages)
+    .innerJoin(conversations, eq(conversations.id, messages.conversationId))
+    .where(and(
+      eq(messages.isRead, false),
+      ne(messages.senderId, userId),
+      or(
+        eq(conversations.participantAId, userId),
+        eq(conversations.participantBId, userId),
+      ),
+    ));
+  return row?.cnt ?? 0;
+}
+
+/** 标记某个会话的所有"别人发的"消息为已读 */
+export async function markConversationRead(conversationId: string, userId: string) {
+  await db.update(messages)
+    .set({ isRead: true })
+    .where(and(
+      eq(messages.conversationId, conversationId),
+      eq(messages.isRead, false),
+      ne(messages.senderId, userId),
+    ));
 }
 
 export async function getConversationMessages(conversationId: string) {

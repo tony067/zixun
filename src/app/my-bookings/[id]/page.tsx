@@ -129,8 +129,8 @@ export default function BookingDetailPage() {
 
   useEffect(() => {
     request(`/api/bookings/${id}`).then(r => r.json()).then(d => {
-      setBk(d.booking ?? d ?? null);
-    }).finally(() => setLoading(false));
+      setBk(d?.booking ?? d ?? null);
+    }).catch(() => {}).finally(() => setLoading(false));
   }, [id]);
 
   const copy = (text: string) => {

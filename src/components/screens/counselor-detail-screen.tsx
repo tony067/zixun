@@ -8,18 +8,23 @@ import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 
 // ── 可预约时间弹窗组件 ──
+type DaySlots = { date: string; label: string; weekday: string; slots: string[] };
+
 function AvailableTimesButton({ counselorId, isAccepting }: { counselorId: string; isAccepting: boolean }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const [days, setDays] = useState<DaySlots[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const WEEKDAY = ["日","一","二","三","四","五","六"];
-  const days7 = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(); d.setDate(d.getDate() + i + 1);
-    const label = `周${WEEKDAY[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}`;
-    const slots = i % 3 === 2 ? [] :
-      i % 2 === 0 ? ["09:00","14:00","16:00"] : ["10:00","15:00"];
-    return { label, slots };
-  }).filter(d => d.slots.length > 0);
+  useEffect(() => {
+    if (!open || !isAccepting) return;
+    setLoading(true);
+    fetch(`/api/counselors/${counselorId}/available-slots`)
+      .then(r => r.json())
+      .then(d => setDays(Array.isArray(d?.days) ? d.days : []))
+      .catch(() => setDays([]))
+      .finally(() => setLoading(false));
+  }, [open, counselorId, isAccepting]);
 
   if (!isAccepting) {
     return (
@@ -33,6 +38,8 @@ function AvailableTimesButton({ counselorId, isAccepting }: { counselorId: strin
     );
   }
 
+  const hasAny = days.some(d => d.slots.length > 0);
+
   return (
     <div className="mt-3">
       <button onClick={() => setOpen(v => !v)}
@@ -45,15 +52,17 @@ function AvailableTimesButton({ counselorId, isAccepting }: { counselorId: strin
       {open && (
         <div className="mt-2 rounded-2xl overflow-hidden" style={{border:"1px solid #EBE7DF",background:"white"}}>
           <div className="px-4 pt-4 pb-2 space-y-3">
-            {days7.length === 0 ? (
+            {loading ? (
+              <p className="text-sm text-center py-4" style={{color:"#9B8E82"}}>加载中…</p>
+            ) : !hasAny ? (
               <p className="text-sm text-center py-4" style={{color:"#9B8E82"}}>暂无可预约时段，可与咨询师协调时间</p>
-            ) : days7.map(day => (
-              <div key={day.label}>
-                <p className="text-xs font-semibold mb-2" style={{color:"#9B8E82"}}>{day.label}</p>
+            ) : days.filter(d => d.slots.length > 0).map(day => (
+              <div key={day.date}>
+                <p className="text-xs font-semibold mb-2" style={{color:"#9B8E82"}}>{day.weekday} {day.label}</p>
                 <div className="flex flex-wrap gap-2">
                   {day.slots.map(slot => (
                     <button key={slot}
-                      onClick={() => router.push(`/booking/${counselorId}`)}
+                      onClick={() => router.push(`/booking/${counselorId}?date=${day.date}&time=${slot}`)}
                       className="px-3.5 py-1.5 rounded-full text-sm font-medium border"
                       style={{background:"#E4F0DC",color:"#3A6228",borderColor:"#CCE0C0"}}>
                       {slot}

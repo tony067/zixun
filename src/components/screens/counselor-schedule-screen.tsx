@@ -404,11 +404,12 @@ const EMPTY: NewRule = {
 
 function RulesPanel({ rules, onAdd, onDelete, saving }: {
   rules: Rule[]; saving: boolean;
-  onAdd: (r: NewRule) => Promise<void>;
+  onAdd: (r: NewRule) => Promise<string | null>;
   onDelete: (id: string) => Promise<void>;
 }) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<NewRule>({ ...EMPTY });
+  const [error, setError] = useState("");
   const set = <K extends keyof NewRule>(k: K, v: NewRule[K]) => setForm(p => ({ ...p, [k]: v }));
   const toggleDay = (i: number) => set("weekdays",
     form.weekdays.includes(i) ? form.weekdays.filter(d => d !== i) : [...form.weekdays, i].sort());
@@ -417,7 +418,12 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
   const actualDur = form.durationMinutes === "custom" ? (parseInt(form.customDuration) || 50) : form.durationMinutes;
 
   const submit = async () => {
-    await onAdd({ ...form, durationMinutes: actualDur as number });
+    setError("");
+    const err = await onAdd({ ...form, durationMinutes: actualDur as number });
+    if (err) {
+      setError(err);
+      return;
+    }
     setForm({ ...EMPTY }); setShowForm(false);
   };
 
@@ -598,6 +604,11 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
                       : `${form.date} ${form.startTime}，时长 ${actualDur} 分钟`}
                   </div>
                 )}
+                {error && (
+                  <div className="px-3 py-2.5 rounded-xl text-sm" style={{ background: "#FEE2E2", color: "#DC2626" }}>
+                    {error}
+                  </div>
+                )}
                 <div className="flex gap-3 pt-2">
                   <button onClick={() => setShowForm(false)}
                     className="flex-1 h-12 rounded-2xl text-sm font-medium"
@@ -662,16 +673,23 @@ export function CounselorScheduleScreen() {
 
   useEffect(() => { loadRules(); }, [loadRules]);
 
-  const handleAdd = async (r: NewRule) => {
+  const handleAdd = async (r: NewRule): Promise<string | null> => {
     setSaving(true);
     try {
       const actual = r.durationMinutes === "custom" ? parseInt((r as any).customDuration) || 50 : r.durationMinutes;
-      await request("/api/counselor/schedule", {
+      const res = await request("/api/counselor/schedule", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...r, durationMinutes: actual }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        return data.message || data.error || `保存失败 (${res.status})`;
+      }
       await loadRules();
+      return null;
+    } catch (e: any) {
+      return e?.message ?? "网络错误，请重试";
     } finally { setSaving(false); }
   };
 

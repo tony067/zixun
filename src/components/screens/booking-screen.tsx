@@ -177,6 +177,7 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
         )}
         {step === 1 && (
           <Step1Time
+            counselorId={counselorId}
             sessionModes={sessionModes}
             durationMinutes={(counselor.pricingOptions && counselor.pricingOptions.length > 0
               ? counselor.pricingOptions[selectedPricing].duration

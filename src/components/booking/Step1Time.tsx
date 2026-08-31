@@ -1,12 +1,13 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  getNextDays, generateMockSlots, TimeSlot,
+  getNextDays, TimeSlot,
   WEEKDAY_LABELS, PERIOD_LABELS,
 } from "@/lib/booking-flow-data";
 
 interface Props {
+  counselorId: string;
   sessionModes: string[];
   durationMinutes: number;
   onNext: (data: { mode: string; date: Date; slot: TimeSlot }) => void;
@@ -57,9 +58,40 @@ const PERIOD_SVG: Record<string, React.ReactNode> = {
   ),
 };
 
-export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
-  const days = useMemo(() => getNextDays(14), []);
-  const slots = useMemo(() => generateMockSlots(days), [days]);
+export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }: Props) {
+  const days = getNextDays(14);
+  const [apiDays, setApiDays] = useState<{ date: string; label: string; weekday: string; slots: string[] }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [slots, setSlots] = useState<Record<string, TimeSlot[]>>({});
+
+  useEffect(() => {
+    fetch(`/api/counselors/${counselorId}/available-slots`)
+      .then(r => r.json())
+      .then(d => {
+        const arr: { date: string; label: string; weekday: string; slots: string[] }[] = Array.isArray(d?.days) ? d.days : [];
+        setApiDays(arr);
+        // 转成 slots 字典
+        const out: Record<string, TimeSlot[]> = {};
+        for (const day of arr) {
+          out[day.date] = day.slots.map((time) => {
+            const [h, m] = time.split(":").map(Number);
+            const startMin = h * 60 + (m || 0);
+            const endMin = startMin + durationMinutes;
+            const endH = Math.floor(endMin / 60);
+            const endM = endMin % 60;
+            const end = `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
+            const period: TimeSlot["period"] = startMin < 12 * 60 ? "morning" : startMin < 18 * 60 ? "afternoon" : "evening";
+            return { id: `${day.date}-${time}`, start: time, end, period, available: true };
+          });
+        }
+        setSlots(out);
+        // 默认选中第一个有可约时段的日子
+        const firstDay = days.find(d => (out[d.toISOString().slice(0, 10)] ?? []).length > 0);
+        if (firstDay) setSelectedDay(firstDay);
+      })
+      .catch(() => setApiDays([]))
+      .finally(() => setLoading(false));
+  }, [counselorId, durationMinutes]);
 
   const [selectedMode, setSelectedMode] = useState<string | null>(
     sessionModes[0] ?? null
@@ -174,9 +206,17 @@ export function Step1Time({ sessionModes, durationMinutes, onNext }: Props) {
         </div>
 
         {/* 时段列表 */}
-        <SlotGroup label="上午" period="morning"   items={morning}   />
-        <SlotGroup label="下午" period="afternoon" items={afternoon} />
-        <SlotGroup label="晚间" period="evening"   items={evening}   />
+        {loading ? (
+          <p className="text-sm text-center py-6" style={{ color: "#9B8E82" }}>加载可预约时段…</p>
+        ) : (morning.length === 0 && afternoon.length === 0 && evening.length === 0) ? (
+          <p className="text-sm text-center py-6" style={{ color: "#9B8E82" }}>该咨询师暂未设置可预约时间，可与咨询师协调</p>
+        ) : (
+          <>
+            <SlotGroup label="上午" period="morning"   items={morning}   />
+            <SlotGroup label="下午" period="afternoon" items={afternoon} />
+            <SlotGroup label="晚间" period="evening"   items={evening}   />
+          </>
+        )}
 
         {/* 与咨询师协调时间 — 内嵌展开区域（参考截图） */}
         <div className="mt-2 mb-4">

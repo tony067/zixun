@@ -10,6 +10,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
+import { useUnreadCount } from "@/hooks/use-unread-count";
 
 const CLIENT_TABS = [
   { href: "/",            icon: Home,          label: "首页" },
@@ -108,6 +109,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
   const { user } = useAuth();
+  const unread = useUnreadCount(15000);
 
   // 根据数据库里的 role 字段决定用户能看到哪些端口
   const userDbRole = (user as any)?.role ?? "visitor";
@@ -170,9 +172,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             if (userDbRole === "counselor") {
               return COUNSELOR_TABS.map(tab => {
                 const isActive = pathname === tab.href || pathname.startsWith(tab.href);
+                const showDot = tab.href === "/counselor/messages" && unread > 0;
                 return (
-                  <Link key={tab.href} href={tab.href} className="flex-1 flex flex-col items-center gap-0.5 py-1">
-                    <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
+                  <Link key={tab.href} href={tab.href} className="relative flex-1 flex flex-col items-center gap-0.5 py-1">
+                    <div className="relative">
+                      <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
+                      {showDot && (
+                        <span className="absolute -top-0.5 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                          {unread > 99 ? "99+" : unread}
+                        </span>
+                      )}
+                    </div>
                     <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>{tab.label}</span>
                   </Link>
                 );
@@ -205,9 +215,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <>
                 {CLIENT_TABS.map(tab => {
                   const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
+                  const showDot = tab.href === "/messages" && unread > 0;
                   return (
-                    <Link key={tab.href} href={tab.href} className="flex-1 flex flex-col items-center gap-0.5 py-1">
-                      <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
+                    <Link key={tab.href} href={tab.href} className="relative flex-1 flex flex-col items-center gap-0.5 py-1">
+                      <div className="relative">
+                        <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
+                        {showDot && (
+                          <span className="absolute -top-0.5 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                            {unread > 99 ? "99+" : unread}
+                          </span>
+                        )}
+                      </div>
                       <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>{tab.label}</span>
                     </Link>
                   );

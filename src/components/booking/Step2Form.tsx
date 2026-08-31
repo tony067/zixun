@@ -38,25 +38,25 @@ function YesNo({ value, onChange }: { value: boolean; onChange: (v: boolean) => 
 const AGREE_LINES = [
   "MindPace 用户服务协议",
   "",
-  "欢迎使用 MindPace 心理咋询平台。在您提交预约前，请仔细阅读以下条款。提交预约即表示您已阅读、理解并同意本协议的全部内容。",
+  "欢迎使用 MindPace 心理咨询平台。在您提交预约前，请仔细阅读以下条款。提交预约即表示您已阅读、理解并同意本协议的全部内容。",
   "",
   "一、平台服务说明",
-  "MindPace 作为第三方心理咋询预约平台，负责为用户提供咋询师匹配、预约管理及订单处理服务。平台对入驻咋询师进行资质审核，但咋询服务由咋询师本人独立提供，平台不对具体咋询过程及效果作出保证。",
+  "MindPace 作为第三方心理咨询预约平台，负责为用户提供咨询师匹配、预约管理及订单处理服务。平台对入驻咨询师进行资质审核，但咨询服务由咨询师本人独立提供，平台不对具体咨询过程及效果作出保证。",
   "",
   "二、用户信息保护",
-  "您填写的个人信息（包括姓名、手机号、咋询目的等）仅用于本次预约及相关服务，平台将依据适用法律法规妥善保管，未经您同意不会向第三方披露。以下情况除外：您主动同意公开；存在伤害自身或他人的紧迫危险；法律法规要求强制披露。",
+  "您填写的个人信息（包括姓名、手机号、咨询目的等）仅用于本次预约及相关服务，平台将依据适用法律法规妥善保管，未经您同意不会向第三方披露。以下情况除外：您主动同意公开；存在伤害自身或他人的紧迫危险；法律法规要求强制披露。",
   "",
   "三、预约与取消政策",
-  "预约提交后须在咋询师确认前完成取消操作，否则视为有效预约。确认后如需取消或改期，请至少提前 24 小时通知，24 小时内取消可能不予退款。具体退款规则以平台当时公示的政策为准。",
+  "预约提交后须在咨询师确认前完成取消操作，否则视为有效预约。确认后如需取消或改期，请至少提前 24 小时通知，24 小时内取消可能不予退款。具体退款规则以平台当时公示的政策为准。",
   "",
   "四、费用与支付",
-  "咋询费用以预约时页面展示为准。平台负责收款，咋询完成后按约定比例结算给咋询师。",
+  "咨询费用以预约时页面展示为准。平台负责收款，咨询完成后按约定比例结算给咨询师。",
   "",
   "五、紧急情况声明",
-  "本平台提供的心理咋询服务不属于危机干预或紧急医疗服务。若您或他人处于紧急危险中，请立即拨打 110、120 或心理援助热线 400-161-9995。",
+  "本平台提供的心理咨询服务不属于危机干预或紧急医疗服务。若您或他人处于紧急危险中，请立即拨打 110、120 或心理援助热线 400-161-9995。",
   "",
   "六、免责声明",
-  "因不可抗力、咋询师个人原因或用户自身原因导致的咋询中断或效果不达预期，平台不承担连带责任，但将协助用户进行合理维权。",
+  "因不可抗力、咨询师个人原因或用户自身原因导致的咨询中断或效果不达预期，平台不承担连带责任，但将协助用户进行合理维权。",
   "",
   "七、协议修改",
   "平台保留在法律允许范围内修改本协议的权利，修改后将在平台显著位置公示。继续使用平台服务视为接受修改后的协议。",
@@ -106,7 +106,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
       return;
     }
     if (form.purposes.length === 0) {
-      setErrorMsg("请至少选择一项咋询目的");
+      setErrorMsg("请至少选择一项咨询目的");
       document.getElementById("field-purposes")?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
@@ -165,7 +165,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
 
         <div id="field-purposes" className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <div className="px-4 py-3.5">
-            <p className="text-sm text-[#5A4E44] mb-2">咋询目的 <span className="text-red-400">*</span><span className="text-xs text-[#9B8E82] ml-1">可多选</span></p>
+            <p className="text-sm text-[#5A4E44] mb-2">咨询目的 <span className="text-red-400">*</span><span className="text-xs text-[#9B8E82] ml-1">可多选</span></p>
             <div className="flex flex-wrap gap-2">
               {PURPOSE_OPTIONS.map(opt => {
                 const selected = form.purposes.includes(opt);
@@ -216,14 +216,13 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
 
         <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <div className="px-4 pt-3.5 pb-1">
-            <p className="text-xs text-[#9B8E82]">安全评估（帮助咋询师提前了解您的状况）</p>
+            <p className="text-xs text-[#9B8E82]">安全评估（帮助咨询师提前了解您的状况）</p>
           </div>
           {([
             ["hasMentalDisease", "是否有精神类疾病诊断"],
             ["onMedication", "是否正在服用精神类药物"],
             ["hasSelfHarm", "三个月内是否有自伤行为"],
             ["hasSuicidalThought", "三个月内是否有自杀想法"],
-            ["hasSuicidalBehavior", "三个月内是否有自杀行为（如制定计划等）"],
           ] as [keyof ApplicationForm, string][]).map(([key, label]) => (
             <div key={key} className="px-4 py-3 border-t flex items-center justify-between" style={{ borderColor: "#F5F0EA" }}>
               <span className="text-sm text-[#5A4E44]">{label}</span>
@@ -234,7 +233,7 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
 
         <div className="mx-5 rounded-2xl overflow-hidden mb-4" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <textarea value={form.additionalNote ?? ""} onChange={e => set("additionalNote", e.target.value)}
-            placeholder="补充说明（选填）——您可以简要描述您目前的困扰或对本次咋询的期望"
+            placeholder="补充说明（选填）——您可以简要描述您目前的困扰或对本次咨询的期望"
             rows={3}
             className="w-full px-4 py-3.5 text-sm bg-transparent outline-none resize-none placeholder-[#C4BDB5]"
             style={{ color: "#2C2420" }} />
