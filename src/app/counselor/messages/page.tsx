@@ -9,6 +9,7 @@ import { request } from "@/lib/api/request";
 type Conv = {
   conv: { id: string; lastMessageAt: string };
   otherUser: { id: string; name: string | null; email: string | null } | null;
+  unreadCount?: number;
 };
 
 function timeAgo(dateStr: string) {
@@ -42,9 +43,15 @@ export default function CounselorMessagesPage() {
 
   useEffect(() => {
     if (!user) return;
-    request("/api/messages").then(r => r.json()).then(d => {
-      setConvs(Array.isArray(d) ? d : []);
-    }).finally(() => setLoading(false));
+    // 首次加载 + 每15秒轮询，保证新会话/新未读能自动出现
+    const fetchConvs = () => {
+      request("/api/messages").then(r => r.json()).then(d => {
+        setConvs(Array.isArray(d) ? d : []);
+      }).catch(() => {}).finally(() => setLoading(false));
+    };
+    fetchConvs();
+    const t = setInterval(fetchConvs, 15000);
+    return () => clearInterval(t);
   }, [user]);
 
   if (!user) return (
@@ -80,9 +87,10 @@ export default function CounselorMessagesPage() {
         </div>
       ) : (
         <div className="px-4 pt-3">
-          {convs.map(({ conv, otherUser }, i) => {
+          {convs.map(({ conv, otherUser, unreadCount }, i) => {
             if (!otherUser) return null;
             const name = otherUser.name ?? otherUser.email ?? "来访者";
+            const unread = Number(unreadCount ?? 0);
             return (
               <motion.button key={conv.id}
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -96,9 +104,17 @@ export default function CounselorMessagesPage() {
                     <p className="text-sm font-semibold truncate" style={{ color: "#2C2420" }}>{name}</p>
                     <p className="text-xs flex-none ml-2" style={{ color: "#C4BDB5" }}>{timeAgo(conv.lastMessageAt)}</p>
                   </div>
-                  <p className="text-xs truncate" style={{ color: "#9B8E82" }}>点击查看对话</p>
+                  <p className="text-xs truncate" style={{ color: unread > 0 ? "#DC2626" : "#9B8E82", fontWeight: unread > 0 ? 600 : 400 }}>
+                    {unread > 0 ? `有 ${unread} 条未读消息，点击查看` : "点击查看对话"}
+                  </p>
                 </div>
-                <ChevronRight className="w-4 h-4 flex-none" style={{ color: "#C4BDB5" }} />
+                {unread > 0 ? (
+                  <span className="flex-none min-w-[20px] h-[20px] px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">
+                    {unread > 99 ? "99+" : unread}
+                  </span>
+                ) : (
+                  <ChevronRight className="w-4 h-4 flex-none" style={{ color: "#C4BDB5" }} />
+                )}
               </motion.button>
             );
           })}

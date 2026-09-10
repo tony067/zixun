@@ -84,7 +84,12 @@ function MessagesPageInner() {
     <div className="min-h-svh pb-24" style={{ background: "var(--color-bg)" }}>
       <div className="sticky top-0 z-10 px-5 pt-12 pb-4"
         style={{ background: "rgba(253,251,247,0.96)", backdropFilter: "blur(8px)", borderBottom: "1px solid #EBE7DF" }}>
-        <h1 className="text-lg font-bold" style={{ color: "#2C2420" }}>消息</h1>
+       <h1 className="text-lg font-bold" style={{ color: "#2C2420" }}>
+          {user.role === "support" ? "客户消息" : user.role === "admin" ? "官方消息" : "消息"}
+        </h1>
+        {(user as any)?.role === "support" || (user as any)?.role === "admin" ? (
+          <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>只显示与你本人的会话</p>
+        ) : null}
       </div>
 
       {loading ? (

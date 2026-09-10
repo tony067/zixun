@@ -7,7 +7,9 @@ import { TimeSlot } from "@/lib/booking-flow-data";
 interface Props {
   mode: string;
   date: Date;
-  slot: TimeSlot;
+  slot: TimeSlot | null;
+  /** 时间调剂申请内容（无具体时段时展示） */
+  adjustRequest?: { message: string; acceptOther: string };
   durationMinutes: number;
   priceAmount: number;
   counselorName: string;
@@ -85,7 +87,7 @@ function AgreementAccordion() {
   );
 }
 
-export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, counselorName, onNext, onBack }: Props) {
+export function Step2Form({ mode, date, slot, adjustRequest, durationMinutes, priceAmount, counselorName, onNext, onBack }: Props) {
   const [form, setForm] = useState<ApplicationForm>(EMPTY_FORM);
   const [agreed, setAgreed] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -119,7 +121,9 @@ export function Step2Form({ mode, date, slot, durationMinutes, priceAmount, coun
   }
 
   const WEEKDAY = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-  const dateStr = date.getMonth() + 1 + "月" + date.getDate() + "日 " + WEEKDAY[date.getDay()] + " " + slot.start + "–" + slot.end;
+  const dateStr = slot
+    ? date.getMonth() + 1 + "月" + date.getDate() + "日 " + WEEKDAY[date.getDay()] + " " + slot.start + "–" + slot.end
+    : "时间调剂申请（由咨询师协调后确认）";
 
   return (
     <div className="flex flex-col h-full">

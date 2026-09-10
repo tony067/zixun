@@ -6,11 +6,19 @@ import {
   WEEKDAY_LABELS, PERIOD_LABELS,
 } from "@/lib/booking-flow-data";
 
+export type Step1Result = {
+  mode: string;
+  date: Date;
+  slot: TimeSlot | null;
+  /** 无合适时段时提交的时间调剂申请 */
+  adjustRequest?: { message: string; acceptOther: string };
+};
+
 interface Props {
   counselorId: string;
   sessionModes: string[];
   durationMinutes: number;
-  onNext: (data: { mode: string; date: Date; slot: TimeSlot }) => void;
+  onNext: (data: Step1Result) => void;
 }
 
 const VIDEO_ICON = (
@@ -110,7 +118,8 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
   const afternoon = daySlots.filter(s => s.period === "afternoon");
   const evening   = daySlots.filter(s => s.period === "evening");
 
-  const canNext = selectedMode && selectedSlot;
+  // 下一步：选了时段，或已提交时间调剂申请
+  const canNext = !!selectedMode && (!!selectedSlot || coordSent);
 
   function SlotGroup({ label, period, items }: { label: string; period: string; items: TimeSlot[] }) {
     if (items.length === 0) return null;
@@ -209,7 +218,9 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
         {loading ? (
           <p className="text-sm text-center py-6" style={{ color: "#9B8E82" }}>加载可预约时段…</p>
         ) : (morning.length === 0 && afternoon.length === 0 && evening.length === 0) ? (
-          <p className="text-sm text-center py-6" style={{ color: "#9B8E82" }}>该咨询师暂未设置可预约时间，可与咨询师协调</p>
+          <p className="text-sm text-center py-6" style={{ color: "#9B8E82" }}>
+            该日期暂无可约时段，可提交时间调剂申请，由咨询师协调时间
+          </p>
         ) : (
           <>
             <SlotGroup label="上午" period="morning"   items={morning}   />
@@ -218,7 +229,7 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
           </>
         )}
 
-        {/* 与咨询师协调时间 — 内嵌展开区域（参考截图） */}
+        {/* 时间调剂申请 — 无合适时段时提交，随订单一起给到咨询师 */}
         <div className="mt-2 mb-4">
           <button onClick={() => setShowCoordinate(v=>!v)}
             className="flex items-center gap-2 text-sm font-medium"
@@ -227,7 +238,7 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
               <circle cx="10" cy="10" r="8.5" />
               <path d="M10 6v4.5l2.5 2" strokeLinecap="round" />
             </svg>
-            与咨询师协调时间
+            没有合适的时间？提交时间调剂申请
             <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 transition-transform" stroke="currentColor"
               style={{ transform: showCoordinate ? "rotate(180deg)" : "none" }}>
               <polyline points="3,5 8,11 13,5" strokeWidth="2" fill="none" />
@@ -242,9 +253,13 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
                 <div className="mt-3 rounded-2xl px-4 pt-4 pb-4"
                   style={{ background: "white", border: "1.5px solid var(--color-border)" }}>
                   {coordSent ? (
-                    <div className="py-4 text-center">
-                      <p className="text-sm font-semibold mb-1" style={{ color: "var(--color-primary)" }}>✓ 已发送给咨询师</p>
-                      <p className="text-xs" style={{ color: "#9B8E82" }}>咨询师确认后会通过消息通知你</p>
+                    <div className="py-2 text-center">
+                      <p className="text-sm font-semibold mb-1" style={{ color: "var(--color-primary)" }}>✓ 调剂申请已填写</p>
+                      <p className="text-xs" style={{ color: "#9B8E82" }}>点击下方「下一步」继续，申请将随订单一起发送给咨询师</p>
+                      <button onClick={() => setCoordSent(false)}
+                        className="mt-2 text-xs underline" style={{ color: "#9B8E82" }}>
+                        重新编辑
+                      </button>
                     </div>
                   ) : (
                     <>
@@ -262,7 +277,7 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
                         style={{ background: "#F8F5F0", color: "#2C2420", border: "1.5px solid var(--color-border)" }} />
                       {/* 是否接受咨询师提供的时间 — 在时间填写下方 */}
                       <p className="text-xs font-medium mb-2" style={{ color: "#5A4E44" }}>
-                        如果上述时间已满，是否接受咨询师提供的其他时间？
+                        如果上述时间不可行，是否接受咨询师提供的其他时间？
                         <span style={{ color: "#E87070" }}> *</span>
                       </p>
                       <div className="flex gap-2 mb-4">
@@ -282,11 +297,11 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
                           );
                         })}
                       </div>
-                      <button disabled={!coordMsg.trim()}
-                        onClick={() => setCoordSent(true)}
+                      <button disabled={!coordMsg.trim() || !coordAccept}
+                        onClick={() => { setSelectedSlot(null); setCoordSent(true); }}
                         className="w-full py-3 rounded-xl text-sm font-bold"
-                        style={{ background: coordMsg.trim() ? "var(--color-primary)" : "#C4BDB5", color: "white" }}>
-                        发送给咨询师
+                        style={{ background: coordMsg.trim() && coordAccept ? "var(--color-primary)" : "#C4BDB5", color: "white" }}>
+                        填写调剂申请
                       </button>
                     </>
                   )}
@@ -299,13 +314,27 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
 
       {/* 底部固定操作区 */}
       <div className="px-5 pb-6 pt-3 border-t flex-none" style={{ borderColor: "var(--color-border)" }}>
-        {selectedSlot && (
+        {selectedSlot ? (
           <p className="text-xs text-center mb-2" style={{ color: "#9B8E82" }}>
             已选：{selectedDay.getMonth()+1}/{selectedDay.getDate()} {selectedSlot.start}–{selectedSlot.end}
           </p>
-        )}
+        ) : coordSent ? (
+          <p className="text-xs text-center mb-2" style={{ color: "#9B8E82" }}>
+            将随订单提交时间调剂申请，支付后由咨询师协调确认时间
+          </p>
+        ) : null}
         <button disabled={!canNext}
-          onClick={() => canNext && onNext({ mode: selectedMode!, date: selectedDay, slot: selectedSlot! })}
+          onClick={() => {
+            if (!canNext || !selectedMode) return;
+            if (selectedSlot) {
+              onNext({ mode: selectedMode, date: selectedDay, slot: selectedSlot });
+            } else {
+              onNext({
+                mode: selectedMode, date: selectedDay, slot: null,
+                adjustRequest: { message: coordMsg.trim(), acceptOther: coordAccept ?? "是" },
+              });
+            }
+          }}
           className="w-full py-3.5 rounded-2xl text-white font-bold text-base"
           style={{ background: canNext ? "var(--color-primary)" : "#C4BDB5" }}>
           下一步：填写预约信息

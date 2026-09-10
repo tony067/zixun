@@ -4,23 +4,29 @@ import { createPortal } from "react-dom";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { request } from "@/lib/api/request";
+import { statusMeta } from "@/lib/booking-status";
+import { localDateStr } from "@/lib/date";
 
 type BookingDetail = {
   id: string; status: string; scheduledAt: string; durationMinutes: number;
   sessionMode: string; priceAmount: number; sessionNumber?: number;
   applicationForm?: Record<string,string> | null;
   agreementSigned?: boolean; paidAt?: string; createdAt?: string; paymentMethod?: string;
+  counselorNote?: string; meetingLink?: string;
+  adjustRequest?: { message: string; acceptOther?: string } | null;
   counselor: { id: string; displayName: string; counselorTypes?: string[] } | null;
 };
 
-const STATUS_CONFIG: Record<string,{label:string;desc:string;color:string}> = {
-  pending_confirmation: { label:"等待咨询师确认", desc:"请耐心等候，咨询师确认后将通知您。", color:"#D97706" },
-  pending_payment:      { label:"待支付",         desc:"请在24小时内完成支付，逾期将自动取消。", color:"#9CB48A" },
-  confirmed:            { label:"待支付",         desc:"请在24小时内完成支付，逾期将自动取消。", color:"#9CB48A" },
-  paid:                 { label:"即将咨询",        desc:"咨询即将开始，请提前准备好设备。", color:"#059669" },
-  completed:            { label:"咨询完成",        desc:"本次咨询已完成。如已约定下次咨询时间，请记得续约。", color:"#059669" },
-  cancelled:            { label:"已取消",          desc:"本次预约已取消。", color:"#9CA3AF" },
-  rejected:             { label:"已拒绝",          desc:"咨询师无法接受本次预约，建议重新选择时间。", color:"#DC2626" },
+// 状态 label/color 统一来自 @/lib/booking-status；此处仅补充详情页的长描述文案
+const STATUS_DESC: Record<string,string> = {
+  pending_confirmation: "已支付成功。咨询师确认后会通知您，并在此页发送咨询设置与链接。",
+  pending_payment:      "请在24小时内完成支付，逾期将自动取消。",
+  paid:                 "咨询师已确认。请在咨询时间前查看咨询设置与链接，准时参加。",
+  in_progress:          "咨询正在进行，请通过咨询链接进入。",
+  completed:            "本次咨询已完成。如已约定下次咨询时间，请记得续约。",
+  cancelled:            "本次预约已取消，已支付费用将原路退回（模拟支付未实际扣款）。",
+  rejected:             "咨询师未能承接本次预约，费用已原路退回（模拟支付未实际扣款）。",
+  refunded:             "本次订单已退款，费用将原路退回（模拟支付未实际扣款）。如有疑问请联系客服。",
 };
 
 const AGREEMENT_TEXT = `MindPace 咨询服务协议
@@ -119,7 +125,10 @@ export default function BookingDetailPage() {
   const [bk, setBk] = useState<BookingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [modal, setModal] = useState<"form"|"agreement"|"reschedule"|null>(null);
+  const [modal, setModal] = useState<"form"|"agreement"|"reschedule"|"pay"|null>(null);
+  const [payMethod, setPayMethod] = useState("wechat");
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState("");
   const [selDay, setSelDay] = useState("");
   const [selTime, setSelTime] = useState("");
   const [submittingReschedule, setSubmittingReschedule] = useState(false);
@@ -129,14 +138,39 @@ export default function BookingDetailPage() {
 
   useEffect(() => {
     request(`/api/bookings/${id}`).then(r => r.json()).then(d => {
-      setBk(d?.booking ?? d ?? null);
+      const data = d?.booking ?? d ?? null;
+      setBk(data);
+      // 从主页"待支付"提醒点进来：自动弹出支付窗
+      if (data?.status === "pending_payment" &&
+          new URLSearchParams(window.location.search).get("pay") === "1") {
+        setPayError("");
+        setModal("pay");
+      }
     }).catch(() => {}).finally(() => setLoading(false));
   }, [id]);
 
-  const copy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const [toast, setToast] = useState("");
+  const copy = async (text: string) => {
+    let ok = false;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      } else {
+        // http 非安全环境降级方案
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    } catch {}
+    setCopied(ok);
+    setToast(ok ? "已复制到剪贴板" : "复制失败，请长按订单号手动复制");
+    setTimeout(() => { setCopied(false); setToast(""); }, 2000);
   };
 
   if (loading) return (
@@ -157,7 +191,19 @@ export default function BookingDetailPage() {
   const dateStr = dt && endDt
     ? `${dt.getFullYear()}.${pad(dt.getMonth()+1)}.${pad(dt.getDate())} ${WD[dt.getDay()]} ${pad(dt.getHours())}:${pad(dt.getMinutes())}–${pad(endDt.getHours())}:${pad(endDt.getMinutes())}`
     : "—";
-  const status = STATUS_CONFIG[bk.status] ?? { label: bk.status, desc: "", color: "#9B8E82" };
+  const status = (() => { const m = statusMeta(bk.status); return { label: m.label, desc: STATUS_DESC[bk.status] ?? "", color: m.color }; })();
+  const showMeetingLink = !!bk.meetingLink && ["paid", "in_progress"].includes(bk.status);
+  const showAdjust = !!bk.adjustRequest;
+
+  const handleCancel = async () => {
+    if (!confirm("确定取消这条预约吗？已支付费用将原路退回（模拟支付未实际扣款）。")) return;
+    const res = await request(`/api/bookings/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "cancelled" }),
+    });
+    if (res.ok) setBk(prev => prev ? { ...prev, status: "cancelled" } : prev);
+  };
 
   return (
     <div className="min-h-svh pb-[100px]" style={{ background: "#F5F0EA" }}>
@@ -198,12 +244,31 @@ export default function BookingDetailPage() {
 
           {/* 咨询详情 — 无分割线 */}
           <div className="px-4 pb-4 space-y-4">
-            <InfoRow label="咨询时间（北京时间）" value={dateStr} />
+            {showAdjust ? (
+              <div>
+                <p className="text-xs text-[#9B8E82] mb-0.5">时间调剂申请</p>
+                <p className="text-sm font-semibold text-[#2C2420] whitespace-pre-wrap">{bk.adjustRequest?.message}</p>
+                <p className="text-xs text-[#9B8E82] mt-1">最终时间以咨询师确认为准，确认后将在此页通知您</p>
+              </div>
+            ) : (
+              <InfoRow label="咨询时间（北京时间）" value={dateStr} />
+            )}
             <InfoRow label="咨询次数及方式" value={`第${bk.sessionNumber ?? 1}次 ${bk.sessionMode ?? "视频"}咨询`} />
-            {bk.sessionMode?.includes("视频") && (
+            {bk.counselorNote && (
+              <div>
+                <p className="text-xs text-[#9B8E82] mb-0.5">咨询设置说明</p>
+                <p className="text-sm font-medium text-[#2C2420] whitespace-pre-wrap">{bk.counselorNote}</p>
+              </div>
+            )}
+            {bk.sessionMode?.includes("视频") && !showMeetingLink && (
               <InfoRow label="视频账号" value={
-                bk.status === "paid" || bk.status === "completed" ? "将在咨询前发送至消息" : "预约成功后可见"
+                bk.status === "paid" || bk.status === "in_progress"
+                  ? "咨询师将通过私信发送咨询设置与链接，请注意查收消息"
+                  : "咨询师确认后可见"
               } />
+            )}
+            {(bk.status === "paid" || bk.status === "in_progress") && !bk.counselorNote && !showMeetingLink && (
+              <InfoRow label="咨询设置" value="咨询师确认后将在本页展示咨询设置，如有疑问可私信咨询师" />
             )}
           </div>
 
@@ -221,6 +286,26 @@ export default function BookingDetailPage() {
             <ChevronRight className="w-5 h-5 text-[#C4BDB5]" />
           </button>
         </div>
+
+        {/* 咨询链接 — 咨询师确认后可见 */}
+        {showMeetingLink && (
+          <div className="rounded-2xl p-4" style={{ background: "#E8F4E4" }}>
+            <p className="text-xs text-[#4A7A36] mb-1.5 font-semibold">咨询链接</p>
+            <p className="text-sm text-[#2C2420] break-all mb-3">{bk.meetingLink}</p>
+            <div className="flex gap-2">
+              <a href={bk.meetingLink} target="_blank" rel="noreferrer"
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white text-center"
+                style={{ background: "var(--color-primary)" }}>
+                进入咨询
+              </a>
+              <button onClick={() => copy(bk.meetingLink!)}
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold border"
+                style={{ borderColor: "#9CB48A", color: "#4A7A36" }}>
+                {copied ? "已复制" : "复制链接"}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 订单信息 */}
         <div className="rounded-2xl px-4 py-4 space-y-3.5" style={{ background: "white" }}>
@@ -258,24 +343,28 @@ export default function BookingDetailPage() {
       <div className="fixed bottom-0 left-0 right-0 px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3"
         style={{ background: "rgba(245,240,234,0.95)", backdropFilter: "blur(8px)" }}>
         <div className="flex gap-3">
-          <button className="flex-1 py-3 rounded-2xl text-sm font-semibold border"
-            style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
-            onClick={() => router.push(`/messages?counselorUserId=${bk.counselor?.id}`)}>私信咨询师</button>
+          {["pending_confirmation", "pending_payment", "paid"].includes(bk.status) && (
+            <button className="flex-1 py-3 rounded-2xl text-sm font-semibold border"
+              style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
+              onClick={() => router.push(`/messages?counselorUserId=${bk.counselor?.id}`)}>私信咨询师</button>
+          )}
           <button
             onClick={() => {
-              const needsPay = bk.status === "pending_payment" || bk.status === "confirmed";
-              if (needsPay) {
-                router.push(`/my-bookings/${id}?pay=1`);
-              } else if (bk.status === "paid" || bk.status === "upcoming") {
+              if (bk.status === "pending_payment") {
+                setPayError(""); setModal("pay");
+              } else if (bk.status === "pending_confirmation") {
+                handleCancel();
+              } else if (bk.status === "paid") {
                 setModal("reschedule");
               } else {
                 router.push(`/booking/${bk.counselor?.id}`);
               }
             }}
             className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
-            style={{ background: "var(--color-primary)" }}>
-            {(bk.status === "pending_payment" || bk.status === "confirmed") ? `立即支付 ¥${bk.priceAmount}` :
-             (bk.status === "upcoming" || bk.status === "paid") ? "修改时间" : "续约"}
+            style={{ background: bk.status === "pending_confirmation" ? "#DC2626" : "var(--color-primary)" }}>
+            {bk.status === "pending_payment" ? `立即支付 ¥${bk.priceAmount}` :
+             bk.status === "pending_confirmation" ? "取消预约" :
+             bk.status === "paid" ? "修改时间" : "续约"}
           </button>
         </div>
       </div>
@@ -303,13 +392,70 @@ export default function BookingDetailPage() {
         </Modal>
       )}
 
+      {/* 模拟支付弹窗（网页端过渡方案，真实支付将在小程序中接入） */}
+      {modal === "pay" && (
+        <Modal title="确认支付" onClose={() => { if (!paying) setModal(null); }}>
+          <div className="rounded-2xl px-4 py-5 mb-4 text-center" style={{ background: "#F8F5F0" }}>
+            <p className="text-xs text-[#9B8E82] mb-1">咨询费用</p>
+            <p className="text-3xl font-bold text-[#2C2420]">¥{bk.priceAmount}</p>
+            <p className="text-xs text-[#9B8E82] mt-2">{bk.counselor?.displayName ?? "咨询师"} · {formatFull(bk.scheduledAt)}</p>
+          </div>
+          <div className="space-y-2 mb-4">
+            {[
+              { id: "wechat", label: "微信支付", color: "#07C160" },
+              { id: "alipay", label: "支付宝",   color: "#1677FF" },
+            ].map(m => (
+              <button key={m.id} onClick={() => setPayMethod(m.id)}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border text-sm font-medium"
+                style={{ borderColor: payMethod === m.id ? m.color : "#EBE7DF", color: "#2C2420" }}>
+                <span className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full" style={{ background: m.color }} />
+                  {m.label}
+                </span>
+                {payMethod === m.id && <Check className="w-4 h-4" style={{ color: m.color }} />}
+              </button>
+            ))}
+          </div>
+          {payError && <p className="text-xs text-red-500 mb-3">{payError}</p>}
+          <button
+            disabled={paying}
+            onClick={async () => {
+              setPaying(true); setPayError("");
+              try {
+                const res = await request(`/api/bookings/${id}`, {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ status: "paid", paymentMethod: payMethod }),
+                });
+                if (res.ok) {
+                  const updated = await res.json().catch(() => null);
+                  setBk(prev => prev ? { ...prev, status: "paid", paidAt: updated?.paidAt, paymentMethod: payMethod } : prev);
+                  setModal(null);
+                } else {
+                  const d = await res.json().catch(() => ({}));
+                  setPayError(d.message ?? "支付失败，请稍后重试");
+                }
+              } catch {
+                setPayError("网络异常，请稍后重试");
+              } finally {
+                setPaying(false);
+              }
+            }}
+            className="w-full py-3.5 rounded-2xl text-white font-bold text-sm"
+            style={{ background: paying ? "#C0B8B0" : "var(--color-primary)" }}>
+            {paying ? "支付中…" : `确认支付 ¥${bk.priceAmount}`}
+          </button>
+          <p className="text-[11px] text-center text-[#9B8E82] mt-3">网页端为模拟支付，正式支付能力将在小程序版本中提供</p>
+        </Modal>
+      )}
+
       {/* 修改时间抽屉 - createPortal 挂到 body，避免父层 stacking context 影响 */}
       {mounted && modal === "reschedule" && (() => {
         const WEEKDAY = ["日","一","二","三","四","五","六"];
         const days = Array.from({ length: 14 }, (_, i) => {
           const d = new Date(); d.setDate(d.getDate() + i + 1);
           return {
-            iso: d.toISOString().slice(0,10),
+            iso: localDateStr(d),
             label: `${d.getMonth()+1}/${d.getDate()}`,
             weekday: `周${WEEKDAY[d.getDay()]}`,
           };
@@ -405,6 +551,14 @@ export default function BookingDetailPage() {
             <p className="text-sm text-[#9B8E82] mb-5">等待咨询师确认，确认后时间自动更新。</p>
             <button onClick={() => setRescheduleSuccess(false)} className="w-full py-3 rounded-2xl text-white font-bold text-sm" style={{background:"var(--color-primary)"}}>好的</button>
           </div>
+        </div>
+      )}
+
+      {/* 复制成功/失败轻提示 */}
+      {toast && (
+        <div className="fixed left-1/2 bottom-28 -translate-x-1/2 px-4 py-2 rounded-full text-xs text-white whitespace-nowrap z-[100000]"
+          style={{ background: "rgba(44,36,32,0.88)", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
+          {toast}
         </div>
       )}
     </div>

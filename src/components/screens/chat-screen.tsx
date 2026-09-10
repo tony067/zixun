@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Send } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
+import { notifyUnreadRefresh } from "@/hooks/use-unread-count";
 
 type Msg = {
   msg: { id: string; content: string; senderId: string; createdAt: string };
@@ -41,19 +42,48 @@ export function ChatScreen() {
   const router = useRouter();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [otherName, setOtherName] = useState("对话");
+  // 消息归属判定 id：普通会话=本人；staff 查看客服共享会话时=官方客服账号（气泡/提醒/已读共用）
+  const [selfId, setSelfId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  // 新消息提醒：记录最近一条对方消息，轮询发现新消息时弹提示
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastIncomingId = useRef<string | null>(null);
+  const initialLoaded = useRef(false);
+
+  const showToast = (t: string) => {
+    setToast(t);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2500);
+  };
 
   const load = () => {
     if (!user) return;
     request(`/api/messages/${convId}`).then(r=>r.json()).then((d)=>{
       const msgList: Msg[] = Array.isArray(d) ? d : (d.msgs ?? []);
+      const myId: string = d.selfId ?? user.id;
+      setSelfId(d.selfId ?? user.id);
+      // 检测对方新消息：弹轻提示 + 自动标记已读（保持底部红点准确）
+      const incoming = msgList.filter(m => m.sender.id !== myId);
+      const latest = incoming[incoming.length - 1];
+      if (latest) {
+        if (initialLoaded.current && latest.msg.id !== lastIncomingId.current) {
+          const from = latest.sender.name ?? latest.sender.email ?? "对方";
+          showToast(`${from} 发来了新消息`);
+          request(`/api/messages/${convId}/read`, { method: "POST" })
+            .then(() => notifyUnreadRefresh())
+            .catch(() => {});
+        }
+        lastIncomingId.current = latest.msg.id;
+      }
+      initialLoaded.current = true;
       setMsgs(msgList);
       if (d.otherUser) {
         setOtherName(d.otherUser.name ?? d.otherUser.email ?? "对方");
       } else {
-        const other = msgList.find((m: Msg)=>m.sender.id!==user.id)?.sender;
+        const other = msgList.find((m: Msg)=>m.sender.id!==myId)?.sender;
         if (other) setOtherName(other.name ?? other.email ?? "对方");
       }
     });
@@ -61,10 +91,12 @@ export function ChatScreen() {
 
   useEffect(()=>{ load(); },[convId, user]);
 
-  // 进入会话时：标记所有"别人发的"消息为已读
+  // 进入会话时：标记所有"别人发的"消息为已读，并立即刷新底部红点
   useEffect(() => {
     if (!user || !convId) return;
-    request(`/api/messages/${convId}/read`, { method: "POST" }).catch(() => {});
+    request(`/api/messages/${convId}/read`, { method: "POST" })
+      .then(() => notifyUnreadRefresh())
+      .catch(() => {});
   }, [convId, user]);
 
   // 5秒轮询
@@ -78,10 +110,11 @@ export function ChatScreen() {
   const send = async () => {
     const content = input.trim();
     if (!content || sending || !user) return;
+    const myId = selfId ?? user.id;
     setInput(""); setSending(true);
     const opt: Msg = {
-      msg: { id:`opt_${Date.now()}`, content, senderId: user.id, createdAt: new Date().toISOString() },
-      sender: { id: user.id, name: user.name??null, email: user.email??null },
+      msg: { id:`opt_${Date.now()}`, content, senderId: myId, createdAt: new Date().toISOString() },
+      sender: { id: myId, name: user.name??null, email: user.email??null },
     };
     setMsgs(p=>[...p, opt]);
     try {
@@ -112,6 +145,17 @@ export function ChatScreen() {
 
   return (
     <div className="flex flex-col h-svh" style={{background:"var(--color-bg)"}}>
+      {/* 新消息轻提示 */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap"
+            style={{ background: "rgba(44,36,32,0.88)", color: "white", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 顶栏 */}
       <div className="flex items-center gap-3 px-4 pt-12 pb-3 flex-none"
         style={{background:"var(--color-bg)", borderBottom:"1px solid var(--color-border)"}}>
@@ -141,7 +185,7 @@ export function ChatScreen() {
               <div className="flex-1 h-px" style={{background:"#EBE7DF"}}/>
             </div>
             {g.items.map((m,i)=>{
-              const mine = m.sender.id===user.id;
+              const mine = m.sender.id===selfId;
               const name = m.sender.name ?? m.sender.email ?? "用户";
               const showAv = !mine && (i===0 || g.items[i-1]?.sender.id!==m.sender.id);
               return (

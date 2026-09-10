@@ -3,6 +3,7 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, User, Clock, CreditCard } from "lucide-react";
 import { request } from "@/lib/api/request";
+import { statusMeta } from "@/lib/booking-status";
 
 type Booking = {
   id: string; status: string; scheduledAt: string | null;
@@ -11,15 +12,6 @@ type Booking = {
   createdAt: string | null; rescheduleStatus: string | null;
   counselor: { id: string; displayName: string | null } | null;
   client: { id: string; name: string | null; email: string | null } | null;
-};
-
-const STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
-  pending_confirmation: { bg: "#FEF3C7", text: "#D97706", label: "待确认" },
-  pending_payment:      { bg: "#EFF6FF", text: "#2563EB", label: "待支付" },
-  paid:                 { bg: "#F0FDF4", text: "#16A34A", label: "待咨询" },
-  completed:            { bg: "#F5F0EA", text: "#6B7280", label: "已完成" },
-  cancelled:            { bg: "#FEE2E2", text: "#DC2626", label: "已取消" },
-  rejected:             { bg: "#FEE2E2", text: "#DC2626", label: "已拒绝" },
 };
 
 const fmt = (s: string | null) => {
@@ -48,7 +40,7 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
     setProcessing(false);
   };
 
-  const st = booking ? (STATUS_MAP[booking.status] ?? { bg: "#F5F0EA", text: "#9B8E82", label: booking.status }) : null;
+  const st = booking ? (() => { const m = statusMeta(booking.status); return { bg: m.bg, text: m.color, label: m.label }; })() : null;
 
   return (
     <div className="min-h-screen pb-10" style={{ background: "var(--color-bg)" }}>
@@ -133,20 +125,25 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
 
           {/* 操作按钮 */}
           <div className="space-y-2 pt-2">
-            {booking.status === "pending_confirmation" && (
+            {(booking.status === "pending_confirmation" || booking.status === "pending_payment") && (
               <div className="flex gap-3">
                 <button onClick={() => handleAction("rejected")} disabled={processing}
                   className="flex-1 py-3.5 rounded-2xl text-sm font-bold"
                   style={{ background: "#FEE2E2", color: "#DC2626" }}>拒绝</button>
-                <button onClick={() => handleAction("pending_payment")} disabled={processing}
+                <button onClick={() => handleAction("paid")} disabled={processing}
                   className="flex-1 py-3.5 rounded-2xl text-sm font-bold text-white"
                   style={{ background: "var(--color-primary)" }}>确认预约</button>
               </div>
             )}
-            {booking.status === "paid" && (
+            {(booking.status === "paid" || booking.status === "in_progress") && (
               <button onClick={() => handleAction("completed")} disabled={processing}
                 className="w-full py-3.5 rounded-2xl text-sm font-bold text-white"
                 style={{ background: "var(--color-primary)" }}>标记已完成</button>
+            )}
+            {["in_progress", "completed"].includes(booking.status) && (
+              <button onClick={() => handleAction("refunded")} disabled={processing}
+                className="w-full py-3.5 rounded-2xl text-sm font-bold"
+                style={{ background: "#FEF9EE", color: "#B07D2A", border: "1px solid #F5E6C0" }}>退款（仅管理员可操作）</button>
             )}
             {!["cancelled", "completed", "rejected"].includes(booking.status) && (
               <button onClick={() => handleAction("cancelled")} disabled={processing}

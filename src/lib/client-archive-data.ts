@@ -1,3 +1,5 @@
+import { BOOKING_STATUSES } from "@/lib/booking-status";
+
 export const MOCK_CLIENTS: Record<string, {
   name: string; gender: string; age: number; phone: string; email: string;
   emergencyName: string; emergencyPhone: string;
@@ -70,9 +72,7 @@ export const MOCK_CLIENTS: Record<string, {
   },
 };
 
-export const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-  "已完成": { bg: "#E4F0DC", color: "#3A6228" },
-  "待咨询": { bg: "#E8F0FF", color: "#3A5AB0" },
-  "待确认": { bg: "#FFF3E0", color: "#B07020" },
-  "已取消": { bg: "#F5F0EA", color: "#9B8E82" },
-};
+// 状态样式统一来自 booking-status 配置（按中文标签索引，供归档展示用）
+export const STATUS_STYLE: Record<string, { bg: string; color: string }> = Object.fromEntries(
+  Object.values(BOOKING_STATUSES).map(m => [m.label, { bg: m.bg, color: m.color }])
+);

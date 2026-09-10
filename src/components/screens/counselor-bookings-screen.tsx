@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, Video, Phone, MessageCircle, Check, X } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
+import { localDateStr } from "@/lib/date";
+import { statusMeta } from "@/lib/booking-status";
 
 type ApplicationForm = {
   name?: string; phone?: string; wechat?: string;
@@ -17,6 +19,8 @@ type ApplicationForm = {
 type Booking = {
   id: string; status: string; scheduledAt: string; durationMinutes: number;
   sessionMode: string; priceAmount: number; clientNote: string | null;
+  meetingLink?: string | null;
+  adjustRequest?: { message: string; acceptOther?: string } | null;
   client: { id: string; name: string | null; email: string | null } | null;
   rescheduleStatus: string | null;
   rescheduleNewTime: string | null;
@@ -24,34 +28,19 @@ type Booking = {
   applicationForm?: ApplicationForm | null;
 };
 
-// 4个平铺Tab，去掉「已取消」
+// 状态文案/配色统一来自 @/lib/booking-status（唯一规范来源）
 const STATUS_OPTIONS = [
-  { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation","pending"], dot: "#D97706" },
-  { key: "pending_payment",      label: "待支付", statuses: ["confirmed","pending_payment"], dot: "#9CB48A" },
-  { key: "upcoming",             label: "待咨询", statuses: ["paid"], dot: "#059669" },
-  { key: "completed",            label: "已咨询", statuses: ["completed"], dot: "#6B7280" },
+  { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation", "pending_payment"], dot: statusMeta("pending_confirmation").color },
+  { key: "upcoming",             label: "待咨询", statuses: ["paid"],                                   dot: statusMeta("paid").color },
+  { key: "in_progress",          label: "进行中", statuses: ["in_progress"],                            dot: statusMeta("in_progress").color },
+  { key: "completed",            label: "已咨询", statuses: ["completed", "refunded"],                  dot: statusMeta("completed").color },
 ];
 
-const STATUS_LABEL: Record<string, string> = {
-  pending_confirmation: "待确认", pending: "待确认", confirmed: "待支付", pending_payment: "待支付",
-  paid: "待咨询", completed: "已咨询", cancelled: "已取消", rejected: "已拒绝",
-};
-const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
-  pending_confirmation: { color: "#D97706", bg: "#FEF3C7" },
-  pending:              { color: "#D97706", bg: "#FEF3C7" },
-  confirmed:            { color: "#9CB48A", bg: "#E4F0DC" },
-  pending_payment:      { color: "#9CB48A", bg: "#E4F0DC" },
-  paid:                 { color: "#059669", bg: "#D1FAE5" },
-  completed:            { color: "#6B7280", bg: "#F3F4F6" },
-  cancelled:            { color: "#9CA3AF", bg: "#F9FAFB" },
-  rejected:             { color: "#EF4444", bg: "#FEE2E2" },
-};
-
-function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Booking; onUpdate: (id: string, status: string) => void; onReschedule?: (b: Booking) => void; onDirectReschedule?: (id: string) => void }) {
+function BookingCard({ b, onUpdate, onConfirm, onReschedule, onDirectReschedule, onContact, onRefund }: { b: Booking; onUpdate: (id: string, status: string) => void; onConfirm?: (b: Booking) => void; onReschedule?: (b: Booking) => void; onDirectReschedule?: (id: string) => void; onContact?: (b: Booking) => void; onRefund?: (id: string) => void }) {
   const dt = new Date(b.scheduledAt);
   const dateStr = dt.toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short" });
   const timeStr = dt.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
-  const st = STATUS_STYLE[b.status] ?? { color: "#6B7280", bg: "#F3F4F6" };
+  const st = statusMeta(b.status);
   const af = b.applicationForm;
   const clientName = af?.name || b.client?.name || b.client?.email?.split("@")[0] || "来访者";
   const [showForm, setShowForm] = useState(false);
@@ -79,7 +68,7 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
         </div>
         <span className="text-xs font-medium px-2.5 py-1 rounded-full"
           style={{ color: st.color, background: st.bg }}>
-          {STATUS_LABEL[b.status] ?? b.status}
+          {statusMeta(b.status).label}
         </span>
       </div>
 
@@ -158,50 +147,50 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
         </div>
       )}
 
+      {/* 调剂申请提示 */}
+      {b.adjustRequest && (
+        <div className="mt-3 rounded-xl px-3 py-2.5" style={{ background: "#FEF3C7" }}>
+          <p className="text-xs font-semibold mb-0.5" style={{ color: "#D97706" }}>时间调剂申请（来访已支付）</p>
+          <p className="text-xs whitespace-pre-wrap" style={{ color: "#5A4E44" }}>{b.adjustRequest.message}</p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between pt-3 border-t mt-3" style={{ borderColor: "var(--color-border)" }}>
         <span className="text-base font-bold" style={{ color: "var(--color-text-primary)" }}>¥{b.priceAmount}</span>
-        <div className="flex gap-2">
-          {(b.status === "pending_confirmation" || b.status === "pending") && (<>
+        <div className="flex flex-wrap gap-2">
+          {(b.status === "pending_confirmation" || b.status === "pending_payment") && (<>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onContact && onContact(b)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
+              <MessageCircle className="w-3.5 h-3.5" />联系来访
+            </motion.button>
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "rejected")}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
               style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
-              <X className="w-3.5 h-3.5" />拒绝
+              <X className="w-3.5 h-3.5" />拒绝并退款
             </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "confirmed")}
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onConfirm && onConfirm(b)}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-white"
               style={{ background: "var(--color-primary)" }}>
-              <Check className="w-3.5 h-3.5" />接受
-            </motion.button>
-          </>)}
-          {(b.status === "confirmed" || b.status === "pending_payment") && (<>
-            <motion.button whileTap={{ scale: 0.95 }}
-              onClick={() => { window.location.href = `/messages?clientId=${b.client?.id}`; }}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-white"
-              style={{ background: "var(--color-primary)" }}>
-              联系来访
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "cancelled")}
-              className="px-3 py-1.5 rounded-xl text-xs font-medium border"
-              style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
-              取消预约
+              <Check className="w-3.5 h-3.5" />确认预约
             </motion.button>
           </>)}
           {b.status === "paid" && (<>
-            <motion.button whileTap={{ scale: 0.95 }}
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onContact && onContact(b)}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
               style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
-              <MessageCircle className="w-3.5 h-3.5" />私信
+              <MessageCircle className="w-3.5 h-3.5" />联系来访
+            </motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onRefund && onRefund(b.id)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
+              style={{ borderColor: "#F5E6C0", color: "#B07D2A", background: "#FEF9EE" }}>
+              退款
             </motion.button>
             <motion.button whileTap={{ scale: 0.95 }}
               onClick={() => onDirectReschedule && onDirectReschedule(b.id)}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
               style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)", background: "white" }}>
               修改时间
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onUpdate(b.id, "completed")}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-white"
-              style={{ background: "var(--color-primary)" }}>
-              <Check className="w-3.5 h-3.5" />标记完成
             </motion.button>
             {b.rescheduleStatus === "pending" && (
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => onReschedule && onReschedule(b)}
@@ -211,6 +200,13 @@ function BookingCard({ b, onUpdate, onReschedule, onDirectReschedule }: { b: Boo
               </motion.button>
             )}
           </>)}
+          {b.status === "in_progress" && (
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => onContact && onContact(b)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}>
+              <MessageCircle className="w-3.5 h-3.5" />联系来访
+            </motion.button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -240,6 +236,49 @@ export function CounselorBookingsScreen() {
   const [dSelTime, setDSelTime] = useState("");
   const [submittingDirect, setSubmittingDirect] = useState(false);
 
+  // 确认预约弹窗（发咨询链接 + 可改时间）
+  const [confirmBooking, setConfirmBooking] = useState<Booking | null>(null);
+  const [cNote, setCNote] = useState("");
+  const [cLink, setCLink] = useState("");
+  const [cSelDay, setCSelDay] = useState("");
+  const [cSelTime, setCSelTime] = useState("");
+  const [confirming, setConfirming] = useState(false);
+  const [confirmError, setConfirmError] = useState("");
+
+  const openConfirm = (b: Booking) => {
+    setConfirmBooking(b);
+    setCNote(""); setCLink(""); setCSelDay(""); setCSelTime(""); setConfirmError("");
+  };
+
+  const handleConfirm = async () => {
+    if (!confirmBooking || confirming) return;
+    setConfirming(true); setConfirmError("");
+    try {
+      const payload: Record<string, unknown> = { status: "paid" };
+      if (cSelDay && cSelTime) payload.scheduledAt = `${cSelDay}T${cSelTime}:00`;
+      if (cNote.trim()) payload.counselorNote = cNote.trim();
+      if (cLink.trim()) payload.meetingLink = cLink.trim();
+      const res = await request(`/api/bookings/${confirmBooking.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setBookings(prev => prev.map(b => b.id === confirmBooking.id
+          ? { ...b, status: "paid", meetingLink: cLink.trim() || b.meetingLink }
+          : b));
+        setConfirmBooking(null);
+      } else {
+        const d = await res.json().catch(() => ({}));
+        setConfirmError(d.message ?? "确认失败，请稍后重试");
+      }
+    } catch {
+      setConfirmError("网络异常，请稍后重试");
+    } finally {
+      setConfirming(false);
+    }
+  };
+
   useEffect(() => {
     if (!user) return;
     setLoading(true);
@@ -257,6 +296,40 @@ export function CounselorBookingsScreen() {
     });
     if (res.ok) {
       setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+    }
+  };
+
+  // 退款：咨询师可退未开始的订单（待确认/待咨询），需二次确认
+  const handleRefund = async (id: string) => {
+    if (!confirm("确认退款吗？退款后订单将变为「已退款」，费用将退回来访（模拟支付未实际扣款）。")) return;
+    const res = await request(`/api/bookings/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "refunded" }),
+    });
+    if (res.ok) {
+      setBookings(prev => prev.map(b => b.id === id ? { ...b, status: "refunded" } : b));
+    } else {
+      const d = await res.json().catch(() => ({}));
+      alert(d.message ?? "退款失败，请稍后重试");
+    }
+  };
+
+  // 联系来访：获取/创建与该来访的私信会话并跳转
+  const [contactingId, setContactingId] = useState<string | null>(null);
+  const handleContact = async (b: Booking) => {
+    if (!b.client?.id || contactingId) return;
+    setContactingId(b.id);
+    try {
+      const res = await request("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otherUserId: b.client.id }),
+      });
+      const conv = await res.json().catch(() => null);
+      if (res.ok && conv?.id) router.push(`/chat/${conv.id}`);
+    } finally {
+      setContactingId(null);
     }
   };
 
@@ -318,7 +391,7 @@ export function CounselorBookingsScreen() {
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
-            {displayed.map(b => <BookingCard key={b.id} b={b} onUpdate={handleUpdate} onReschedule={setRescheduleBooking} onDirectReschedule={setShowDirectReschedule} />)}
+            {displayed.map(b => <BookingCard key={b.id} b={b} onUpdate={handleUpdate} onConfirm={openConfirm} onReschedule={setRescheduleBooking} onDirectReschedule={setShowDirectReschedule} onContact={handleContact} onRefund={handleRefund} />)}
           </AnimatePresence>
         )}
       </div>
@@ -352,7 +425,7 @@ export function CounselorBookingsScreen() {
               style={{ background: "#F8F5F0", borderColor: "#DDD8D0", resize: "none", color: "#2C2420" }} />
             <div className="flex gap-3">
               <button onClick={async () => {
-                await request(`/api/bookings/\${rescheduleBooking.id}/reschedule`, {
+                await request(`/api/bookings/${rescheduleBooking.id}/reschedule`, {
                   method: "PATCH",
                   body: JSON.stringify({ action: "reject", note: rescheduleNote }),
                 });
@@ -363,7 +436,7 @@ export function CounselorBookingsScreen() {
                 拒绝改期
               </button>
               <button onClick={async () => {
-                await request(`/api/bookings/\${rescheduleBooking.id}/reschedule`, {
+                await request(`/api/bookings/${rescheduleBooking.id}/reschedule`, {
                   method: "PATCH",
                   body: JSON.stringify({ action: "approve", note: rescheduleNote }),
                 });
@@ -382,12 +455,112 @@ export function CounselorBookingsScreen() {
         </div>
       )}
 
+      {/* 确认预约弹窗：告知咨询设置 + 发送咨询链接 + 可改时间 */}
+      {confirmBooking && (() => {
+        const WEEKDAY = ["日","一","二","三","四","五","六"];
+        const days = Array.from({ length: 14 }, (_, i) => {
+          const d = new Date(); d.setDate(d.getDate() + i + 1);
+          return { iso: localDateStr(d), label: `${d.getMonth()+1}/${d.getDate()}`, weekday: `周${WEEKDAY[d.getDay()]}` };
+        });
+        const TIME_SLOTS = ["09:00","10:00","11:00","14:00","15:00","16:00","19:00","20:00"];
+        const needTime = !!confirmBooking.adjustRequest;
+        const timePicked = !!(cSelDay && cSelTime);
+        const canSubmit = confirming ? false : (needTime ? timePicked : true);
+
+        return (
+          <div className="fixed inset-0 z-50 flex flex-col justify-end">
+            <div className="absolute inset-0 bg-black/50" onClick={() => !confirming && setConfirmBooking(null)} />
+            <div className="relative bg-[var(--color-bg)] rounded-t-3xl px-5 pt-5 pb-10 z-10 max-h-[85vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-bold text-[#2C2420]">确认预约</h3>
+                <button onClick={() => setConfirmBooking(null)} className="w-8 h-8 rounded-full bg-[#EBE7DF] flex items-center justify-center text-[#5A4E44]">×</button>
+              </div>
+
+              {/* 订单摘要 */}
+              <div className="rounded-2xl p-3.5 mb-4" style={{ background: "#F8F5F0" }}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span style={{ color: "#9B8E82" }}>来访者</span>
+                  <span className="font-semibold" style={{ color: "#2C2420" }}>
+                    {confirmBooking.applicationForm?.name || confirmBooking.client?.name || confirmBooking.client?.email?.split("@")[0] || "来访者"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span style={{ color: "#9B8E82" }}>费用（已支付）</span>
+                  <span className="font-semibold" style={{ color: "#2C2420" }}>¥{confirmBooking.priceAmount}</span>
+                </div>
+                {confirmBooking.adjustRequest ? (
+                  <div className="mt-2 pt-2 border-t" style={{ borderColor: "#EBE7DF" }}>
+                    <p className="text-xs font-semibold mb-0.5" style={{ color: "#D97706" }}>时间调剂申请</p>
+                    <p className="text-xs whitespace-pre-wrap" style={{ color: "#5A4E44" }}>{confirmBooking.adjustRequest.message}</p>
+                    <p className="text-xs mt-1" style={{ color: "#9B8E82" }}>需在下方为本次咨询指定时间</p>
+                  </div>
+                ) : (
+                  <div className="flex justify-between text-sm">
+                    <span style={{ color: "#9B8E82" }}>预约时间</span>
+                    <span className="font-semibold" style={{ color: "#2C2420" }}>
+                      {new Date(confirmBooking.scheduledAt).toLocaleString("zh-CN", { month: "numeric", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* 时间选择（调剂申请必选；常规预约可改） */}
+              <p className="text-sm font-semibold text-[#2C2420] mb-1.5">
+                咨询时间 {needTime ? <span style={{ color: "#E87070" }}>*</span> : <span className="text-xs font-normal text-[#9B8E82]">（不选则按预约时间）</span>}
+              </p>
+              <div className="flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide">
+                {days.map(d => (
+                  <button key={d.iso} onClick={() => { setCSelDay(d.iso); setCSelTime(""); }}
+                    className="flex-none flex flex-col items-center px-3 py-2 rounded-2xl text-xs font-medium"
+                    style={{ background: cSelDay===d.iso ? "var(--color-primary)" : "white", color: cSelDay===d.iso ? "white" : "#5A4E44", border:`1px solid ${cSelDay===d.iso ? "var(--color-primary)" : "#EBE7DF"}`, minWidth:52 }}>
+                    <span>{d.weekday}</span><span className="mt-0.5">{d.label}</span>
+                  </button>
+                ))}
+              </div>
+              {cSelDay && (
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {TIME_SLOTS.map(t => (
+                    <button key={t} onClick={() => setCSelTime(t)}
+                      className="py-2 rounded-xl text-sm font-medium"
+                      style={{ background: cSelTime===t ? "var(--color-primary)" : "#F5F0EA", color: cSelTime===t ? "white" : "#2C2420" }}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* 咨询说明 + 咨询链接 */}
+              <p className="text-sm font-semibold text-[#2C2420] mb-1.5">告知来访者咨询设置</p>
+              <textarea value={cNote} onChange={e => setCNote(e.target.value)} rows={2}
+                placeholder="例如：咨询将使用腾讯会议，请提前 5 分钟进入，找安静环境…"
+                className="w-full rounded-xl px-3 py-2.5 text-sm border mb-3"
+                style={{ background: "#F8F5F0", borderColor: "#DDD8D0", resize: "none", color: "#2C2420" }} />
+              <p className="text-sm font-semibold text-[#2C2420] mb-1.5">
+                咨询链接 <span className="text-xs font-normal text-[#9B8E82]">（腾讯会议 / Zoom 等，选填）</span>
+              </p>
+              <input value={cLink} onChange={e => setCLink(e.target.value)}
+                placeholder="https://meeting.tencent.com/..."
+                className="w-full rounded-xl px-3 py-2.5 text-sm border mb-4"
+                style={{ background: "#F8F5F0", borderColor: "#DDD8D0", color: "#2C2420" }} />
+
+              {confirmError && <p className="text-xs text-red-500 mb-3">{confirmError}</p>}
+
+              <button onClick={handleConfirm} disabled={!canSubmit}
+                className="w-full py-3.5 rounded-2xl text-white font-bold text-sm disabled:opacity-50"
+                style={{ background: "var(--color-primary)" }}>
+                {confirming ? "确认中…" : "确认预约并通知来访者"}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* 咨询师直接改期抽屉（直接生效，无需来访确认） */}
       {showDirectReschedule && (() => {
         const WEEKDAY = ["日","一","二","三","四","五","六"];
         const days = Array.from({ length: 14 }, (_, i) => {
           const d = new Date(); d.setDate(d.getDate() + i + 1);
-          return { iso: d.toISOString().slice(0,10), label: `${d.getMonth()+1}/${d.getDate()}`, weekday: `周${WEEKDAY[d.getDay()]}` };
+          return { iso: localDateStr(d), label: `${d.getMonth()+1}/${d.getDate()}`, weekday: `周${WEEKDAY[d.getDay()]}` };
         });
         const TIME_SLOTS = ["09:00","10:00","11:00","14:00","15:00","16:00","19:00","20:00"];
 

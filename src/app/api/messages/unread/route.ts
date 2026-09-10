@@ -6,6 +6,6 @@ import { getTotalUnreadCount } from "@/lib/db/queries/messages";
 export async function GET(req: NextRequest) {
   const r = await requireAuth(req);
   if (!r.ok) return r.response;
-  const count = await getTotalUnreadCount(r.user.id);
+  const count = await getTotalUnreadCount(r.user.id, r.user.role);
   return NextResponse.json({ count });
 }

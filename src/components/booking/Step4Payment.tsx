@@ -20,12 +20,19 @@ export function Step4Payment({ counselorName, dateStr, durationMinutes, priceAmo
   const [method, setMethod] = useState("wechat");
   const [paying, setPaying] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
 
   const handlePay = async () => {
     setPaying(true);
-    await onPay(method);
-    setPaying(false);
-    setDone(true);
+    setError("");
+    try {
+      await onPay(method);
+      setDone(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "支付失败，请稍后重试");
+    } finally {
+      setPaying(false);
+    }
   };
 
   if (done) {
@@ -39,7 +46,7 @@ export function Step4Payment({ counselorName, dateStr, durationMinutes, priceAmo
           </svg>
         </div>
         <h2 className="text-xl font-bold text-[#2C2420] mb-2">支付成功！</h2>
-        <p className="text-sm text-[#9B8E82] mb-2">预约已确认，期待与你的相遇</p>
+        <p className="text-sm text-[#9B8E82] mb-2">咨询师确认后将通知你，并发送咨询设置与链接</p>
         <p className="text-sm font-semibold text-[#5A4E44]">{counselorName} · {dateStr}</p>
         <div className="flex gap-3 mt-8 w-full">
           <button onClick={onBack}

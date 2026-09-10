@@ -1,11 +1,21 @@
 "use client";
 /**
- * 全局未读消息数 hook — 每 15 秒轮询一次
+ * 全局未读消息数 hook — 15秒兜底轮询 + 事件驱动立即刷新
  * 供 app-shell 底部导航红点使用
  */
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
+
+/** 未读数立即刷新事件名（标记已读后 dispatch，红点即刻更新，不等轮询） */
+export const UNREAD_REFRESH_EVENT = "mindpace:unread-refresh";
+
+/** 标记已读后调用：让所有底部导航红点立即刷新 */
+export function notifyUnreadRefresh() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(UNREAD_REFRESH_EVENT));
+  }
+}
 
 export function useUnreadCount(intervalMs = 15000) {
   const { user } = useAuth();
@@ -24,7 +34,13 @@ export function useUnreadCount(intervalMs = 15000) {
     };
     fetchOnce();
     const t = setInterval(fetchOnce, intervalMs);
-    return () => { aborted = true; clearInterval(t); };
+    // 标记已读/发消息等动作触发立即刷新
+    window.addEventListener(UNREAD_REFRESH_EVENT, fetchOnce);
+    return () => {
+      aborted = true;
+      clearInterval(t);
+      window.removeEventListener(UNREAD_REFRESH_EVENT, fetchOnce);
+    };
   }, [user, intervalMs]);
 
   return count;

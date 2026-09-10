@@ -5,6 +5,7 @@ import { users } from "@/lib/db/schema/users";
 import { bookings } from "@/lib/db/schema/scheduling";
 import { counselors } from "@/lib/db/schema/counselors";
 import { eq, desc } from "drizzle-orm";
+import { BOOKING_STATUSES } from "@/lib/booking-status";
 
 export async function PATCH(
   req: NextRequest,
@@ -103,13 +104,9 @@ export async function GET(
     cs.forEach(c => { allCounselorNames[c.id] = c.name ?? c.id; });
   }
 
-  const STATUS_LABEL: Record<string, string> = {
-    pending_confirmation: "待确认",
-    paid:                 "待咨询",
-    completed:            "已完成",
-    cancelled:            "已取消",
-    refunded:             "已退款",
-  };
+  const STATUS_LABEL: Record<string, string> = Object.fromEntries(
+    Object.entries(BOOKING_STATUSES).map(([k, m]) => [k, m.label])
+  );
 
   function formatBooking(b: typeof clientBookings[0]) {
     const d = b.scheduledAt ? new Date(b.scheduledAt) : null;

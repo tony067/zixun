@@ -5,10 +5,16 @@ import { bookings } from "@/lib/db/schema/scheduling";
 import { users } from "@/lib/db/schema/users";
 import { counselors } from "@/lib/db/schema/counselors";
 import { eq } from "drizzle-orm";
+import { syncBookingProgress } from "@/lib/db/queries/bookings";
 
 export async function GET(req: NextRequest) {
   const auth = await requireAuth(req);
   if (!auth.ok) return auth.response;
+  // 仅管理员和客服（显式授权）可查看全量订单列表
+  if (auth.user.role !== "admin" && auth.user.role !== "support") {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+  await syncBookingProgress();
 
   const status = req.nextUrl.searchParams.get("status");
 

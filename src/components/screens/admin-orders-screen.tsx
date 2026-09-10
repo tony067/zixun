@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { request } from "@/lib/api/request";
+import { statusMeta } from "@/lib/booking-status";
 import { User, Clock, CreditCard } from "lucide-react";
 
 type Booking = {
@@ -17,24 +18,17 @@ type Booking = {
 const STATUS_OPTS = [
   { key: "all", label: "全部" },
   { key: "pending_confirmation", label: "待确认" },
-  { key: "pending_payment", label: "待支付" },
   { key: "paid", label: "待咨询" },
+  { key: "in_progress", label: "进行中" },
   { key: "completed", label: "已完成" },
   { key: "cancelled", label: "已取消" },
+  { key: "refunded", label: "已退款" },
 ];
 
-const STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
-  pending_confirmation: { bg: "#FEF3C7", text: "#D97706", label: "待确认" },
-  pending_payment:      { bg: "#EFF6FF", text: "#2563EB", label: "待支付" },
-  paid:                 { bg: "#F0FDF4", text: "#16A34A", label: "待咨询" },
-  completed:            { bg: "#F5F0EA", text: "#6B7280", label: "已完成" },
-  cancelled:            { bg: "#FEE2E2", text: "#DC2626", label: "已取消" },
-  rejected:             { bg: "#FEE2E2", text: "#DC2626", label: "已拒绝" },
-};
-
-export default function AdminOrdersScreen() {
+export default function AdminOrdersScreen({ variant = "admin" }: { variant?: "admin" | "support" } = {}) {
   const router = useRouter();
   const { user } = useAuth();
+  const isSupport = variant === "support";
   const [tab, setTab] = useState("all");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,12 +60,15 @@ export default function AdminOrdersScreen() {
     return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
   };
 
-  const st = (status: string) => STATUS_MAP[status] ?? { bg: "#F5F0EA", text: "#9B8E82", label: status };
+  const st = (status: string) => {
+    const m = statusMeta(status);
+    return { bg: m.bg, text: m.color, label: m.label };
+  };
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--color-bg)" }}>
       <div className="px-5 pt-12 pb-3">
-        <h1 className="text-xl font-bold" style={{ color: "#2C2420" }}>订单管理</h1>
+        <h1 className="text-xl font-bold" style={{ color: "#2C2420" }}>{isSupport ? "客服 · 订单" : "订单管理"}</h1>
         <p className="text-xs mt-0.5" style={{ color: "#9B8E82" }}>共 {bookings.length} 笔</p>
       </div>
       <div className="flex gap-2 px-4 overflow-x-auto pb-3">
@@ -176,21 +173,41 @@ export default function AdminOrdersScreen() {
               </div>
             </div>
             <div className="space-y-2">
-              {selected.status === "pending_confirmation" && (
-                <div className="flex gap-2">
-                  <button onClick={() => handleAction(selected.id, "rejected")} disabled={processing}
-                    className="flex-1 py-3 rounded-2xl text-sm font-bold" style={{ background: "#FEE2E2", color: "#DC2626" }}>拒绝</button>
-                  <button onClick={() => handleAction(selected.id, "pending_payment")} disabled={processing}
-                    className="flex-1 py-3 rounded-2xl text-sm font-bold text-white" style={{ background: "var(--color-primary)" }}>确认预约</button>
-                </div>
-              )}
-              {selected.status === "paid" && (
-                <button onClick={() => handleAction(selected.id, "completed")} disabled={processing}
-                  className="w-full py-3 rounded-2xl text-sm font-bold text-white" style={{ background: "var(--color-primary)" }}>标记已完成</button>
-              )}
-              {!["cancelled","completed","rejected"].includes(selected.status) && (
-                <button onClick={() => handleAction(selected.id, "cancelled")} disabled={processing}
-                  className="w-full py-3 rounded-2xl text-sm font-bold" style={{ background: "#FEE2E2", color: "#DC2626" }}>取消订单</button>
+              {isSupport ? (
+                <>
+                  {/* 客服：仅开放 标记已支付 + 退款 */}
+                  {["pending_payment", "confirmed"].includes(selected.status) && (
+                    <button onClick={() => handleAction(selected.id, "paid")} disabled={processing}
+                      className="w-full py-3 rounded-2xl text-sm font-bold text-white" style={{ background: "var(--color-primary)" }}>标记已支付</button>
+                  )}
+                  {["pending_confirmation", "pending_payment", "paid", "in_progress", "completed"].includes(selected.status) && (
+                    <button onClick={() => handleAction(selected.id, "refunded")} disabled={processing}
+                      className="w-full py-3 rounded-2xl text-sm font-bold" style={{ background: "#FEF9EE", color: "#B07D2A", border: "1px solid #F5E6C0" }}>退款</button>
+                  )}
+                </>
+              ) : (
+                <>
+                  {(selected.status === "pending_confirmation" || selected.status === "pending_payment") && (
+                    <div className="flex gap-2">
+                      <button onClick={() => handleAction(selected.id, "rejected")} disabled={processing}
+                        className="flex-1 py-3 rounded-2xl text-sm font-bold" style={{ background: "#FEE2E2", color: "#DC2626" }}>拒绝</button>
+                      <button onClick={() => handleAction(selected.id, "paid")} disabled={processing}
+                        className="flex-1 py-3 rounded-2xl text-sm font-bold text-white" style={{ background: "var(--color-primary)" }}>确认预约</button>
+                    </div>
+                  )}
+                  {(selected.status === "paid" || selected.status === "in_progress") && (
+                    <button onClick={() => handleAction(selected.id, "completed")} disabled={processing}
+                      className="w-full py-3 rounded-2xl text-sm font-bold text-white" style={{ background: "var(--color-primary)" }}>标记已完成</button>
+                  )}
+                  {["in_progress", "completed"].includes(selected.status) && (
+                    <button onClick={() => handleAction(selected.id, "refunded")} disabled={processing}
+                      className="w-full py-3 rounded-2xl text-sm font-bold" style={{ background: "#FEF9EE", color: "#B07D2A", border: "1px solid #F5E6C0" }}>退款（仅管理员可操作）</button>
+                  )}
+                  {!["cancelled","completed","rejected"].includes(selected.status) && (
+                    <button onClick={() => handleAction(selected.id, "cancelled")} disabled={processing}
+                      className="w-full py-3 rounded-2xl text-sm font-bold" style={{ background: "#FEE2E2", color: "#DC2626" }}>取消订单</button>
+                  )}
+                </>
               )}
             </div>
           </div>

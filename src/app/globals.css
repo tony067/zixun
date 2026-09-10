@@ -22,6 +22,13 @@
   --color-mp-warning:   #D97706;
   --color-mp-error:     #DC2626;
 
+  /* 语义别名（项目代码中大量使用，缺失会导致弹窗/页面背景透明） */
+  --color-bg: var(--color-mp-surface);
+  --color-surface: var(--color-mp-surface);
+  --color-text-primary: var(--color-mp-text);
+  --color-text-secondary: var(--color-mp-muted);
+  --color-text-muted: var(--color-mp-faint);
+
   /* shadcn compat */
   --color-background: var(--color-mp-surface);
   --color-foreground: var(--color-mp-text);

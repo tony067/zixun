@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { getCounselorByUserId } from "@/lib/db/queries/counselors";
-import { getCounselorBookings } from "@/lib/db/queries/bookings";
+import { getCounselorBookings, syncBookingProgress } from "@/lib/db/queries/bookings";
 
 export async function GET(request: NextRequest) {
   const result = await requireAuth(request);
@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const c = await getCounselorByUserId(result.user.id);
     if (!c) return NextResponse.json({ error: "not a counselor" }, { status: 403 });
+    await syncBookingProgress();
     const list = await getCounselorBookings(c.id);
     return NextResponse.json(list);
   } catch (e) {

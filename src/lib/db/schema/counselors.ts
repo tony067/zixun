@@ -35,5 +35,5 @@ export const counselors = pgTable("counselors", {
   trainings: text("trainings").array().default([]),           // 受训经历
   workExperiences: text("work_experiences").array().default([]), // 工作经验
   sessionDescription: text("session_description").default(""), // 咨询过程与方式
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });

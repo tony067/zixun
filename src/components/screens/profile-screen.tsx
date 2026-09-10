@@ -2,39 +2,50 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
-import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight, Camera, Pencil, Check, X } from "lucide-react";
+import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight, Camera, Pencil, Check, X, MessageCircle } from "lucide-react";
 import { request } from "@/lib/api/request";
+import { statusMeta } from "@/lib/booking-status";
+import { useUnreadCount } from "@/hooks/use-unread-count";
 
 type Booking = {
   id: string; status: string; scheduledAt: string; durationMinutes: number;
   sessionMode: string; priceAmount: number; sessionNumber?: number;
+  rescheduleStatus?: string | null;
   counselor: { id: string; displayName: string } | null;
 };
 
 // 主页只显示进行中的订单
-const ACTIVE_STATUSES = ["pending_confirmation","pending_payment","paid","upcoming","confirmed","pending"];
-
-const STATUS_BADGE: Record<string,{label:string;color:string;bg:string}> = {
-  pending_confirmation: { label:"待确认",   color:"#D97706", bg:"#FEF3C7" },
-  pending_payment:      { label:"待支付",   color:"#3A6228", bg:"#C6DFB8" },
-  paid:                 { label:"即将咨询", color:"#059669", bg:"#D1FAE5" },
-  upcoming:             { label:"即将咨询", color:"#059669", bg:"#D1FAE5" },
-  confirmed:            { label:"待支付",   color:"#3A6228", bg:"#C6DFB8" },
-  pending:              { label:"待确认",   color:"#D97706", bg:"#FEF3C7" },
-  cancelled:            { label:"已取消",   color:"#6B7280", bg:"#F3F4F6" },
-  completed:            { label:"已完成",   color:"#059669", bg:"#D1FAE5" },
-  rejected:             { label:"已拒绝",   color:"#9B8E82", bg:"#F5F0EA" },
-};
+const ACTIVE_STATUSES = ["pending_confirmation","pending_payment","paid","in_progress","upcoming","confirmed","pending"];
 
 function fmt(iso: string) {
   const d = new Date(iso);
   return `${d.getMonth()+1}月${d.getDate()}日 ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
 }
 
+// 预约动态文案：行动提醒（下一步去哪、做什么），操作统一到订单详情页
+function reminderText(b: Booking, name: string) {
+  if (b.status === "in_progress") return "咨询正在进行，请进入咨询";
+  if (b.status === "paid" || b.status === "upcoming") {
+    if (b.rescheduleStatus === "approved") return "改期申请已通过，请查看新时间";
+    if (b.rescheduleStatus === "pending") return "已提交改期申请，等待咨询师确认";
+    return "预约已确认，请查看咨询设置";
+  }
+  if (b.status === "pending_confirmation") return `已支付成功，等待${name}确认`;
+  if (b.status === "pending_payment" || b.status === "confirmed") return "预约待支付，请尽快完成";
+  return "预约进行中";
+}
+
+// 点击动态跳转到对应的操作目的地
+function reminderHref(b: Booking) {
+  if (b.status === "pending_payment" || b.status === "confirmed") return `/my-bookings/${b.id}?pay=1`;
+  return `/my-bookings/${b.id}`;
+}
+
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const unread = useUnreadCount();
 
   useEffect(() => {
     if (!user) return;
@@ -156,8 +167,8 @@ export default function ProfileScreen() {
           </button>
         </div>
 
-        {/* 进行中订单列表 */}
-        {activeBookings.length === 0 ? (
+        {/* 预约动态：行动提醒（含未读消息），点击直达对应操作 */}
+        {activeBookings.length === 0 && unread === 0 ? (
           <div className="py-8 flex flex-col items-center gap-2">
             <p className="text-sm" style={{ color:"#9B8E82" }}>暂无进行中的预约</p>
             <button onClick={() => router.push("/")}
@@ -168,63 +179,55 @@ export default function ProfileScreen() {
           </div>
         ) : (
           <div>
-            {activeBookings.map((b) => {
-              const st = STATUS_BADGE[b.status] ?? { label:b.status, color:"#9B8E82", bg:"#F5F0EA" };
-              const isPending = b.status === "pending" || b.status === "pending_confirmation";
+            {unread > 0 && (
+              <button onClick={() => router.push("/messages")}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left border-b"
+                style={{ borderColor:"#F5F0EA" }}>
+                <div className="w-9 h-9 rounded-full flex-none flex items-center justify-center"
+                  style={{ background:"#E4F0DC" }}>
+                  <MessageCircle className="w-4 h-4" style={{ color:"#3A6228" }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium" style={{ color:"#2C2420" }}>你有 {unread} 条未读消息</p>
+                  <p className="text-xs mt-0.5" style={{ color:"#9B8E82" }}>来自咨询师的私信，点击查看并回复</p>
+                </div>
+                <span className="text-xs px-2 py-0.5 rounded-full font-medium flex-none"
+                  style={{ background:"#FEF3C7", color:"#D97706" }}>新消息</span>
+              </button>
+            )}
+            {activeBookings.slice(0, 3).map((b) => {
+              const st = statusMeta(b.status);
+              const name = b.counselor?.displayName ?? "咨询师";
               return (
-                <div key={b.id} className="border-b last:border-0" style={{ borderColor:"#F5F0EA" }}>
-                  <button onClick={() => router.push(`/my-bookings/${b.id}`)}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left"
-                    style={{ borderColor:"#F5F0EA" }}>
+                <button key={b.id} onClick={() => router.push(reminderHref(b))}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left border-b last:border-0"
+                  style={{ borderColor:"#F5F0EA" }}>
                   <div className="w-9 h-9 rounded-full flex-none overflow-hidden flex items-center justify-center text-sm font-bold text-white"
                     style={{ background:"var(--color-primary)" }}>
                     {(b.counselor as any)?.avatarUrl
                       ? <img src={(b.counselor as any).avatarUrl} alt="" className="w-full h-full object-cover" />
-                      : (b.counselor?.displayName?.[0] ?? "师")}
+                      : name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate" style={{ color:"#2C2420" }}>
-                      {b.counselor?.displayName ?? "咨询师"}
+                    <p className="text-sm font-medium truncate" style={{ color:"#2C2420" }}>
+                      {reminderText(b, name)}
                     </p>
                     <p className="text-xs mt-0.5" style={{ color:"#9B8E82" }}>
-                      {b.scheduledAt ? fmt(b.scheduledAt) : "待定"} · {b.sessionMode}
+                      {b.scheduledAt ? fmt(b.scheduledAt) : "时间待定"} · {b.sessionMode}
                     </p>
                   </div>
                   <span className="text-xs px-2 py-0.5 rounded-full font-medium flex-none"
                     style={{ background:st.bg, color:st.color }}>{st.label}</span>
-                  </button>
-                  {/* 操作按钮行 */}
-                  {isPending && (
-                    <div className="flex gap-2 px-4 pb-3" onClick={e => e.stopPropagation()}>
-                      {(b.status === "pending_payment" || b.status === "confirmed") ? (
-                        <button onClick={(e) => { e.stopPropagation(); router.push(`/my-bookings/${b.id}?pay=1`); }}
-                          className="flex-1 py-1.5 rounded-xl text-xs font-bold text-white"
-                          style={{ background:"var(--color-primary)" }}>
-                          去支付
-                        </button>
-                      ) : (
-                        <button onClick={() => router.push(`/messages`)}
-                          className="flex-1 py--1.5 rounded-xl text-xs font-medium border"
-                          style={{ borderColor:"var(--color-primary)", color:"var(--color-primary)" }}>
-                          私信咨询师
-                        </button>
-                      )}
-                      <button onClick={async (e) => {
-                        e.stopPropagation();
-                        if (!confirm("确认取消这个预约吗？")) return;
-                        const { request } = await import("@/lib/api/request");
-                        await request(`/api/bookings/${b.id}`, { method:"PATCH", body: JSON.stringify({ status:"cancelled" }) });
-                        setBookings(prev => prev.filter(x => x.id !== b.id));
-                      }}
-                        className="flex-1 py-1.5 rounded-xl text-xs font-medium border"
-                        style={{ borderColor:"#D1D5DB", color:"#6B7280" }}>
-                        取消预约
-                      </button>
-                    </div>
-                  )}
-                </div>
+                </button>
               );
             })}
+            {activeBookings.length > 3 && (
+              <button onClick={() => router.push("/my-bookings")}
+                className="w-full py-3 text-xs font-medium text-center"
+                style={{ color:"var(--color-primary)", borderTop:"1px solid #F5F0EA" }}>
+                查看全部 {activeBookings.length} 条预约
+              </button>
+            )}
           </div>
         )}
       </div>

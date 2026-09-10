@@ -58,8 +58,7 @@ export const PURPOSE_OPTIONS = [
 export const STEPS = [
   { num: 1, label: "选择时间" },
   { num: 2, label: "填写信息" },
-  { num: 3, label: "等待确认" },
-  { num: 4, label: "支付" },
+  { num: 3, label: "支付" },
 ];
 
 /**

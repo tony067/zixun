@@ -27,6 +27,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Search, ChevronRight, ArrowLeft, X } from "lucide-react";
 import { request } from "@/lib/api/request";
+import { statusMeta } from "@/lib/booking-status";
 
 interface UserRow {
   id: string;
@@ -52,14 +53,6 @@ interface BookingRow {
 interface UserDetail extends UserRow {
   bookings: BookingRow[];
 }
-
-const STATUS_LABEL: Record<string, string> = {
-  pending_confirmation: "待确认",
-  confirmed: "待支付",
-  completed: "已完成",
-  cancelled: "已取消",
-  pending_payment: "待支付",
-};
 
 function fmtDate(iso: string) {
   if (!iso) return "";
@@ -138,6 +131,20 @@ export default function AdminUsersScreen() {
     if (!selected) return;
     const newRole = selected.role === "counselor" ? "visitor" : "counselor";
     const label = newRole === "counselor" ? "设为咨询师" : "移回来访者";
+    if (!window.confirm(`确认将该用户「${label}」？`)) return;
+    await request(`/api/admin/users/${selected.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ role: newRole }),
+    });
+    setSelected(prev => prev ? { ...prev, role: newRole } : prev);
+    setAllUsers(prev => prev.map(u => u.id === selected.id ? { ...u, role: newRole } : u));
+  }
+
+  // 授予/撤销客服权限（客服仅开放：客户消息 + 订单促进[标记已支付/退款]）
+  async function toggleSupport() {
+    if (!selected) return;
+    const newRole = selected.role === "support" ? "visitor" : "support";
+    const label = newRole === "support" ? "设为客服" : "移回来访者";
     if (!window.confirm(`确认将该用户「${label}」？`)) return;
     await request(`/api/admin/users/${selected.id}`, {
       method: "PATCH",
@@ -287,7 +294,7 @@ export default function AdminUsersScreen() {
                         <span className="text-[10px] px-1.5 py-0.5 rounded mt-1 inline-block"
                           style={{ background: b.status === "completed" ? "#DCFCE7" : "#F3F4F6",
                             color: b.status === "completed" ? "#16A34A" : "#6B7280" }}>
-                          {STATUS_LABEL[b.status] ?? b.status}
+                          {statusMeta(b.status).label}
                         </span>
                         {b.agreementSigned && (
                           <button onClick={() => setShowAgreement(b.id)}
@@ -323,6 +330,16 @@ export default function AdminUsersScreen() {
 
             {/* 角色切换按钮 */}
             <div className="mt-2">
+              {selected.role !== "counselor" && (
+                <button onClick={toggleSupport}
+                  className="w-full py-3 rounded-2xl text-sm font-bold mb-2"
+                  style={{
+                    background: selected.role === "support" ? "#FEF3C7" : "#E8F0FB",
+                    color: selected.role === "support" ? "#92400E" : "#3A9B8E",
+                  }}>
+                  {selected.role === "support" ? "移回来访者身份（撤销客服）" : "设为客服"}
+                </button>
+              )}
               <button onClick={toggleRole}
                 className="w-full py-3 rounded-2xl text-sm font-bold mb-2"
                 style={{

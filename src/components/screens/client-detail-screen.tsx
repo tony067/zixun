@@ -16,14 +16,8 @@ type ClientData = {
   bookings: Booking[];
 };
 
-const STATUS_LABEL: Record<string,string> = {
-  pending_confirmation:"待确认",pending_payment:"待支付",confirmed:"待咨询",completed:"已完成",cancelled:"已取消"
-};
-const STATUS_COLOR: Record<string,[string,string]> = {
-  completed:["#E4F0DC","#3A6228"], cancelled:["#F5F0EA","#9B8E82"],
-  confirmed:["#E8F4FC","#2A6E8A"], pending_payment:["#FEF3E2","#8A5A1A"],
-  pending_confirmation:["#FEF3E2","#8A5A1A"],
-};
+import { statusMeta } from "@/lib/booking-status";
+// 状态文案/配色统一来自 @/lib/booking-status
 function fmt(d:string){const t=new Date(d);return`${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`;}
 
 const MOCK:ClientData={
@@ -150,7 +144,7 @@ export default function ClientDetailScreen() {
         <p className="text-sm font-bold mb-3" style={{color:"#2C2420"}}>咨询记录</p>
         <div className="space-y-3 mb-10">
           {d.bookings.map(b=>{
-            const [bg,color] = STATUS_COLOR[b.status]??["#F5F0EA","#9B8E82"];
+            const m = statusMeta(b.status); const [bg,color] = [m.bg, m.color];
             const expanded = expandedId===b.id;
             return(
               <div key={b.id} className="rounded-2xl overflow-hidden" style={{background:"white",border:"1.5px solid var(--color-border)"}}>
@@ -166,7 +160,7 @@ export default function ClientDetailScreen() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{background:bg,color}}>
-                      {STATUS_LABEL[b.status]??b.status}
+                      {statusMeta(b.status).label}
                     </span>
                     {expanded?<ChevronUp className="w-4 h-4" style={{color:"#9B8E82"}}/>:<ChevronDown className="w-4 h-4" style={{color:"#9B8E82"}}/>}
                   </div>
@@ -178,7 +172,7 @@ export default function ClientDetailScreen() {
                         <div className="grid grid-cols-2 gap-2 mt-3">
                           {[
                             {label:"咨询方式",value:b.sessionMode},{label:"时长",value:`${b.durationMinutes} 分钟`},
-                            {label:"费用",value:`¥${b.priceAmount}`},{label:"状态",value:STATUS_LABEL[b.status]??b.status},
+                            {label:"费用",value:`¥${b.priceAmount}`},{label:"状态",value:statusMeta(b.status).label},
                           ].map(item=>(
                             <div key={item.label} className="rounded-xl p-2.5" style={{background:"#F8F5F0"}}>
                               <p className="text-xs" style={{color:"#9B8E82"}}>{item.label}</p>

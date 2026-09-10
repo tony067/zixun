@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, Video, ChevronRight, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
+import { statusMeta } from "@/lib/booking-status";
 
 type Booking = {
   id: string; status: string; scheduledAt: string; durationMinutes: number;
@@ -13,32 +14,21 @@ type Booking = {
 };
 
 const TABS = [
-  { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation","pending"] },
-  { key: "pending_payment",      label: "待支付", statuses: ["pending_payment","confirmed"] },
-  { key: "upcoming",             label: "待咨询", statuses: ["paid","upcoming"] },
-  { key: "past",                 label: "已完成",   statuses: ["completed","cancelled","rejected"] },
+  { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation", "pending_payment"] },
+  { key: "upcoming",             label: "待咨询", statuses: ["paid"] },
+  { key: "in_progress",          label: "进行中", statuses: ["in_progress"] },
+  { key: "past",                 label: "已完成", statuses: ["completed", "cancelled", "rejected", "refunded"] },
 ];
 
-const STATUS_BADGE: Record<string, { label: string; color: string; bg: string }> = {
-  pending_confirmation: { label: "待咨询师确认", color: "#D97706", bg: "transparent" },
-  pending:              { label: "待咨询师确认", color: "#D97706", bg: "transparent" },
-  pending_payment:      { label: "待支付",       color: "#4A7A36", bg: "#E4F0DC" },
-  confirmed:            { label: "待支付",       color: "#4A7A36", bg: "#E4F0DC" },
-  paid:                 { label: "即将咨询",     color: "#059669", bg: "transparent" },
-  upcoming:             { label: "即将咨询",     color: "#059669", bg: "transparent" },
-  completed:            { label: "已完成",       color: "#6B7280", bg: "transparent" },
-  cancelled:            { label: "已取消",       color: "#9CA3AF", bg: "transparent" },
-  rejected:             { label: "已拒绝",       color: "#DC2626", bg: "transparent" },
-};
-
-function BookingCard({ b }: { b: Booking }) {
+function BookingCard({ b, onCancel }: { b: Booking; onCancel: (id: string) => void }) {
   const router = useRouter();
-  const badge = STATUS_BADGE[b.status] ?? { label: b.status, color: "#9B8E82", bg: "#F5F0E8" };
+  const badge = statusMeta(b.status);
   const dt = b.scheduledAt ? new Date(b.scheduledAt) : null;
   const c = b.counselor;
   return (
     <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl p-4 mb-3" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+      onClick={() => router.push(`/my-bookings/${b.id}`)}
+      className="rounded-2xl p-4 mb-3 cursor-pointer" style={{ background: "white", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
       <div className="flex items-start gap-3">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0"
           style={{ background: "#E8DFCC", color: "#7A6248" }}>
@@ -75,15 +65,16 @@ function BookingCard({ b }: { b: Booking }) {
           </div>
         </div>
       </div>
-      {(b.status === "pending_confirmation" || b.status === "pending") && (
-        <button className="w-full mt-3 py-2.5 rounded-xl text-sm font-semibold border"
+      {b.status === "pending_confirmation" && (
+        <button onClick={(e) => { e.stopPropagation(); onCancel(b.id); }}
+          className="w-full mt-3 py-2.5 rounded-xl text-sm font-semibold border"
           style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}>取消预约</button>
       )}
-      {(b.status === "pending_payment" || b.status === "confirmed") && (
+      {b.status === "pending_payment" && (
         <div className="flex gap-2 mt-3">
           <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1"
             style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
-            onClick={() => router.push(`/messages?counselorId=${b.counselor?.id}`)}>
+            onClick={(e) => { e.stopPropagation(); router.push(`/messages?counselorId=${b.counselor?.id}`); }}>
             <MessageCircle className="w-4 h-4" />私信咨询师</button>
           <button className="flex-[2] py-2.5 rounded-xl text-white text-sm font-semibold"
             style={{ background: "var(--color-primary)" }}
@@ -95,11 +86,20 @@ function BookingCard({ b }: { b: Booking }) {
         <div className="flex gap-2 mt-3">
           <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1"
             style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
-            onClick={() => router.push(`/messages?counselorId=${b.counselor?.id}`)}>
+            onClick={(e) => { e.stopPropagation(); router.push(`/messages?counselorId=${b.counselor?.id}`); }}>
             <MessageCircle className="w-4 h-4" />私信咨询师</button>
           <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border"
-            style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}>申请改期</button>
+            style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}
+            onClick={(e) => { e.stopPropagation(); router.push(`/my-bookings/${b.id}/reschedule`); }}>申请改期</button>
         </div>
+      )}
+      {b.status === "in_progress" && (
+        <button
+          onClick={(e) => { e.stopPropagation(); router.push(`/my-bookings/${b.id}`); }}
+          className="w-full mt-3 py-2.5 rounded-xl text-white text-sm font-semibold"
+          style={{ background: "var(--color-primary)" }}>
+          进入咨询
+        </button>
       )}
       {b.status === "completed" && (
         <button className="w-full mt-3 py-2.5 rounded-xl text-sm font-semibold border"
@@ -140,6 +140,18 @@ export default function MyBookingsScreen() {
     const next = { ...seenCounts, [key]: count };
     setSeenCounts(next);
     try { localStorage.setItem("mindpace_booking_seen", JSON.stringify(next)); } catch {}
+  };
+
+  const handleCancel = async (id: string) => {
+    if (!confirm("确定要取消这条预约吗？")) return;
+    const res = await request(`/api/bookings/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "cancelled" }),
+    });
+    if (res.ok) {
+      setAllBookings(prev => prev.map(b => b.id === id ? { ...b, status: "cancelled" } : b));
+    }
   };
 
   const currentTab = TABS.find(t => t.key === tab)!;
@@ -195,7 +207,7 @@ export default function MyBookingsScreen() {
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
-            {displayed.map(b => <BookingCard key={b.id} b={b} />)}
+            {displayed.map(b => <BookingCard key={b.id} b={b} onCancel={handleCancel} />)}
           </AnimatePresence>
         )}
       </div>

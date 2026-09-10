@@ -27,7 +27,7 @@ export async function notifyUser({ userId, title, body, data = {} }: NotifyPaylo
 
 // ── 来访端通知 ──
 
-/** 咨询师确认订单 → 通知来访可以支付 */
+/** 咨询师确认订单 → 通知来访（含咨询设置/链接提示） */
 export async function notifyClientBookingConfirmed(opts: {
   clientUserId: string;
   counselorName: string;
@@ -37,8 +37,22 @@ export async function notifyClientBookingConfirmed(opts: {
   await notifyUser({
     userId: opts.clientUserId,
     title: "咨询师已确认你的预约 ✓",
-    body: `${opts.counselorName} 已确认你的预约（${opts.scheduledAt}），请在 24 小时内完成支付。`,
+    body: `${opts.counselorName} 已确认你的预约（${opts.scheduledAt}），请前往订单详情查看咨询设置与咨询链接。`,
     data: { type: "booking_confirmed", bookingId: opts.bookingId },
+  });
+}
+
+/** 咨询师拒绝订单 → 通知来访（模拟退款提示） */
+export async function notifyClientBookingRejected(opts: {
+  clientUserId: string;
+  counselorName: string;
+  bookingId: string;
+}) {
+  await notifyUser({
+    userId: opts.clientUserId,
+    title: "预约未能确认",
+    body: `${opts.counselorName} 无法接受本次预约，你已支付的费用将原路退回（模拟支付，未实际扣款）。`,
+    data: { type: "booking_rejected", bookingId: opts.bookingId },
   });
 }
 
@@ -162,17 +176,20 @@ export async function notifyClientRescheduleResult(opts: {
 
 // ── 咨询师端通知 ──
 
-/** 新预约订单 → 提醒咨询师确认 */
+/** 新预约订单（已支付）→ 提醒咨询师确认 */
 export async function notifyCounselorNewBooking(opts: {
   counselorUserId: string;
   clientName: string;
   scheduledAt: string;
   bookingId: string;
+  isAdjustRequest?: boolean;
 }) {
   await notifyUser({
     userId: opts.counselorUserId,
-    title: "新预约等待确认",
-    body: `${opts.clientName} 预约了你 ${opts.scheduledAt} 的咨询，请在 24 小时内确认。`,
+    title: opts.isAdjustRequest ? "新的时间调剂申请" : "新预约等待确认",
+    body: opts.isAdjustRequest
+      ? `${opts.clientName} 已支付并提交了时间调剂申请（期望：${opts.scheduledAt}），请前往预约管理确认。`
+      : `${opts.clientName} 已支付，预约了你 ${opts.scheduledAt} 的咨询，请前往预约管理确认并发送咨询链接。`,
     data: { type: "new_booking", bookingId: opts.bookingId },
   });
 }

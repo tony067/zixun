@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Repeat, Lock, Check } from "lucide-react";
+import { localDateStr } from "@/lib/date";
 
 type RuleType = "available" | "blocked" | "fixed";
 type RuleMode = "recurring" | "single";
@@ -24,7 +25,7 @@ type Rule = {
 
 const WEEKDAY_LABELS = ["周一","周二","周三","周四","周五","周六","周日"];
 const HOUR_OPTIONS = ["08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
-const TODAY = new Date().toISOString().slice(0, 10);
+const TODAY = localDateStr(new Date());
 
 const TYPE_CFG: Record<RuleType, { label: string; icon: React.ReactNode; bgClass: string; textClass: string }> = {
   available: { label: "可预约", icon: <Check className="w-3.5 h-3.5" />, bgClass: "bg-[rgba(156,180,138,0.15)]", textClass: "text-[#5a7a4a]" },
@@ -105,7 +106,7 @@ export function RulesPanel({
   const toggleWD = (i: number) => set("weekdays", form.weekdays.includes(i) ? form.weekdays.filter(d => d !== i) : [...form.weekdays, i].sort());
 
   const canSubmit = form.mode === "recurring"
-    ? (form.type === "blocked" || form.weekdays.length > 0) && !!form.startTime
+    ? form.weekdays.length > 0 && !!form.startTime
     : !!form.singleDate && !!form.singleTime;
 
   const submit = async () => { await onAdd(form); setForm({ ...EMPTY }); setShowForm(false); };
@@ -163,22 +164,20 @@ export function RulesPanel({
             {/* recurring fields */}
             {form.mode === "recurring" && (
               <>
-                {form.type !== "blocked" && (
-                  <div>
-                    <p className="text-xs mb-2" style={{ color: "var(--color-mp-muted)" }}>重复星期</p>
-                    <div className="flex gap-1.5 flex-wrap">
-                      {WEEKDAY_LABELS.map((l, i) => (
-                        <button key={i} onClick={() => toggleWD(i)}
-                          className="w-9 h-9 rounded-xl text-xs font-semibold border transition-colors"
-                          style={{
-                            background: form.weekdays.includes(i) ? "var(--color-mp-primary)" : "var(--color-mp-surface)",
-                            color: form.weekdays.includes(i) ? "#fff" : "var(--color-mp-muted)",
-                            borderColor: form.weekdays.includes(i) ? "var(--color-mp-primary)" : "var(--color-mp-border)",
-                          }}>{l.slice(1)}</button>
-                      ))}
-                    </div>
+                <div>
+                  <p className="text-xs mb-2" style={{ color: "var(--color-mp-muted)" }}>重复星期</p>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {WEEKDAY_LABELS.map((l, i) => (
+                      <button key={i} onClick={() => toggleWD(i)}
+                        className="w-9 h-9 rounded-xl text-xs font-semibold border transition-colors"
+                        style={{
+                          background: form.weekdays.includes(i) ? (form.type === "blocked" ? "#DC2626" : "var(--color-mp-primary)") : "var(--color-mp-surface)",
+                          color: form.weekdays.includes(i) ? "#fff" : "var(--color-mp-muted)",
+                          borderColor: form.weekdays.includes(i) ? (form.type === "blocked" ? "#DC2626" : "var(--color-mp-primary)") : "var(--color-mp-border)",
+                        }}>{l.slice(1)}</button>
+                    ))}
                   </div>
-                )}
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs mb-1.5" style={{ color: "var(--color-mp-muted)" }}>开始时间</p>

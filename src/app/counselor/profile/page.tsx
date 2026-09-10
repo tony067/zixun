@@ -66,7 +66,9 @@ export default function CounselorProfilePage() {
 
   const status = STATUS_LABEL[form.reviewStatus] ?? STATUS_LABEL.draft;
   const canSubmit = !!(form.displayName && form.counselorTypes.length > 0);
-  const missingPrice = canSubmit && !form.pricePerSession;
+  // 价格校验：pricingOptions 中至少一个方案价格 > 0（旧字段 pricePerSession 已不作为必填）
+  const hasValidPricing = (form.pricingOptions ?? []).some(o => Number(o.price) > 0);
+  const missingPrice = canSubmit && !hasValidPricing;
 
   return (
     <div className="min-h-svh pb-36" style={{ background: "#F5F0E8" }}>
@@ -145,7 +147,7 @@ export default function CounselorProfilePage() {
           </button>
           <motion.button whileTap={{ scale: 0.97 }}
             onClick={() => {
-                if (missingPrice) { setToast("请先在「咨询设置」中填写收费金额"); setTimeout(() => setToast(""), 3000); return; }
+                if (missingPrice) { setToast("请先在「咨询设置」中添加至少一个收费方案（价格需大于 0）"); setTimeout(() => setToast(""), 3000); return; }
                 save(true);
               }}
             disabled={!canSubmit || submitting}

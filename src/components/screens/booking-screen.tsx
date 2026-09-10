@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 import { StepBar } from "@/components/booking/StepBar";
-import { Step1Time } from "@/components/booking/Step1Time";
+import { Step1Time, Step1Result } from "@/components/booking/Step1Time";
 import { Step2Form } from "@/components/booking/Step2Form";
-import { Step3Waiting } from "@/components/booking/Step3Waiting";
 import { Step4Payment } from "@/components/booking/Step4Payment";
 import { TimeSlot, ApplicationForm, WEEKDAY_LABELS } from "@/lib/booking-flow-data";
 
@@ -27,12 +26,11 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
   const [counselor, setCounselor] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 流程状态
-  const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(0);
+  // 流程状态：0 选方案 → 1 选时间/调剂申请 → 2 填表单 → 3 支付（提交订单）
+  const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
   const [selectedPricing, setSelectedPricing] = useState<number>(0);
-  const [step1Data, setStep1Data] = useState<{ mode: string; date: Date; slot: TimeSlot } | null>(null);
+  const [step1Data, setStep1Data] = useState<Step1Result | null>(null);
   const [bookingId, setBookingId] = useState<string>("");
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     request(`/api/counselors/${counselorId}`)
@@ -52,61 +50,76 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
     ? counselor.sessionModes
     : ["视频咨询"];
 
+  const isAdjust = !!step1Data && !step1Data.slot;
+
   const dateStr = step1Data
-    ? `${step1Data.date.getMonth() + 1}月${step1Data.date.getDate()}日 ${WEEKDAY_LABELS[step1Data.date.getDay()]} ${step1Data.slot.start}–${step1Data.slot.end}`
+    ? (step1Data.slot
+        ? `${step1Data.date.getMonth() + 1}月${step1Data.date.getDate()}日 ${WEEKDAY_LABELS[step1Data.date.getDay()]} ${step1Data.slot.start}–${step1Data.slot.end}`
+        : "时间调剂申请 · 由咨询师协调后确认时间")
     : "";
+
+  const duration = (counselor?.pricingOptions && counselor.pricingOptions.length > 0
+    ? counselor.pricingOptions[selectedPricing].duration
+    : counselor?.sessionDuration) ?? 50;
+  const price = (counselor?.pricingOptions && counselor.pricingOptions.length > 0
+    ? counselor.pricingOptions[selectedPricing].price
+    : counselor?.pricePerSession) ?? 0;
 
   // Step0 → Step1 (选择定价方案)
   const handleStep0 = () => {
     setStep(1);
   };
 
-  // Step1 → Step2
-  const handleStep1 = (data: { mode: string; date: Date; slot: TimeSlot }) => {
+  // Step1 → Step2（选时段 或 时间调剂申请）
+  const handleStep1 = (data: Step1Result) => {
     setStep1Data(data);
     setStep(2);
   };
 
-  // Step2 → Step3 (提交预约)
-  const handleStep2 = async (form: ApplicationForm, agreed: boolean) => {
-    if (!step1Data || !counselor) return;
-    setSubmitting(true);
-    try {
-      const scheduledAt = new Date(step1Data.date);
-      const [h, m] = step1Data.slot.start.split(":").map(Number);
-      scheduledAt.setHours(h, m, 0, 0);
-
-      const pricing = counselor.pricingOptions && counselor.pricingOptions.length > 0
-        ? counselor.pricingOptions[selectedPricing]
-        : null;
-
-      const res = await request("/api/bookings", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({
-        counselorId: counselor.id,
-        scheduledAt: scheduledAt.toISOString(),
-        sessionMode: step1Data.mode,
-        durationMinutes: pricing?.duration ?? counselor.sessionDuration ?? 50,
-        priceAmount: pricing?.price ?? counselor.pricePerSession ?? 300,
-        sessionNumber: pricing?.sessions ?? 1,
-        pricingOptionId: pricing?.id ?? "",
-        applicationForm: form,
-        agreementSigned: agreed,
-      })});
-      const data = await res.json();
-      if (data.id) {
-        setBookingId(data.id);
-        setStep(3);
-      }
-    } finally {
-      setSubmitting(false);
-    }
+  // Step2 → Step3 支付（表单暂存，支付成功时随订单一起提交）
+  const [pendingForm, setPendingForm] = useState<{ form: ApplicationForm; agreed: boolean } | null>(null);
+  const handleStep2 = (form: ApplicationForm, agreed: boolean) => {
+    setPendingForm({ form, agreed });
+    setStep(3);
   };
 
-  // Step4 支付
+  // Step3 支付（网页端为模拟支付）：支付成功即创建订单（状态=待确认·已支付）
   const handlePay = async (method: string) => {
-    await new Promise(r => setTimeout(r, 1500)); // 模拟支付
-    if (bookingId) {
-      await request(`/api/bookings/${bookingId}`, { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ status: "paid", paymentMethod: method }) });
+    await new Promise(r => setTimeout(r, 1200)); // 模拟支付等待
+    if (!step1Data || !pendingForm || !counselor) throw new Error("missing booking data");
+
+    const pricing = counselor.pricingOptions && counselor.pricingOptions.length > 0
+      ? counselor.pricingOptions[selectedPricing]
+      : null;
+
+    // 有具体时段：计算开始时间；调剂申请：不传 scheduledAt，由服务端落占位时间
+    let scheduledAt: string | undefined;
+    if (step1Data.slot) {
+      const scheduled = new Date(step1Data.date);
+      const [h, m] = step1Data.slot.start.split(":").map(Number);
+      scheduled.setHours(h, m, 0, 0);
+      scheduledAt = scheduled.toISOString();
     }
+
+    const res = await request("/api/bookings", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({
+      counselorId: counselor.id,
+      scheduledAt,
+      sessionMode: step1Data.mode,
+      durationMinutes: pricing?.duration ?? counselor.sessionDuration ?? 50,
+      priceAmount: pricing?.price ?? counselor.pricePerSession ?? 0,
+      sessionNumber: pricing?.sessions ?? 1,
+      pricingOptionId: pricing?.id ?? "",
+      applicationForm: pendingForm.form,
+      agreementSigned: pendingForm.agreed,
+      paymentMethod: method,
+      adjustRequest: step1Data.adjustRequest ?? null,
+    })});
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({} as any));
+      throw new Error(d.message ?? "提交失败，请稍后重试");
+    }
+    const data = await res.json();
+    if (data.id) setBookingId(data.id);
   };
 
   if (loading) {
@@ -130,7 +143,7 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
     <div className="min-h-svh flex flex-col" style={{ background: "var(--color-bg)" }}>
       {/* 顶部导航 */}
       <div className="flex items-center px-4 pt-4 pb-2">
-        <button onClick={() => step === 0 ? router.back() : setStep(s => (s - 1) as 0 | 1 | 2 | 3 | 4)}
+        <button onClick={() => step === 0 ? router.back() : setStep(s => (s - 1) as 0 | 1 | 2)}
           className="w-9 h-9 rounded-full flex items-center justify-center"
           style={{ background: "#F5F0EA" }}>
           <ChevronLeft className="w-5 h-5 text-[#5A4E44]" />
@@ -179,9 +192,7 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
           <Step1Time
             counselorId={counselorId}
             sessionModes={sessionModes}
-            durationMinutes={(counselor.pricingOptions && counselor.pricingOptions.length > 0
-              ? counselor.pricingOptions[selectedPricing].duration
-              : counselor.sessionDuration) ?? 50}
+            durationMinutes={duration}
             onNext={handleStep1}
           />
         )}
@@ -190,59 +201,33 @@ export function BookingScreen({ counselorId }: { counselorId: string }) {
             mode={step1Data.mode}
             date={step1Data.date}
             slot={step1Data.slot}
-            durationMinutes={(counselor.pricingOptions && counselor.pricingOptions.length > 0
-              ? counselor.pricingOptions[selectedPricing].duration
-              : counselor.sessionDuration) ?? 50}
-            priceAmount={(counselor.pricingOptions && counselor.pricingOptions.length > 0
-              ? counselor.pricingOptions[selectedPricing].price
-              : counselor.pricePerSession) ?? 300}
+            adjustRequest={step1Data.adjustRequest}
+            durationMinutes={duration}
+            priceAmount={price}
             counselorName={counselor.displayName}
             onNext={handleStep2}
             onBack={() => setStep(counselor.pricingOptions && counselor.pricingOptions.length > 0 ? 0 : 1)}
           />
         )}
         {step === 3 && (
-          <Step3Waiting
-            counselorName={counselor.displayName}
-            dateStr={dateStr}
-            bookingId={bookingId}
-            onGoPayment={() => setStep(4)}
-          />
-        )}
-        {step === 4 && step1Data && (
           <Step4Payment
             counselorName={counselor.displayName}
             dateStr={dateStr}
-            durationMinutes={(counselor.pricingOptions && counselor.pricingOptions.length > 0
-              ? counselor.pricingOptions[selectedPricing].duration
-              : counselor.sessionDuration) ?? 50}
-            priceAmount={(counselor.pricingOptions && counselor.pricingOptions.length > 0
-              ? counselor.pricingOptions[selectedPricing].price
-              : counselor.pricePerSession) ?? 300}
+            durationMinutes={duration}
+            priceAmount={price}
             onPay={handlePay}
             onBack={() => router.push("/")}
           />
         )}
       </div>
 
-      {/* Step0/Step1 底部按钮 */}
+      {/* Step0 底部按钮 */}
       {step === 0 && counselor.pricingOptions && counselor.pricingOptions.length > 0 && (
         <div className="px-5 pb-8 pt-3 border-t" style={{ borderColor: "#EBE7DF", background: "var(--color-bg)" }}>
           <button onClick={handleStep0}
             className="w-full py-3 rounded-2xl text-white font-bold text-sm"
             style={{ background: "var(--color-primary)" }}>
             下一步
-          </button>
-        </div>
-      )}
-
-      {/* Step3 底部按钮 — 等待咨询师确认，只能查看预约 */}
-      {step === 3 && (
-        <div className="px-5 pb-8 pt-3 border-t flex gap-3" style={{ borderColor: "#EBE7DF", background: "var(--color-bg)" }}>
-          <button onClick={() => router.push("/my-bookings")}
-            className="flex-1 py-3 rounded-2xl text-white font-bold text-sm"
-            style={{ background: "var(--color-primary)" }}>
-            查看我的预约
           </button>
         </div>
       )}
