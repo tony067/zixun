@@ -17,6 +17,20 @@ type BookingDetail = {
   counselor: { id: string; displayName: string; counselorTypes?: string[] } | null;
 };
 
+type PkgInfo = {
+  id: string; orderId: string; counselorId: string;
+  totalSessions: number; usedSessions: number; status: string;
+};
+
+// 套餐购买单专属状态描述（普通单用下方 STATUS_DESC）
+const PKG_STATUS_DESC: Record<string,string> = {
+  pending_payment: "套餐订单已提交。请联系客服完成转账，客服确认收款后套餐即生效。",
+  paid:            "套餐已生效！点击下方「使用套餐预约」选择咨询时间，每次咨询核销1次。",
+  completed:       "套餐订单已完成。",
+  cancelled:       "套餐订单已取消。",
+  refunded:        "套餐已退款作废，剩余次数不能再使用。如有疑问请联系客服。",
+};
+
 // 状态 label/color 统一来自 @/lib/booking-status；此处仅补充详情页的长描述文案
 const STATUS_DESC: Record<string,string> = {
   pending_confirmation: "已支付成功。咨询师确认后会通知您，并在此页发送咨询设置与链接。",
@@ -123,6 +137,7 @@ export default function BookingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [bk, setBk] = useState<BookingDetail | null>(null);
+  const [pkg, setPkg] = useState<PkgInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [modal, setModal] = useState<"form"|"agreement"|"reschedule"|"pay"|null>(null);
@@ -140,6 +155,12 @@ export default function BookingDetailPage() {
     request(`/api/bookings/${id}`).then(r => r.json()).then(d => {
       const data = d?.booking ?? d ?? null;
       setBk(data);
+      // 套餐购买单：加载套餐账户（剩余次数 + 使用套餐预约入口）
+      if (data && (data.sessionNumber ?? 1) > 1 && data.paymentMethod !== "package") {
+        request("/api/user/packages").then(r => r.json())
+          .then(pd => setPkg((Array.isArray(pd.packages) ? pd.packages : []).find((p: PkgInfo) => p.orderId === data.id) ?? null))
+          .catch(() => {});
+      }
       // 从主页"待支付"提醒点进来：自动弹出支付窗
       if (data?.status === "pending_payment" &&
           new URLSearchParams(window.location.search).get("pay") === "1") {
@@ -191,7 +212,17 @@ export default function BookingDetailPage() {
   const dateStr = dt && endDt
     ? `${dt.getFullYear()}.${pad(dt.getMonth()+1)}.${pad(dt.getDate())} ${WD[dt.getDay()]} ${pad(dt.getHours())}:${pad(dt.getMinutes())}–${pad(endDt.getHours())}:${pad(endDt.getMinutes())}`
     : "—";
-  const status = (() => { const m = statusMeta(bk.status); return { label: m.label, desc: STATUS_DESC[bk.status] ?? "", color: m.color }; })();
+  // 套餐购买单（sessionNumber>1 且非核销子预约）：无固定咨询时间，显示套餐余次
+  const isPackagePurchase = (bk.sessionNumber ?? 1) > 1 && bk.paymentMethod !== "package";
+  const pkgRemaining = pkg ? pkg.totalSessions - (pkg.usedSessions ?? 0) : null;
+  const pkgUsable = !!pkg && pkg.status === "active" && (pkgRemaining ?? 0) > 0;
+  const status = (() => {
+    const m = statusMeta(bk.status);
+    const desc = isPackagePurchase
+      ? (PKG_STATUS_DESC[bk.status] ?? "")
+      : (STATUS_DESC[bk.status] ?? "");
+    return { label: m.label, desc, color: m.color };
+  })();
   const showMeetingLink = !!bk.meetingLink && ["paid", "in_progress"].includes(bk.status);
   const showAdjust = !!bk.adjustRequest;
 
@@ -244,30 +275,60 @@ export default function BookingDetailPage() {
 
           {/* 咨询详情 — 无分割线 */}
           <div className="px-4 pb-4 space-y-4">
-            {showAdjust ? (
-              <div>
-                <p className="text-xs text-[#9B8E82] mb-0.5">时间调剂申请</p>
-                <p className="text-sm font-semibold text-[#2C2420] whitespace-pre-wrap">{bk.adjustRequest?.message}</p>
-                <p className="text-xs text-[#9B8E82] mt-1">最终时间以咨询师确认为准，确认后将在此页通知您</p>
-              </div>
+            {isPackagePurchase ? (
+              /* 套餐购买单：不显示占位时间，显示套餐余次 + 使用入口 */
+              <>
+                <InfoRow label="套餐内容" value={`多次套餐 · 共 ${bk.sessionNumber} 次 · ${bk.sessionMode ?? "视频"}咨询`} />
+                {pkg ? (
+                  <div className="rounded-xl px-3 py-2.5 flex items-center justify-between" style={{ background: "#F0F7EC" }}>
+                    <div>
+                      <p className="text-xs font-semibold" style={{ color: "#3A6228" }}>
+                        套餐剩余 {pkgRemaining}/{pkg.totalSessions} 次
+                      </p>
+                      {!pkgUsable && <p className="text-xs mt-0.5" style={{ color: "#6B7A5E" }}>次数已用完</p>}
+                    </div>
+                    {pkgUsable && (
+                      <button onClick={() => router.push(`/booking/${bk.counselor?.id}?package=${pkg.id}`)}
+                        className="text-xs font-bold px-3 py-1.5 rounded-lg text-white"
+                        style={{ background: "var(--color-primary)" }}>使用套餐预约</button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-xl px-3 py-2.5" style={{ background: "#FEF9EE" }}>
+                    <p className="text-xs font-semibold" style={{ color: "#C66B2E" }}>
+                      {bk.status === "pending_payment" ? "套餐将在客服确认收款后生效" : "套餐信息加载中…"}
+                    </p>
+                  </div>
+                )}
+              </>
             ) : (
-              <InfoRow label="咨询时间（北京时间）" value={dateStr} />
+              <>
+                {showAdjust ? (
+                  <div>
+                    <p className="text-xs text-[#9B8E82] mb-0.5">时间调剂申请</p>
+                    <p className="text-sm font-semibold text-[#2C2420] whitespace-pre-wrap">{bk.adjustRequest?.message}</p>
+                    <p className="text-xs text-[#9B8E82] mt-1">最终时间以咨询师确认为准，确认后将在此页通知您</p>
+                  </div>
+                ) : (
+                  <InfoRow label="咨询时间（北京时间）" value={dateStr} />
+                )}
+                <InfoRow label="咨询次数及方式" value={`第${bk.sessionNumber ?? 1}次 ${bk.sessionMode ?? "视频"}咨询`} />
+              </>
             )}
-            <InfoRow label="咨询次数及方式" value={`第${bk.sessionNumber ?? 1}次 ${bk.sessionMode ?? "视频"}咨询`} />
             {bk.counselorNote && (
               <div>
                 <p className="text-xs text-[#9B8E82] mb-0.5">咨询设置说明</p>
                 <p className="text-sm font-medium text-[#2C2420] whitespace-pre-wrap">{bk.counselorNote}</p>
               </div>
             )}
-            {bk.sessionMode?.includes("视频") && !showMeetingLink && (
+            {bk.sessionMode?.includes("视频") && !showMeetingLink && !isPackagePurchase && (
               <InfoRow label="视频账号" value={
                 bk.status === "paid" || bk.status === "in_progress"
                   ? "咨询师将通过私信发送咨询设置与链接，请注意查收消息"
                   : "咨询师确认后可见"
               } />
             )}
-            {(bk.status === "paid" || bk.status === "in_progress") && !bk.counselorNote && !showMeetingLink && (
+            {(bk.status === "paid" || bk.status === "in_progress") && !bk.counselorNote && !showMeetingLink && !isPackagePurchase && (
               <InfoRow label="咨询设置" value="咨询师确认后将在本页展示咨询设置，如有疑问可私信咨询师" />
             )}
           </div>
@@ -343,29 +404,47 @@ export default function BookingDetailPage() {
       <div className="fixed bottom-0 left-0 right-0 px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3"
         style={{ background: "rgba(245,240,234,0.95)", backdropFilter: "blur(8px)" }}>
         <div className="flex gap-3">
-          {["pending_confirmation", "pending_payment", "paid"].includes(bk.status) && (
-            <button className="flex-1 py-3 rounded-2xl text-sm font-semibold border"
-              style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
-              onClick={() => router.push(`/messages?counselorUserId=${bk.counselor?.id}`)}>私信咨询师</button>
+          {/* 套餐购买单：主按钮为使用套餐预约（无固定时间，不支持修改时间/续约） */}
+          {isPackagePurchase && bk.status !== "pending_payment" ? (
+            pkgUsable ? (
+              <button onClick={() => router.push(`/booking/${bk.counselor?.id}?package=${pkg.id}`)}
+                className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
+                style={{ background: "var(--color-primary)" }}>
+                使用套餐预约
+              </button>
+            ) : (
+              <div className="flex-[2] py-3 rounded-2xl text-sm font-semibold text-center"
+                style={{ background: "#EBE7DF", color: "#9B8E82" }}>
+                {pkg ? "套餐次数已用完" : "套餐生效后可预约"}
+              </div>
+            )
+          ) : (
+            <>
+              {["pending_confirmation", "pending_payment", "paid"].includes(bk.status) && (
+                <button className="flex-1 py-3 rounded-2xl text-sm font-semibold border"
+                  style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
+                  onClick={() => router.push(`/messages?counselorUserId=${bk.counselor?.id}`)}>私信咨询师</button>
+              )}
+              <button
+                onClick={() => {
+                  if (bk.status === "pending_payment") {
+                    setPayError(""); setModal("pay");
+                  } else if (bk.status === "pending_confirmation") {
+                    handleCancel();
+                  } else if (bk.status === "paid") {
+                    setModal("reschedule");
+                  } else {
+                    router.push(`/booking/${bk.counselor?.id}`);
+                  }
+                }}
+                className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
+                style={{ background: bk.status === "pending_confirmation" ? "#DC2626" : "var(--color-primary)" }}>
+                {bk.status === "pending_payment" ? `立即支付 ¥${bk.priceAmount}` :
+                 bk.status === "pending_confirmation" ? "取消预约" :
+                 bk.status === "paid" ? "修改时间" : "续约"}
+              </button>
+            </>
           )}
-          <button
-            onClick={() => {
-              if (bk.status === "pending_payment") {
-                setPayError(""); setModal("pay");
-              } else if (bk.status === "pending_confirmation") {
-                handleCancel();
-              } else if (bk.status === "paid") {
-                setModal("reschedule");
-              } else {
-                router.push(`/booking/${bk.counselor?.id}`);
-              }
-            }}
-            className="flex-[2] py-3 rounded-2xl text-white text-sm font-semibold"
-            style={{ background: bk.status === "pending_confirmation" ? "#DC2626" : "var(--color-primary)" }}>
-            {bk.status === "pending_payment" ? `立即支付 ¥${bk.priceAmount}` :
-             bk.status === "pending_confirmation" ? "取消预约" :
-             bk.status === "paid" ? "修改时间" : "续约"}
-          </button>
         </div>
       </div>
 
@@ -386,7 +465,7 @@ export default function BookingDetailPage() {
           <pre className="text-sm text-[#2C2420] whitespace-pre-wrap leading-relaxed font-sans">{AGREEMENT_TEXT}</pre>
           <div className="mt-4 pt-4 border-t border-[#F0EBE3]">
             <p className="text-xs" style={{ color: bk.agreementSigned ? "#9CB48A" : "#9B8E82" }}>
-              {bk.agreementSigned ? "✓ 已于预约时签署同意" : "未签署"}
+              {bk.agreementSigned ? "已于预约时签署同意" : "未签署"}
             </p>
           </div>
         </Modal>
@@ -398,7 +477,10 @@ export default function BookingDetailPage() {
           <div className="rounded-2xl px-4 py-5 mb-4 text-center" style={{ background: "#F8F5F0" }}>
             <p className="text-xs text-[#9B8E82] mb-1">咨询费用</p>
             <p className="text-3xl font-bold text-[#2C2420]">¥{bk.priceAmount}</p>
-            <p className="text-xs text-[#9B8E82] mt-2">{bk.counselor?.displayName ?? "咨询师"} · {formatFull(bk.scheduledAt)}</p>
+            <p className="text-xs text-[#9B8E82] mt-2">
+              {bk.counselor?.displayName ?? "咨询师"}
+              {isPackagePurchase ? ` · ${bk.sessionNumber}次套餐` : ` · ${formatFull(bk.scheduledAt)}`}
+            </p>
           </div>
           <div className="space-y-2 mb-4">
             {[
@@ -431,6 +513,12 @@ export default function BookingDetailPage() {
                   const updated = await res.json().catch(() => null);
                   setBk(prev => prev ? { ...prev, status: "paid", paidAt: updated?.paidAt, paymentMethod: payMethod } : prev);
                   setModal(null);
+                  // 套餐购买单：支付成功后套餐账户才生成，重新拉取余次
+                  if (isPackagePurchase) {
+                    request("/api/user/packages").then(r => r.json())
+                      .then(pd => setPkg((Array.isArray(pd.packages) ? pd.packages : []).find((p: PkgInfo) => p.orderId === id) ?? null))
+                      .catch(() => {});
+                  }
                 } else {
                   const d = await res.json().catch(() => ({}));
                   setPayError(d.message ?? "支付失败，请稍后重试");
@@ -487,7 +575,7 @@ export default function BookingDetailPage() {
                 <button onClick={() => setModal(null)} className="w-8 h-8 rounded-full bg-[#EBE7DF] flex items-center justify-center text-[#5A4E44]">×</button>
               </div>
               <div className="mb-4 px-3 py-2.5 rounded-xl" style={{ background: "#FEF9EE", border: "1px solid #F5E6C0" }}>
-                <p className="text-xs font-semibold mb-0.5" style={{ color: "#92600A" }}>建议先与咨询师沟通好时间</p>
+                <p className="text-xs font-semibold mb-0.5" style={{ color: "#C66B2E" }}>建议先与咨询师沟通好时间</p>
                 <p className="text-xs" style={{ color: "#B07D2A" }}>提交申请后需等待咨询师确认，建议在私信中提前确认好新时间再操作。</p>
               </div>
 

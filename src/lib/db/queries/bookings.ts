@@ -68,6 +68,7 @@ export async function createBooking(data: {
   applicationForm?: Record<string, unknown> | null;
   agreementSigned?: boolean;
   sessionNumber?: number;
+  packageId?: string;
   status?: string;
   paidAt?: Date;
   paymentMethod?: string;
@@ -90,6 +91,8 @@ export async function getClientBookings(clientId: string) {
     meetingLink: bookings.meetingLink,
     adjustRequest: bookings.adjustRequest,
     paymentMethod: bookings.paymentMethod,
+    packageId: bookings.packageId,
+    sessionNumber: bookings.sessionNumber,
     createdAt: bookings.createdAt,
     rescheduleStatus: bookings.rescheduleStatus,
     counselor: {
@@ -118,6 +121,8 @@ export async function getCounselorBookings(counselorId: string) {
     meetingLink: bookings.meetingLink,
     adjustRequest: bookings.adjustRequest,
     applicationForm: bookings.applicationForm,
+    packageId: bookings.packageId,
+    sessionNumber: bookings.sessionNumber,
     createdAt: bookings.createdAt,
     client: {
       id: users.id,

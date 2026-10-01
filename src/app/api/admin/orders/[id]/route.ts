@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { bookings } from "@/lib/db/schema/scheduling";
 import { users } from "@/lib/db/schema/users";
@@ -7,7 +7,7 @@ import { counselors } from "@/lib/db/schema/counselors";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth(req);
+  const auth = await requireStaff(req);
   if (!auth.ok) return auth.response;
   const { id } = await params;
   const [b] = await db.select().from(bookings).where(eq(bookings.id, id));

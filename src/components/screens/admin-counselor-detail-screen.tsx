@@ -104,9 +104,9 @@ export default function AdminCounselorDetailScreen({ id }: { id: string }) {
   if (!c) return <div className="flex items-center justify-center h-screen text-sm" style={{ color: "#9B8E82" }}>未找到咨询师信息</div>;
 
   const STATUS: Record<string, { label: string; color: string; bg: string }> = {
-    pending: { label: "待审核", color: "#B45309", bg: "#FEF3C7" },
-    approved: { label: "已通过", color: "#166534", bg: "#DCFCE7" },
-    rejected: { label: "已拒绝", color: "#991B1B", bg: "#FEE2E2" },
+    pending: { label: "待审核", color: "#C66B2E", bg: "#FAE9DD" },
+    approved: { label: "已通过", color: "#3A6228", bg: "#E4F0DC" },
+    rejected: { label: "已拒绝", color: "#DC2626", bg: "#FEE2E2" },
     draft: { label: "草稿", color: "#6B7280", bg: "#F3F4F6" },
   };
   const st = STATUS[c.reviewStatus] ?? STATUS.draft;
@@ -268,7 +268,7 @@ export default function AdminCounselorDetailScreen({ id }: { id: string }) {
             <button onClick={() => showReject ? act("reject") : setShowReject(true)}
               disabled={acting || (showReject && !rejectReason.trim())}
               className="flex-1 py-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-              style={{ background: "#FEE2E2", color: "#991B1B" }}>
+              style={{ background: "#FEE2E2", color: "#DC2626" }}>
               <XCircle className="w-4 h-4" />
               {showReject ? "确认驳回" : "驳回"}
             </button>

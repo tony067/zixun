@@ -125,7 +125,7 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
 
           {/* 操作按钮 */}
           <div className="space-y-2 pt-2">
-            {(booking.status === "pending_confirmation" || booking.status === "pending_payment") && (
+            {booking.status === "pending_confirmation" && (
               <div className="flex gap-3">
                 <button onClick={() => handleAction("rejected")} disabled={processing}
                   className="flex-1 py-3.5 rounded-2xl text-sm font-bold"
@@ -133,6 +133,17 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
                 <button onClick={() => handleAction("paid")} disabled={processing}
                   className="flex-1 py-3.5 rounded-2xl text-sm font-bold text-white"
                   style={{ background: "var(--color-primary)" }}>确认预约</button>
+              </div>
+            )}
+            {/* 待支付 = 线下转账订单：确认已收到来访的转账 */}
+            {booking.status === "pending_payment" && (
+              <div className="flex gap-3">
+                <button onClick={() => handleAction("rejected")} disabled={processing}
+                  className="flex-1 py-3.5 rounded-2xl text-sm font-bold"
+                  style={{ background: "#FEE2E2", color: "#DC2626" }}>拒绝</button>
+                <button onClick={() => handleAction("paid")} disabled={processing}
+                  className="flex-1 py-3.5 rounded-2xl text-sm font-bold text-white"
+                  style={{ background: "var(--color-primary)" }}>确认收到转账</button>
               </div>
             )}
             {(booking.status === "paid" || booking.status === "in_progress") && (

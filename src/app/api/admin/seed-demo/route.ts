@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { bookings } from "@/lib/db/schema/scheduling";
 import { counselors } from "@/lib/db/schema/counselors";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAdmin(req as NextRequest);
+  if (!auth.ok) return auth.response;
   // 只允许带特定 header 调用（防止误触）
   const secret = req.headers.get("x-seed-secret");
   if (secret !== "mindpace-seed-2026") {

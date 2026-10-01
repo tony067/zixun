@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronRight, Check } from "lucide-react";
 import { createPortal } from "react-dom";
 import { request } from "@/lib/api/request";
 
@@ -62,7 +62,7 @@ export default function ReschedulePage() {
   if (done) return (
     <div className="min-h-screen flex flex-col items-center px-5 pt-16 pb-10" style={{ background: "var(--color-bg)" }}>
       <div className="w-14 h-14 rounded-full flex items-center justify-center mb-5" style={{ background: "#E4F0DC" }}>
-        <span className="text-2xl text-green-700">✓</span>
+        <Check className="w-7 h-7" style={{ color: "#3A6228" }} strokeWidth={3} />
       </div>
       <h2 className="text-xl font-bold text-center mb-2" style={{ color: "#2C2420" }}>改期申请已提交</h2>
       <p className="text-sm text-center mb-10" style={{ color: "#9B8E82" }}>咨询师将在 24 小时内确认，请留意消息通知。</p>

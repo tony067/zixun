@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { bookings, counselors } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 /** 管理员最近动态 — 从数据库读真实数据 */
 export async function GET(req: NextRequest) {
-  const auth = await requireAuth(req);
+  const auth = await requireAdmin(req);
   if (!auth.ok) return auth.response;
 
   try {

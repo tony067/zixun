@@ -28,17 +28,8 @@ export default function FavoritesScreen() {
     async function loadFavorites() {
       setLoading(true);
       try {
-        const legacyIds: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
-        if (legacyIds.length > 0) {
-          await Promise.all(
-            legacyIds.map((counselorId) =>
-              request("/api/user/favorites", {
-                method: "POST",
-                body: JSON.stringify({ counselorId }),
-              }).catch(() => null),
-            ),
-          );
-        }
+        // 清理早期版本遗留的本地收藏（避免换账号后继承上一个账号的数据）
+        localStorage.removeItem("favorite_counselors");
 
         const res = await request("/api/user/favorites");
         const data = await res.json();
@@ -60,8 +51,6 @@ export default function FavoritesScreen() {
       method: "DELETE",
       body: JSON.stringify({ counselorId: id }),
     }).catch(() => null);
-    const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
-    localStorage.setItem("favorite_counselors", JSON.stringify(ids.filter(i => i !== id)));
     setFavorites(f => f.filter(c => c.id !== id));
   }
 

@@ -66,9 +66,15 @@ function MessagesPageInner() {
 
   useEffect(() => {
     if (!user) return;
-    request("/api/messages").then(r => r.json()).then(d => {
-      setConvs(Array.isArray(d) ? d : []);
-    }).finally(() => setLoading(false));
+    // 首次加载 + 每15秒轮询，保证新会话/新未读能自动出现（与咨询师消息页一致）
+    const fetchConvs = () => {
+      request("/api/messages").then(r => r.json()).then(d => {
+        setConvs(Array.isArray(d) ? d : []);
+      }).catch(() => {}).finally(() => setLoading(false));
+    };
+    fetchConvs();
+    const t = setInterval(fetchConvs, 15000);
+    return () => clearInterval(t);
   }, [user]);
 
   if (!user) return (

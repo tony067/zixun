@@ -292,8 +292,8 @@ export default function AdminUsersScreen() {
                       <div className="text-right">
                         <p className="text-sm font-bold" style={{ color: "#9CB48A" }}>¥{b.priceAmount}</p>
                         <span className="text-[10px] px-1.5 py-0.5 rounded mt-1 inline-block"
-                          style={{ background: b.status === "completed" ? "#DCFCE7" : "#F3F4F6",
-                            color: b.status === "completed" ? "#16A34A" : "#6B7280" }}>
+                          style={{ background: statusMeta(b.status).bg,
+                            color: statusMeta(b.status).color }}>
                           {statusMeta(b.status).label}
                         </span>
                         {b.agreementSigned && (
@@ -323,7 +323,7 @@ export default function AdminUsersScreen() {
                       style={{ background: "#EBE7DF", color: "#5A4E44" }}>×</button>
                   </div>
                   <pre className="text-sm whitespace-pre-wrap leading-relaxed font-sans" style={{ color: "#2C2420" }}>{AGREEMENT_TEXT}</pre>
-                  <p className="text-xs mt-4 pt-3 border-t" style={{ color: "#9CB48A", borderColor: "#EBE7DF" }}>✓ 来访者已于预约时签署同意</p>
+                  <p className="text-xs mt-4 pt-3 border-t" style={{ color: "#9CB48A", borderColor: "#EBE7DF" }}>来访者已于预约时签署同意</p>
                 </div>
               </div>
             )}
@@ -334,8 +334,8 @@ export default function AdminUsersScreen() {
                 <button onClick={toggleSupport}
                   className="w-full py-3 rounded-2xl text-sm font-bold mb-2"
                   style={{
-                    background: selected.role === "support" ? "#FEF3C7" : "#E8F0FB",
-                    color: selected.role === "support" ? "#92400E" : "#3A9B8E",
+                    background: selected.role === "support" ? "#FAE9DD" : "#FEF9EE",
+                    color: selected.role === "support" ? "#C66B2E" : "#B07D2A",
                   }}>
                   {selected.role === "support" ? "移回来访者身份（撤销客服）" : "设为客服"}
                 </button>
@@ -343,8 +343,8 @@ export default function AdminUsersScreen() {
               <button onClick={toggleRole}
                 className="w-full py-3 rounded-2xl text-sm font-bold mb-2"
                 style={{
-                  background: selected.role === "counselor" ? "#FEF3C7" : "#E4F0DC",
-                  color: selected.role === "counselor" ? "#92400E" : "#3A6228",
+                  background: selected.role === "counselor" ? "#FAE9DD" : "#E4F0DC",
+                  color: selected.role === "counselor" ? "#C66B2E" : "#3A6228",
                 }}>
                 {selected.role === "counselor" ? "移回来访者身份" : "设为咨询师"}
               </button>
@@ -353,8 +353,8 @@ export default function AdminUsersScreen() {
             <div className="mt-2">
               <button onClick={toggleBan}
                 className="w-full py-3 rounded-2xl text-sm font-bold"
-                style={{ background: selected.status === "banned" ? "#DCFCE7" : "#FEE2E2",
-                  color: selected.status === "banned" ? "#16A34A" : "#DC2626" }}>
+                style={{ background: selected.status === "banned" ? "#E4F0DC" : "#FEE2E2",
+                  color: selected.status === "banned" ? "#3A6228" : "#DC2626" }}>
                 {selected.status === "banned" ? "解除封禁" : "封禁该用户"}
               </button>
             </div>

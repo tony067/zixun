@@ -10,7 +10,13 @@ import { statusMeta } from "@/lib/booking-status";
 type Booking = {
   id: string; status: string; scheduledAt: string; durationMinutes: number;
   sessionMode: string; priceAmount: number;
+  packageId?: string | null; sessionNumber?: number | null;
   counselor: { id: string; displayName: string; avatarUrl?: string; counselorTypes?: string[] } | null;
+};
+
+type PkgInfo = {
+  id: string; orderId: string; counselorId: string; counselorName?: string | null;
+  planName?: string | null; totalSessions: number; usedSessions: number; status: string;
 };
 
 const TABS = [
@@ -20,11 +26,17 @@ const TABS = [
   { key: "past",                 label: "已完成", statuses: ["completed", "cancelled", "rejected", "refunded"] },
 ];
 
-function BookingCard({ b, onCancel }: { b: Booking; onCancel: (id: string) => void }) {
+function BookingCard({ b, pkg, onCancel }: { b: Booking; pkg?: PkgInfo | null; onCancel: (id: string) => void }) {
   const router = useRouter();
-  const badge = statusMeta(b.status);
+  const base = statusMeta(b.status);
   const dt = b.scheduledAt ? new Date(b.scheduledAt) : null;
   const c = b.counselor;
+  const isPackagePurchase = !b.packageId && (b.sessionNumber ?? 1) > 1; // 套餐购买单
+  // 套餐购买单不是一次咨询：paid 显示「套餐生效中」而非「待咨询」，避免与子预约混淆
+  const badge = isPackagePurchase && b.status === "paid"
+    ? { label: "套餐生效中", color: base.color, bg: base.bg }
+    : base;
+  const remaining = pkg ? pkg.totalSessions - (pkg.usedSessions ?? 0) : null;
   return (
     <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       onClick={() => router.push(`/my-bookings/${b.id}`)}
@@ -45,7 +57,7 @@ function BookingCard({ b, onCancel }: { b: Booking; onCancel: (id: string) => vo
             <span className="text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0"
               style={{ color: badge.color, background: badge.bg }}>{badge.label}</span>
           </div>
-          {dt && (
+          {dt && !isPackagePurchase && (
             <div className="flex items-center gap-3 text-xs text-[#9B8E82] mt-1.5">
               <span className="flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
@@ -57,12 +69,36 @@ function BookingCard({ b, onCancel }: { b: Booking; onCancel: (id: string) => vo
               </span>
             </div>
           )}
+          {isPackagePurchase && (
+            <div className="flex items-center gap-1.5 text-xs text-[#9B8E82] mt-1.5">
+              <Calendar className="w-3.5 h-3.5" />
+              多次套餐 · 共 {b.sessionNumber} 次 · 购买后逐次预约
+            </div>
+          )}
           <div className="flex items-center justify-between mt-2">
             <span className="text-xs text-[#9B8E82] flex items-center gap-1">
               <Video className="w-3.5 h-3.5" />{b.durationMinutes} 分钟 · {b.sessionMode}
             </span>
-            <span className="text-sm font-bold text-[#2C2420]">¥{b.priceAmount}</span>
+            {b.packageId ? (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                style={{ background: "#F0F7EC", color: "#3A6228" }}>套餐核销</span>
+            ) : (
+              <span className="text-sm font-bold text-[#2C2420]">¥{b.priceAmount}</span>
+            )}
           </div>
+          {isPackagePurchase && remaining !== null && (
+            <div className="mt-2 rounded-xl px-3 py-2 flex items-center justify-between"
+              style={{ background: "#F0F7EC" }}>
+              <span className="text-xs font-semibold" style={{ color: "#3A6228" }}>
+                套餐剩余 {remaining}/{pkg?.totalSessions} 次
+              </span>
+              {remaining > 0 && (
+                <button onClick={(e) => { e.stopPropagation(); router.push(`/booking/${b.counselor?.id}?package=${pkg?.id}`); }}
+                  className="text-xs font-bold px-3 py-1.5 rounded-lg text-white"
+                  style={{ background: "var(--color-primary)" }}>使用套餐预约</button>
+              )}
+            </div>
+          )}
         </div>
       </div>
       {b.status === "pending_confirmation" && (
@@ -88,9 +124,12 @@ function BookingCard({ b, onCancel }: { b: Booking; onCancel: (id: string) => vo
             style={{ borderColor: "#9CB48A", color: "#9CB48A" }}
             onClick={(e) => { e.stopPropagation(); router.push(`/messages?counselorId=${b.counselor?.id}`); }}>
             <MessageCircle className="w-4 h-4" />私信咨询师</button>
-          <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border"
-            style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}
-            onClick={(e) => { e.stopPropagation(); router.push(`/my-bookings/${b.id}/reschedule`); }}>申请改期</button>
+          {/* 套餐购买单无固定时间，不提供申请改期 */}
+          {!isPackagePurchase && (
+            <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold border"
+              style={{ borderColor: "#E0D8CE", color: "#9B8E82" }}
+              onClick={(e) => { e.stopPropagation(); router.push(`/my-bookings/${b.id}/reschedule`); }}>申请改期</button>
+          )}
         </div>
       )}
       {b.status === "in_progress" && (
@@ -113,6 +152,7 @@ export default function MyBookingsScreen() {
   const { user } = useAuth();
   const [tab, setTab] = useState(TABS[0].key);
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
+  const [packages, setPackages] = useState<PkgInfo[]>([]);
   const [loading, setLoading] = useState(true);
   // 未读记录：上次查看该Tab时的数量
   const [seenCounts, setSeenCounts] = useState<Record<string, number>>({});
@@ -130,6 +170,10 @@ export default function MyBookingsScreen() {
     request("/api/bookings").then(r => r.json()).then(d => {
       setAllBookings(Array.isArray(d) ? d : []);
     }).finally(() => setLoading(false));
+    // 套餐账户（显示剩余次数 + 使用套餐预约入口）
+    request("/api/user/packages").then(r => r.json())
+      .then(d => setPackages(Array.isArray(d.packages) ? d.packages : []))
+      .catch(() => {});
   }, [user]);
 
   // 切换Tab时标记已读
@@ -207,7 +251,11 @@ export default function MyBookingsScreen() {
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
-            {displayed.map(b => <BookingCard key={b.id} b={b} onCancel={handleCancel} />)}
+            {displayed.map(b => (
+              <BookingCard key={b.id} b={b}
+                pkg={packages.find(p => p.orderId === b.id) ?? null}
+                onCancel={handleCancel} />
+            ))}
           </AnimatePresence>
         )}
       </div>

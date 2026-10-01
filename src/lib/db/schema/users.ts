@@ -16,6 +16,8 @@ export const users = pgTable(
     status: varchar("status", { length: 32 }).default("active"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    /** staff 上次查看订单管理的时间：用于计算「新增订单」红点 */
+    ordersLastSeenAt: timestamp("orders_last_seen_at", { withTimezone: true }),
   },
   (table) => ({
     emailIdx: index("users_email_idx").on(table.email),

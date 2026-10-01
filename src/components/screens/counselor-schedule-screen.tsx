@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, CalendarDays, AlignLeft, Plus, Trash2, Check, Lock, Repeat, BarChart2, Users, TrendingUp, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, AlignLeft, Plus, Trash2, Check, Lock, Repeat, BarChart2, Users, TrendingUp, Clock, Pencil } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 
@@ -49,15 +49,24 @@ type SlotDisplay = {
   recurringId?: string;       // 原循环规则 id（用于「删除循环规则」）
   ruleId: string;             // 操作时用的 id（单次优先）
   durationMinutes?: number;   // 时长（用于新建屏蔽记录）
+  booked?: boolean;           // 已被来访预约占用（日历显示「已预约」，禁止编辑/删除）
+  bookingStatus?: string;     // 占用订单的状态
 };
 
-function getDaySlots(rules: Rule[], dateStr: string): SlotDisplay[] {
+interface BookedItem { scheduledAt: string | null; status: string; durationMinutes: number | null; }
+
+const ACTIVE_BOOKING_STATUSES = ["pending_confirmation", "pending_payment", "paid", "in_progress", "completed"];
+
+function getDaySlots(rules: Rule[], dateStr: string, bookedList: BookedItem[] = []): SlotDisplay[] {
   const date = new Date(dateStr);
   const jsDay = date.getDay();
   const weekday = jsDay === 0 ? 6 : jsDay - 1;
 
   const recurring = rules.filter(r => {
     if (!r.isActive || r.isSingle) return false;
+    // 有效期检查（与后端 inRuleDateRange 一致）：不在生效范围内的循环规则不显示
+    if (r.validFrom && dateStr < r.validFrom) return false;
+    if (r.validUntil && dateStr > r.validUntil) return false;
     const wds: number[] = Array.isArray(r.weekdays) ? r.weekdays
       : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
     return wds.includes(weekday);
@@ -120,12 +129,32 @@ function getDaySlots(rules: Rule[], dateStr: string): SlotDisplay[] {
     }
   }
 
-  return slots.sort((a, b) => a.startTime.localeCompare(b.startTime));
+  // 标记已被来访预约占用的时段（与有效订单时间重叠 → 「已预约」）
+  const dayBooked = bookedList.filter(b => {
+    if (!b.scheduledAt || !ACTIVE_BOOKING_STATUSES.includes(b.status)) return false;
+    const d = new Date(b.scheduledAt);
+    const local = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    return local === dateStr;
+  });
+  return slots.sort((a, b) => a.startTime.localeCompare(b.startTime)).map(sl => {
+    const [sh, sm] = sl.startTime.split(":").map(Number);
+    const [eh, em] = sl.endTime.split(":").map(Number);
+    const sMin = sh * 60 + sm, eMin = eh * 60 + em;
+    const hit = dayBooked.find(b => {
+      const bd = new Date(b.scheduledAt!);
+      const bs = bd.getHours() * 60 + bd.getMinutes();
+      const be = bs + (b.durationMinutes ?? 50);
+      return bs < eMin && sMin < be;
+    });
+    if (hit) { sl.booked = true; sl.bookingStatus = hit.status; }
+    return sl;
+  });
 }
 
 // ── 月视图日历（下拉平铺式）────────────────────────────────────────────────
-function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDelete, onRecurringDelete, onAddClick }: {
+function MonthCalendar({ rules, bookings, onDayClick, expandedDate, onSlotEdit, onSlotDelete, onRecurringDelete, onAddClick }: {
   rules: Rule[];
+  bookings: BookedItem[];
   onDayClick: (dateStr: string) => void;
   expandedDate: string | null;
   onSlotEdit: (slot: SlotDisplay, dateStr: string) => void;
@@ -229,7 +258,7 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
       {/* 展开的时间段列表（在日历下方平铺） */}
       <AnimatePresence>
         {expandedDate && expandedDate.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`) && (() => {
-          const slots = getDaySlots(rules, expandedDate);
+          const slots = getDaySlots(rules, expandedDate, bookings);
           const dayNum = parseInt(expandedDate.split("-")[2]);
           const displayDate = new Date(expandedDate).toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short" });
 
@@ -274,35 +303,37 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
                       <div className="space-y-2">
                         {g.slots.map((slot, i) => (
                           <button key={i}
-                            onClick={() => onSlotEdit(slot, expandedDate)}
+                            onClick={() => { if (!slot.booked) onSlotEdit(slot, expandedDate); }}
                             className="w-full flex items-center justify-between rounded-2xl px-3 py-3 text-left active:scale-[0.99] transition-all"
                             style={{
-                              background: "#F5F1E8",
+                              background: slot.booked ? "#FDF6F2" : "#F5F1E8",
                               opacity: slot.overriddenByBlock ? 0.85 : 1,
                             }}>
                             <div className="flex items-center gap-2.5">
                               {/* 类型小胶囊 — 和档期规则一致 */}
                               <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{
-                                background: slot.type === "blocked" ? "#FEE2E2" : slot.type === "fixed" ? "#FEF3C7" : "#9CB48A",
-                                color: slot.type === "blocked" ? "#EF4444" : slot.type === "fixed" ? "#D97706" : "white",
+                                background: slot.booked ? "#E4F2F0" : slot.type === "blocked" ? "#FEE2E2" : slot.type === "fixed" ? "#FAE9DD" : "#9CB48A",
+                                color: slot.booked ? "#3A9B8E" : slot.type === "blocked" ? "#EF4444" : slot.type === "fixed" ? "#C66B2E" : "white",
                               }}>
-                                {slot.type === "available" ? "可预约" : slot.type === "blocked" ? "已屏蔽" : "固定"}
+                                {slot.booked ? "已预约" : slot.type === "available" ? "可预约" : slot.type === "blocked" ? "已屏蔽" : "固定"}
                               </span>
                               {/* 时间 */}
                               <span className="text-sm font-bold" style={{
                                 textDecoration: slot.overriddenByBlock ? "line-through" : "none",
-                                color: slot.type === "blocked" ? "#DC2626" : slot.type === "fixed" ? "#D97706" : "#2C2420",
+                                color: slot.booked ? "#3A9B8E" : slot.type === "blocked" ? "#DC2626" : slot.type === "fixed" ? "#C66B2E" : "#2C2420",
                               }}>
                                 {slot.startTime} — {slot.endTime}
                               </span>
                               {/* 循环图标 */}
-                              {slot.isRecurring && (
+                              {slot.isRecurring && !slot.booked && (
                                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold flex-shrink-0"
                                   style={{ background: "#E4F0DC", color: "#3A6228" }}>↺</span>
                               )}
                             </div>
-                            {/* 右侧箭头提示可点击 */}
-                            <ChevronRight size={14} style={{ color: "#C4BDB5", flexShrink: 0 }} />
+                            {/* 右侧：已预约则不可编辑，仅作展示 */}
+                            <span className="text-[11px] font-semibold flex-shrink-0" style={{ color: slot.booked ? "#C4BDB5" : "#C4BDB5" }}>
+                              {slot.booked ? "已被来访预约" : "›"}
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -342,11 +373,30 @@ function MonthCalendar({ rules, onDayClick, expandedDate, onSlotEdit, onSlotDele
 
 
 // ── 规则卡片 ──────────────────────────────────────────────────────────────────
-function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => void }) {
+// 规则 → 表单初值（编辑时回填）
+function ruleToForm(r: Rule): NewRule {
+  const wdArr: number[] = Array.isArray(r.weekdays) ? r.weekdays
+    : typeof r.weekdays === "string" && r.weekdays ? r.weekdays.split(",").map(Number) : [];
+  return {
+    mode: r.isSingle ? "single" : "recurring",
+    type: r.type,
+    weekdays: wdArr,
+    date: r.singleDate ?? TODAY_STR,
+    startTime: r.isSingle ? (r.singleTime ?? r.startTime) : r.startTime,
+    durationMinutes: r.durationMinutes,
+    customDuration: "",
+    validFrom: r.validFrom ?? TODAY_STR,
+    validUntil: r.validUntil ?? "",
+    fixedClientId: r.fixedClientId ?? "",
+    blockNote: r.blockNote ?? "",
+  };
+}
+
+function RuleBadge({ rule, onEdit, onDelete }: { rule: Rule; onEdit: (r: Rule) => void; onDelete: (id: string) => void }) {
   const typeColors = {
     available: { bg: "#E4F0DC", text: "#3A6228", icon: <Check className="w-3 h-3" /> },
-    blocked:   { bg: "#FEE2E2", text: "#991B1B", icon: <Lock className="w-3 h-3" /> },
-    fixed:     { bg: "#FEF3C7", text: "#92400E", icon: <Repeat className="w-3 h-3" /> },
+    blocked:   { bg: "#FEE2E2", text: "#DC2626", icon: <Lock className="w-3 h-3" /> },
+    fixed:     { bg: "#FAE9DD", text: "#C66B2E", icon: <Repeat className="w-3 h-3" /> },
   };
   const c = typeColors[rule.type];
   const wdArr: number[] = Array.isArray(rule.weekdays)
@@ -379,11 +429,18 @@ function RuleBadge({ rule, onDelete }: { rule: Rule; onDelete: (id: string) => v
         {rule.fixedClientId && <p className="text-xs text-amber-600 mt-0.5">绑定来访：{rule.fixedClientId}</p>}
         {rule.blockNote && <p className="text-xs text-[#9B8E82] mt-0.5">备注：{rule.blockNote}</p>}
       </div>
-      <motion.button whileTap={{ scale: 0.9 }} onClick={() => onDelete(rule.id)}
-        className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-        style={{ background: "#EBE7DF" }}>
-        <Trash2 className="w-3.5 h-3.5 text-[#9B8E82]" />
-      </motion.button>
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        <motion.button whileTap={{ scale: 0.9 }} onClick={() => onEdit(rule)}
+          className="w-7 h-7 rounded-lg flex items-center justify-center"
+          style={{ background: "#EBE7DF" }}>
+          <Pencil className="w-3.5 h-3.5 text-[#6B5E52]" />
+        </motion.button>
+        <motion.button whileTap={{ scale: 0.9 }} onClick={() => onDelete(rule.id)}
+          className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+          style={{ background: "#EBE7DF" }}>
+          <Trash2 className="w-3.5 h-3.5 text-[#9B8E82]" />
+        </motion.button>
+      </div>
     </div>
   );
 }
@@ -402,12 +459,14 @@ const EMPTY: NewRule = {
   validFrom: TODAY_STR, validUntil: "", fixedClientId: "", blockNote: "",
 };
 
-function RulesPanel({ rules, onAdd, onDelete, saving }: {
+function RulesPanel({ rules, onAdd, onUpdate, onDelete, saving }: {
   rules: Rule[]; saving: boolean;
   onAdd: (r: NewRule) => Promise<string | null>;
+  onUpdate: (id: string, r: NewRule) => Promise<string | null>;
   onDelete: (id: string) => Promise<void>;
 }) {
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<NewRule>({ ...EMPTY });
   const [error, setError] = useState("");
   const set = <K extends keyof NewRule>(k: K, v: NewRule[K]) => setForm(p => ({ ...p, [k]: v }));
@@ -419,12 +478,21 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
 
   const submit = async () => {
     setError("");
-    const err = await onAdd({ ...form, durationMinutes: actualDur as number });
+    const err = editingId
+      ? await onUpdate(editingId, { ...form, durationMinutes: actualDur as number })
+      : await onAdd({ ...form, durationMinutes: actualDur as number });
     if (err) {
       setError(err);
       return;
     }
-    setForm({ ...EMPTY }); setShowForm(false);
+    setForm({ ...EMPTY }); setEditingId(null); setShowForm(false);
+  };
+
+  const openEdit = (r: Rule) => {
+    setEditingId(r.id);
+    setForm(ruleToForm(r));
+    setError("");
+    setShowForm(true);
   };
 
   return (
@@ -446,21 +514,23 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
           <p className="text-xs mt-1" style={{ color: "#C4BDB5" }}>单次安排请在「日历」标签中管理</p>
         </div>
       )}
-      {rules.filter(r => !r.isSingle).map(r => <RuleBadge key={r.id} rule={r} onDelete={onDelete} />)}
+      {rules.filter(r => !r.isSingle).map(r => (
+        <RuleBadge key={r.id} rule={r} onEdit={openEdit} onDelete={onDelete} />
+      ))}
 
       <AnimatePresence>
         {showForm && (
           <>
             <motion.div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.3)" }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setShowForm(false)} />
+              onClick={() => { setShowForm(false); setEditingId(null); }} />
             <motion.div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-y-auto"
               style={{ background: "#FDFBF7", maxHeight: "85vh" }}
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}>
               <div className="px-5 pt-5 pb-2 flex items-center justify-between sticky top-0" style={{ background: "#FDFBF7" }}>
-                <p className="text-base font-bold" style={{ color: "#2C2420" }}>新增档期规则</p>
-                <button onClick={() => setShowForm(false)}
+                <p className="text-base font-bold" style={{ color: "#2C2420" }}>{editingId ? "编辑档期规则" : "新增档期规则"}</p>
+                <button onClick={() => { setShowForm(false); setEditingId(null); }}
                   className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#EBE7DF" }}>
                   <ChevronRight size={16} className="rotate-90" style={{ color: "#6B5E52" }} />
                 </button>
@@ -617,7 +687,7 @@ function RulesPanel({ rules, onAdd, onDelete, saving }: {
                     disabled={!canSubmit || saving}
                     className="flex-1 h-12 rounded-2xl text-sm font-semibold text-white"
                     style={{ background: canSubmit && !saving ? "#9CB48A" : "#C0B8B0" }}>
-                    {saving ? "保存中…" : "保存规则"}
+                    {saving ? "保存中…" : editingId ? "保存修改" : "保存规则"}
                   </motion.button>
                 </div>
               </div>
@@ -643,6 +713,7 @@ export function CounselorScheduleScreen() {
   const router = useRouter();
   const [tab, setTab] = useState<"rules" | "calendar" | "stats" | "clients">("rules");
   const [rules, setRules] = useState<Rule[]>([]);
+  const [bookings, setBookings] = useState<BookedItem[]>([]);
   const [saving, setSaving] = useState(false);
 
   // 日历点击日期相关状态
@@ -651,6 +722,7 @@ export function CounselorScheduleScreen() {
   const [editingSlot, setEditingSlot] = useState<{ rule: Rule; dateStr: string } | null>(null);
   const [editType, setEditType] = useState<"available" | "blocked" | "fixed">("available");
   const [dayType, setDayType] = useState<"available" | "blocked" | "fixed">("available");
+  const [dayRepeat, setDayRepeat] = useState<"weekly" | "single">("weekly");
   const [daySelectedTimes, setDaySelectedTimes] = useState<Set<string>>(new Set());
   const [dayDuration, setDayDuration] = useState(50);
   const [dayFixedClientId, setDayFixedClientId] = useState("");
@@ -669,6 +741,19 @@ export function CounselorScheduleScreen() {
         setRules(Array.isArray(data) ? data : []);
       }
     } catch { setRules([]); }
+    // 拉取自己的订单（用于日历标记「已预约」时段）
+    try {
+      const res2 = await request("/api/counselor/bookings");
+      if (res2.ok) {
+        const d2 = await res2.json();
+        const list = Array.isArray(d2) ? d2 : Array.isArray(d2.bookings) ? d2.bookings : [];
+        setBookings(list.map((b: any) => ({
+          scheduledAt: b.scheduledAt ?? null,
+          status: b.status ?? "",
+          durationMinutes: b.durationMinutes ?? null,
+        })));
+      }
+    } catch { setBookings([]); }
   }, [user]);
 
   useEffect(() => { loadRules(); }, [loadRules]);
@@ -681,6 +766,26 @@ export function CounselorScheduleScreen() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...r, durationMinutes: actual }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        return data.message || data.error || `保存失败 (${res.status})`;
+      }
+      await loadRules();
+      return null;
+    } catch (e: any) {
+      return e?.message ?? "网络错误，请重试";
+    } finally { setSaving(false); }
+  };
+
+  const handleUpdate = async (id: string, r: NewRule): Promise<string | null> => {
+    setSaving(true);
+    try {
+      const actual = r.durationMinutes === "custom" ? parseInt((r as any).customDuration) || 50 : r.durationMinutes;
+      const res = await request("/api/counselor/schedule", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...r, id, durationMinutes: actual }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -738,9 +843,9 @@ export function CounselorScheduleScreen() {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}>
           {tab === "rules"
-            ? <RulesPanel rules={rules} onAdd={handleAdd} onDelete={handleDelete} saving={saving} />
+            ? <RulesPanel rules={rules} onAdd={handleAdd} onUpdate={handleUpdate} onDelete={handleDelete} saving={saving} />
             : tab === "calendar"
-            ? <MonthCalendar rules={rules}
+            ? <MonthCalendar rules={rules} bookings={bookings}
                 expandedDate={expandedDate}
                 onDayClick={(d) => setExpandedDate(expandedDate === d ? null : d)}
                 onSlotEdit={(slot, dateStr) => setEditingSlotDisplay({ slot, dateStr })}
@@ -762,7 +867,7 @@ export function CounselorScheduleScreen() {
                   });
                   await loadRules();
                 }}
-                onAddClick={(d) => { setAddingDateModal(d); setDayType("available"); setDaySelectedTimes(new Set()); setDayDuration(50); }}
+                onAddClick={(d) => { setAddingDateModal(d); setDayType("available"); setDaySelectedTimes(new Set()); setDayDuration(50); setDayRepeat("weekly"); }}
               />
             : tab === "stats"
             ? <StatsPanel />
@@ -867,24 +972,47 @@ export function CounselorScheduleScreen() {
                   </div>
                 </div>
                 {dayType === "fixed" && (
-                  <div>
-                    <p className="text-xs mb-1.5" style={{ color: "#9B8E82" }}>指定来访者 ID（选填）</p>
-                    <input value={dayFixedClientId} onChange={e => setDayFixedClientId(e.target.value)}
-                      placeholder="来访者用户 ID"
-                      className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
-                      style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
-                  </div>
+                  <>
+                    <div>
+                      <p className="text-xs mb-2" style={{ color: "#9B8E82" }}>重复方式</p>
+                      <div className="flex gap-2">
+                        {([["weekly", "每周重复"], ["single", "仅此一次"]] as const).map(([id, label]) => (
+                          <button key={id} onClick={() => setDayRepeat(id)}
+                            className="flex-1 py-2.5 rounded-xl text-xs font-semibold"
+                            style={{ background: dayRepeat === id ? "#F59E0B" : "#EBE7DF", color: dayRepeat === id ? "white" : "#7D736A" }}>
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs mb-1.5" style={{ color: "#9B8E82" }}>指定来访者 ID（选填）</p>
+                      <input value={dayFixedClientId} onChange={e => setDayFixedClientId(e.target.value)}
+                        placeholder="来访者用户 ID"
+                        className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                        style={{ background: "#F5F1E8", border: "1px solid #EBE7DF", color: "#2C2420" }} />
+                    </div>
+                  </>
                 )}
                 <button disabled={addingDay || daySelectedTimes.size === 0} onClick={async () => {
-                  if (daySelectedTimes.size === 0) return;
+                  if (daySelectedTimes.size === 0 || !addingDateModal) return;
                   setAddingDay(true);
                   try {
-                    // 批量保存：每个选中时间各一条记录
+                    // 每周重复的固定档期 → 存为循环规则（星期取自所选日期，从该日起生效）
+                    const recurWeekly = dayType === "fixed" && dayRepeat === "weekly";
+                    const wdJs = new Date(addingDateModal).getDay();
+                    const weekdayMon0 = wdJs === 0 ? 6 : wdJs - 1;
                     await Promise.all(Array.from(daySelectedTimes).map(t =>
                       request("/api/counselor/schedule", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
+                        body: JSON.stringify(recurWeekly ? {
+                          type: "fixed", isSingle: false,
+                          weekdays: [weekdayMon0], startTime: t,
+                          durationMinutes: dayDuration,
+                          validFrom: addingDateModal,
+                          fixedClientId: dayFixedClientId || undefined,
+                        } : {
                           type: dayType, isSingle: true,
                           singleDate: addingDateModal, singleTime: t,
                           durationMinutes: dayDuration,
@@ -895,6 +1023,7 @@ export function CounselorScheduleScreen() {
                     await loadRules();
                     setDayFixedClientId("");
                     setDaySelectedTimes(new Set());
+                    setDayRepeat("weekly");
                     setAddingDateModal(null);
                   } finally { setAddingDay(false); }
                 }} className="w-full py-3 rounded-2xl text-sm font-semibold text-white"

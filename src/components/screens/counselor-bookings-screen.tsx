@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, Video, Phone, MessageCircle, Check, X } from "lucide-react";
+import { Calendar, Clock, Video, Phone, MessageCircle, Check, X, ClipboardList } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { request } from "@/lib/api/request";
 import { localDateStr } from "@/lib/date";
@@ -33,7 +33,7 @@ const STATUS_OPTIONS = [
   { key: "pending_confirmation", label: "待确认", statuses: ["pending_confirmation", "pending_payment"], dot: statusMeta("pending_confirmation").color },
   { key: "upcoming",             label: "待咨询", statuses: ["paid"],                                   dot: statusMeta("paid").color },
   { key: "in_progress",          label: "进行中", statuses: ["in_progress"],                            dot: statusMeta("in_progress").color },
-  { key: "completed",            label: "已咨询", statuses: ["completed", "refunded"],                  dot: statusMeta("completed").color },
+  { key: "completed",            label: "已完成", statuses: ["completed", "refunded"],                  dot: statusMeta("completed").color },
 ];
 
 function BookingCard({ b, onUpdate, onConfirm, onReschedule, onDirectReschedule, onContact, onRefund }: { b: Booking; onUpdate: (id: string, status: string) => void; onConfirm?: (b: Booking) => void; onReschedule?: (b: Booking) => void; onDirectReschedule?: (id: string) => void; onContact?: (b: Booking) => void; onRefund?: (id: string) => void }) {
@@ -149,14 +149,19 @@ function BookingCard({ b, onUpdate, onConfirm, onReschedule, onDirectReschedule,
 
       {/* 调剂申请提示 */}
       {b.adjustRequest && (
-        <div className="mt-3 rounded-xl px-3 py-2.5" style={{ background: "#FEF3C7" }}>
-          <p className="text-xs font-semibold mb-0.5" style={{ color: "#D97706" }}>时间调剂申请（来访已支付）</p>
+        <div className="mt-3 rounded-xl px-3 py-2.5" style={{ background: "#FAE9DD" }}>
+          <p className="text-xs font-semibold mb-0.5" style={{ color: "#C66B2E" }}>时间调剂申请（来访已支付）</p>
           <p className="text-xs whitespace-pre-wrap" style={{ color: "#5A4E44" }}>{b.adjustRequest.message}</p>
         </div>
       )}
 
       <div className="flex items-center justify-between pt-3 border-t mt-3" style={{ borderColor: "var(--color-border)" }}>
-        <span className="text-base font-bold" style={{ color: "var(--color-text-primary)" }}>¥{b.priceAmount}</span>
+        {(b as any).packageId ? (
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+            style={{ background: "#F0F7EC", color: "#3A6228" }}>套餐核销 · 不另收费</span>
+        ) : (
+          <span className="text-base font-bold" style={{ color: "var(--color-text-primary)" }}>¥{b.priceAmount}</span>
+        )}
         <div className="flex flex-wrap gap-2">
           {(b.status === "pending_confirmation" || b.status === "pending_payment") && (<>
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => onContact && onContact(b)}
@@ -195,7 +200,7 @@ function BookingCard({ b, onUpdate, onConfirm, onReschedule, onDirectReschedule,
             {b.rescheduleStatus === "pending" && (
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => onReschedule && onReschedule(b)}
                 className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium"
-                style={{ background: "#FEF3C7", color: "#D97706" }}>
+                style={{ background: "#FAE9DD", color: "#C66B2E" }}>
                 改期申请
               </motion.button>
             )}
@@ -490,7 +495,7 @@ export function CounselorBookingsScreen() {
                 </div>
                 {confirmBooking.adjustRequest ? (
                   <div className="mt-2 pt-2 border-t" style={{ borderColor: "#EBE7DF" }}>
-                    <p className="text-xs font-semibold mb-0.5" style={{ color: "#D97706" }}>时间调剂申请</p>
+                    <p className="text-xs font-semibold mb-0.5" style={{ color: "#C66B2E" }}>时间调剂申请</p>
                     <p className="text-xs whitespace-pre-wrap" style={{ color: "#5A4E44" }}>{confirmBooking.adjustRequest.message}</p>
                     <p className="text-xs mt-1" style={{ color: "#9B8E82" }}>需在下方为本次咨询指定时间</p>
                   </div>

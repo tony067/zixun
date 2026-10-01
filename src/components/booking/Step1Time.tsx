@@ -254,7 +254,7 @@ export function Step1Time({ counselorId, sessionModes, durationMinutes, onNext }
                   style={{ background: "white", border: "1.5px solid var(--color-border)" }}>
                   {coordSent ? (
                     <div className="py-2 text-center">
-                      <p className="text-sm font-semibold mb-1" style={{ color: "var(--color-primary)" }}>✓ 调剂申请已填写</p>
+                      <p className="text-sm font-semibold mb-1" style={{ color: "var(--color-primary)" }}>调剂申请已填写</p>
                       <p className="text-xs" style={{ color: "#9B8E82" }}>点击下方「下一步」继续，申请将随订单一起发送给咨询师</p>
                       <button onClick={() => setCoordSent(false)}
                         className="mt-2 text-xs underline" style={{ color: "#9B8E82" }}>

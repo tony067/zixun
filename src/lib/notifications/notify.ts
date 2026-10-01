@@ -36,7 +36,7 @@ export async function notifyClientBookingConfirmed(opts: {
 }) {
   await notifyUser({
     userId: opts.clientUserId,
-    title: "咨询师已确认你的预约 ✓",
+    title: "咨询师已确认你的预约",
     body: `${opts.counselorName} 已确认你的预约（${opts.scheduledAt}），请前往订单详情查看咨询设置与咨询链接。`,
     data: { type: "booking_confirmed", bookingId: opts.bookingId },
   });
@@ -94,7 +94,7 @@ export async function notifyClientSession24h(opts: {
 }) {
   await notifyUser({
     userId: opts.clientUserId,
-    title: "明天有咨询 🌿",
+    title: "明天有咨询",
     body: `你与 ${opts.counselorName} 的咨询明天 ${opts.scheduledAt} 开始，记得按时上线。`,
     data: { type: "session_reminder_24h", bookingId: opts.bookingId },
   });
@@ -166,7 +166,7 @@ export async function notifyClientRescheduleResult(opts: {
 }) {
   await notifyUser({
     userId: opts.clientUserId,
-    title: opts.accepted ? "改期已确认 ✓" : "改期申请未通过",
+    title: opts.accepted ? "改期已确认" : "改期申请未通过",
     body: opts.accepted
       ? `${opts.counselorName} 已确认改期，新的咨询时间为 ${opts.newTime}。`
       : `${opts.counselorName} 暂时无法接受改期，请与咨询师协商其他时间。`,
@@ -247,7 +247,7 @@ export async function notifyCounselorReviewResult(opts: {
 }) {
   await notifyUser({
     userId: opts.counselorUserId,
-    title: opts.approved ? "档案审核通过 🎉" : "档案审核未通过",
+    title: opts.approved ? "档案审核通过" : "档案审核未通过",
     body: opts.approved
       ? "恭喜！你的咨询师档案已通过审核，现在可以在平台上接受来访预约了。"
       : `你的档案审核未通过：${opts.reason || "请联系平台了解详情"}。`,

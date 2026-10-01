@@ -12,8 +12,8 @@ import type { SectionKey } from "@/lib/counselor-profile-data";
 
 const STATUS_LABEL: Record<string, { text: string; color: string; bg: string }> = {
   draft:     { text: "草稿",   color: "#9B8E82", bg: "#F0EDE8" },
-  submitted: { text: "审核中", color: "#D97706", bg: "#FEF3C7" },
-  approved:  { text: "已通过", color: "#16A34A", bg: "#DCFCE7" },
+  submitted: { text: "审核中", color: "#C66B2E", bg: "#FAE9DD" },
+  approved:  { text: "已通过", color: "#3A6228", bg: "#E4F0DC" },
   rejected:  { text: "已退回", color: "#DC2626", bg: "#FEE2E2" },
 };
 
@@ -29,7 +29,15 @@ export default function CounselorProfilePage() {
   useEffect(() => {
     if (!user) return;
     request("/api/counselor/profile").then(r => r.json()).then(data => {
-      if (data?.exists && data.profile) setForm({ ...EMPTY_PROFILE, ...data.profile });
+      if (data?.exists && data.profile) {
+        const prof = { ...EMPTY_PROFILE, ...data.profile };
+        // 老数据兼容：pricingOptions 可能被存成 JSON 字符串
+        if (typeof prof.pricingOptions === "string") {
+          try { prof.pricingOptions = JSON.parse(prof.pricingOptions); } catch { prof.pricingOptions = []; }
+        }
+        if (!Array.isArray(prof.pricingOptions)) prof.pricingOptions = [];
+        setForm(prof);
+      }
     });
   }, [user]);
 
@@ -50,7 +58,7 @@ export default function CounselorProfilePage() {
           reviewStatus: data.profile?.reviewStatus ?? data.reviewStatus ?? prev.reviewStatus,
           isAccepting: data.profile?.isAccepting ?? prev.isAccepting,
         }));
-        showToast(submit ? "已提交审核！" : "草稿已保存 ✓");
+        showToast(submit ? "已提交审核！" : "草稿已保存");
         if (submit) {
           setTimeout(() => router.replace("/counselor/schedule"), 900);
         }

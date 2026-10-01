@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
-import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight, Camera, Pencil, Check, X, MessageCircle } from "lucide-react";
+import { Heart, HeadphonesIcon, BookOpen, LogOut, Settings, Calendar, ChevronRight, Camera, Pencil, Check, X, MessageCircle, ClipboardList } from "lucide-react";
 import { request } from "@/lib/api/request";
 import { statusMeta } from "@/lib/booking-status";
 import { useUnreadCount } from "@/hooks/use-unread-count";
@@ -12,6 +12,18 @@ type Booking = {
   sessionMode: string; priceAmount: number; sessionNumber?: number;
   rescheduleStatus?: string | null;
   counselor: { id: string; displayName: string } | null;
+};
+
+// 个性服务（评估）订单摘要
+type SvcOrder = { id: string; serviceName: string | null; price: number; status: string; createdAt: string };
+
+const SVC_STATUS: Record<string, { label: string; color: string; bg: string }> = {
+  pending_payment: { label: "待支付", color: "#C66B2E", bg: "#FAE9DD" },
+  paid:            { label: "待填写问卷", color: "#3A6228", bg: "#E4F0DC" },
+  submitted:       { label: "等待报告", color: "#3A9B8E", bg: "#E4F2F0" },
+  completed:       { label: "已完成", color: "white", bg: "#9CB48A" },
+  refunded:        { label: "已退款", color: "#B07D2A", bg: "#FEF9EE" },
+  cancelled:       { label: "已取消", color: "#9B8E82", bg: "#EBE7DF" },
 };
 
 // 主页只显示进行中的订单
@@ -45,6 +57,7 @@ export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [svcOrders, setSvcOrders] = useState<SvcOrder[]>([]);
   const unread = useUnreadCount();
 
   useEffect(() => {
@@ -53,6 +66,9 @@ export default function ProfileScreen() {
       // API 直接返回数组
       const list = Array.isArray(d) ? d : (d.bookings ?? []);
       setBookings(list);
+    }).catch(() => {});
+    request("/api/service-orders").then(r => r.json()).then((d: SvcOrder[] | unknown) => {
+      setSvcOrders(Array.isArray(d) ? d : []);
     }).catch(() => {});
   }, [user]);
 
@@ -192,7 +208,7 @@ export default function ProfileScreen() {
                   <p className="text-xs mt-0.5" style={{ color:"#9B8E82" }}>来自咨询师的私信，点击查看并回复</p>
                 </div>
                 <span className="text-xs px-2 py-0.5 rounded-full font-medium flex-none"
-                  style={{ background:"#FEF3C7", color:"#D97706" }}>新消息</span>
+                  style={{ background:"#FAE9DD", color:"#C66B2E" }}>新消息</span>
               </button>
             )}
             {activeBookings.slice(0, 3).map((b) => {
@@ -231,6 +247,46 @@ export default function ProfileScreen() {
           </div>
         )}
       </div>
+
+      {/* ── 我的评估（个性服务订单，有评估订单时才显示）── */}
+      {svcOrders.length > 0 && (
+        <div className="mx-5 mb-4 rounded-2xl overflow-hidden" style={{ background:"white", border:"1px solid #EBE7DF" }}>
+          <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor:"#F0EBE4" }}>
+            <div className="flex items-center gap-2">
+              <ClipboardList className="w-4 h-4" style={{ color:"var(--color-primary)" }} />
+              <span className="text-sm font-bold" style={{ color:"#2C2420" }}>我的评估</span>
+              {svcOrders.filter(o => ["pending_payment","paid","submitted"].includes(o.status)).length > 0 && (
+                <span className="text-xs px-1.5 py-0.5 rounded-full font-bold text-white" style={{ background:"var(--color-primary)" }}>
+                  {svcOrders.filter(o => ["pending_payment","paid","submitted"].includes(o.status)).length}
+                </span>
+              )}
+            </div>
+            <button onClick={() => router.push("/my-services")}
+              className="flex items-center gap-0.5 text-xs font-medium"
+              style={{ color:"var(--color-primary)" }}>
+              全部评估 <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          {svcOrders.slice(0, 2).map((o) => {
+            const st = SVC_STATUS[o.status] ?? SVC_STATUS.cancelled;
+            return (
+              <button key={o.id} onClick={() => router.push(`/my-services/${o.id}`)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left border-b last:border-0"
+                style={{ borderColor:"#F5F0EA" }}>
+                <div className="w-9 h-9 rounded-full flex-none flex items-center justify-center" style={{ background:"#E4F0DC" }}>
+                  <ClipboardList className="w-4 h-4" style={{ color:"#3A6228" }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate" style={{ color:"#2C2420" }}>{o.serviceName ?? "评估服务"}</p>
+                  <p className="text-xs mt-0.5" style={{ color:"#9B8E82" }}>¥{o.price} · {o.status === "paid" ? "去填写问卷" : o.status === "completed" ? "查看报告" : o.status === "pending_payment" ? "待完成支付" : "已提交答卷"}</p>
+                </div>
+                <span className="text-xs px-2 py-0.5 rounded-full font-medium flex-none"
+                  style={{ background:st.bg, color:st.color }}>{st.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── 快捷功能四宫格 ── */}
       <div className="mx-5 grid grid-cols-2 gap-3 mb-6">

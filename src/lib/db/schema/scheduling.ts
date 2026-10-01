@@ -42,6 +42,8 @@ export const bookings = pgTable("bookings", {
   clientNote: text("client_note"),
   counselorNote: text("counselor_note"),
   sessionNumber: integer("session_number").default(1),
+  // 套餐核销：此预约属于哪个套餐账户（0元子预约）
+  packageId: text("package_id"),
   applicationForm: json("application_form"),
   agreementSigned: boolean("agreement_signed").default(false),
   // 改期相关
@@ -50,6 +52,19 @@ export const bookings = pgTable("bookings", {
   rescheduleNewTime: timestamp("reschedule_new_time", { withTimezone: true }),
   rescheduleReason: text("reschedule_reason"),
   rescheduleNote: text("reschedule_note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
+// 多次套餐账户（购买 sessions>1 的定价方案后生成）
+export const consultationPackages = pgTable("consultation_packages", {
+  id: text("id").primaryKey(),
+  orderId: text("order_id").notNull(),        // 购买套餐的订单
+  clientId: text("client_id").notNull(),
+  counselorId: text("counselor_id").notNull(),
+  planName: text("plan_name"),                // 套餐名称快照，如"10次套餐"
+  totalSessions: integer("total_sessions").notNull(),
+  usedSessions: integer("used_sessions").default(0),
+  status: text("status").default("active"),   // active | refunded
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 

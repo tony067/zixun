@@ -31,7 +31,7 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ id: 
   const isBanned = status === "banned";
   const initial = user.name[0];
   const roleLabel = user.role === "counselor" ? "咨询师" : "来访者";
-  const roleColor = user.role === "counselor" ? "#8BB5C8" : "#9CB48A";
+  const roleColor = user.role === "counselor" ? "#B07D2A" : "#9CB48A";
 
   return (
     <div className="min-h-screen pb-10" style={{ background: "var(--color-bg)" }}>
@@ -91,7 +91,7 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ id: 
           <button
             onClick={() => setStatus(isBanned ? "active" : "banned")}
             className="w-full py-3.5 rounded-2xl text-sm font-bold flex items-center justify-center gap-2"
-            style={{ background: isBanned ? "#F0FDF4" : "#FEE2E2", color: isBanned ? "#16A34A" : "#DC2626" }}>
+            style={{ background: isBanned ? "#E4F0DC" : "#FEE2E2", color: isBanned ? "#3A6228" : "#DC2626" }}>
             {isBanned ? <ShieldCheck className="w-4 h-4" /> : <ShieldBan className="w-4 h-4" />}
             {isBanned ? "解除封禁" : "封禁该用户"}
           </button>

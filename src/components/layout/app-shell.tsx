@@ -7,19 +7,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, CalendarDays, MessageCircle, User,
   LayoutDashboard, ClipboardList, ShieldCheck, Users,
-  ChevronRight,
+  ChevronRight, Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useUnreadCount } from "@/hooks/use-unread-count";
 
 const CLIENT_TABS = [
-  { href: "/",            icon: Home,          label: "首页" },
+  { href: "/",            icon: Home,          label: "咨询服务" },
+  { href: "/services",    icon: Sparkles,      label: "个性服务" },
   { href: "/messages",    icon: MessageCircle, label: "消息" },
 ];
 
 const COUNSELOR_TABS = [
   { href: "/counselor/bookings",  icon: ClipboardList, label: "预约" },
   { href: "/counselor/schedule",  icon: CalendarDays,  label: "档期" },
+  { href: "/counselor/services",  icon: Sparkles,      label: "评估" },
   { href: "/counselor/messages",  icon: MessageCircle, label: "消息" },
   { href: "/counselor/profile",   icon: User,          label: "档案" },
 ];
@@ -38,7 +40,7 @@ const SUPPORT_TABS = [
   { href: "/messages",   icon: MessageCircle, label: "消息" },
 ];
 
-const HIDE_NAV = ["/booking/", "/chat/", "/counselor/profile", "/counselors/", "/my-bookings", "/settings", "/support", "/favorites"];
+const HIDE_NAV = ["/booking/", "/chat/", "/counselor/profile", "/counselors/", "/my-bookings", "/settings", "/support", "/favorites", "/services/", "/my-services"];
 
 type Role = "client" | "counselor" | "admin" | "support";
 
@@ -126,6 +128,13 @@ const ROLE_ITEMS = [
   { role: "admin"    as Role, label: "管理员", sub: "审核・数据・系统设置",  Icon: AdminIcon },
 ];
 
+const NAV_CONFIG: Record<Role, { tabs: typeof CLIENT_TABS; unreadHrefs: string[] }> = {
+  client:    { tabs: CLIENT_TABS,    unreadHrefs: ["/messages"] },
+  counselor: { tabs: COUNSELOR_TABS, unreadHrefs: ["/counselor/messages", "/messages"] },
+  admin:     { tabs: ADMIN_TABS,     unreadHrefs: ["/messages", "/counselor/messages"] },
+  support:   { tabs: SUPPORT_TABS,   unreadHrefs: ["/messages", "/counselor/messages"] },
+};
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
@@ -142,11 +151,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return false;
   });
 
-  const role = detectRole(pathname);
-  const tabs = role === "counselor" ? COUNSELOR_TABS
-             : role === "admin"     ? ADMIN_TABS
-             : role === "support"   ? SUPPORT_TABS
-             : CLIENT_TABS;
+  const activePort = detectRole(pathname);
+  // 端口偏好：管理员/客服显式切换端口后记住选择，逛来访端各页面（首页/个性服务/消息/我的）保持所选 tabs；
+  // 进入专职地盘（/counselor、/admin、/cs）时自动更新为该端口
+  const [portPref, setPortPref] = useState<Role | null>(null);
+  useEffect(() => {
+    setPortPref((localStorage.getItem("mindpace:port") as Role | null) ?? null);
+  }, []);
+  useEffect(() => {
+    if (!user || activePort === "client") return;
+    localStorage.setItem("mindpace:port", activePort);
+    setPortPref(activePort);
+  }, [activePort, user]);
+  // 导航跟随当前所处端口（在谁的"地盘"显示谁的 tabs）；
+  // 多角色账号在来访端页面时用"最近切换的端口"，从未切换过则显示自己身份
+  const navRole: Role = !user ? "client"
+    : (userDbRole === "admin" || userDbRole === "support")
+      ? (activePort === "client" ? (portPref ?? (userDbRole as Role)) : activePort)
+      : userDbRole === "counselor" ? "counselor"
+      : "client";
+  const navCfg = NAV_CONFIG[navRole];
+  // 切换入口：多端口账号（管理员/客服）才有
+  const canSwitch = !!user && (userDbRole === "admin" || userDbRole === "support");
 
   const hideNav = HIDE_NAV.some(p => pathname.startsWith(p));
 
@@ -158,6 +184,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       router.push("/login");
       return;
     }
+    // 记住显式切换的端口：之后逛来访端各页面保持该身份的 tabs
+    localStorage.setItem("mindpace:port", targetRole);
+    setPortPref(targetRole);
     router.push(MY_ROUTE[targetRole]);
   }
 
@@ -181,7 +210,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <>
                   <Link href="/" className="flex-1 flex flex-col items-center gap-0.5 py-1">
                     <Home size={22} style={{ color: pathname === "/" ? "#9CB48A" : "#9B8E82" }} strokeWidth={pathname === "/" ? 2.2 : 1.8} />
-                    <span className="text-[10px] font-medium" style={{ color: pathname === "/" ? "#9CB48A" : "#9B8E82" }}>首页</span>
+                    <span className="text-[10px] font-medium" style={{ color: pathname === "/" ? "#9CB48A" : "#9B8E82" }}>咨询服务</span>
                   </Link>
                   <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => router.push("/login")}>
                     <User size={22} style={{ color: "#9B8E82" }} strokeWidth={1.8} />
@@ -191,92 +220,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             }
 
-            // 咨询师：直接显示咨询师4个按钮，无切换入口
-            if (userDbRole === "counselor") {
-              return COUNSELOR_TABS.map(tab => {
-                const isActive = pathname === tab.href || pathname.startsWith(tab.href);
-                const showDot = tab.href === "/counselor/messages" && unread > 0;
-                return (
-                  <Link key={tab.href} href={tab.href} className="relative flex-1 flex flex-col items-center gap-0.5 py-1">
-                    <div className="relative">
-                      <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
-                      {showDot && (
-                        <span className="absolute -top-0.5 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
-                          {unread > 99 ? "99+" : unread}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>{tab.label}</span>
-                  </Link>
-                );
-              });
-            }
-
-            // 管理员：始终显示管理员tabs（含切换入口），停留在来访端页面时导航不漂移
-            if (userDbRole === "admin") {
-              return (
-                <>
-                  {ADMIN_TABS.map(tab => {
-                    const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
-                    // 消息tab未读红点（管理员切到来访/咨询师端口时同样生效）
-                    const showDot = (tab.href === "/messages" || tab.href === "/counselor/messages") && unread > 0;
-                    return (
-                      <Link key={tab.href} href={tab.href} className="relative flex-1 flex flex-col items-center gap-0.5 py-1">
-                        <div className="relative">
-                          <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
-                          {showDot && (
-                            <span className="absolute -top-0.5 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
-                              {unread > 99 ? "99+" : unread}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>{tab.label}</span>
-                      </Link>
-                    );
-                  })}
-                  <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => setShowRolePicker(true)}>
-                    <ChevronRight size={22} style={{ color: "#9B8E82" }} strokeWidth={1.8} className="rotate-90" />
-                    <span className="text-[10px] font-medium" style={{ color: "#9B8E82" }}>切换</span>
-                  </button>
-                </>
-              );
-            }
-
-            // 客服：始终显示客服tabs（含切换入口），停留在来访端页面时导航不漂移
-            if (userDbRole === "support") {
-              return (
-                <>
-                  {SUPPORT_TABS.map(tab => {
-                    const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
-                    const showDot = tab.href === "/messages" && unread > 0;
-                    return (
-                      <Link key={tab.href} href={tab.href} className="relative flex-1 flex flex-col items-center gap-0.5 py-1">
-                        <div className="relative">
-                          <tab.icon size={22} style={{ color: isActive ? "#9CB48A" : "#9B8E82" }} strokeWidth={isActive ? 2.2 : 1.8} />
-                          {showDot && (
-                            <span className="absolute -top-0.5 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
-                              {unread > 99 ? "99+" : unread}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-[10px] font-medium" style={{ color: isActive ? "#9CB48A" : "#9B8E82" }}>{tab.label}</span>
-                      </Link>
-                    );
-                  })}
-                  <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => setShowRolePicker(true)}>
-                    <ChevronRight size={22} style={{ color: "#9B8E82" }} strokeWidth={1.8} className="rotate-90" />
-                    <span className="text-[10px] font-medium" style={{ color: "#9B8E82" }}>切换</span>
-                  </button>
-                </>
-              );
-            }
-
-            // 来访者（visitor）：首页、消息、我的；admin/counselor 额外显示切换入口
             return (
               <>
-                {CLIENT_TABS.map(tab => {
+                {navCfg.tabs.map(tab => {
                   const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
-                  const showDot = tab.href === "/messages" && unread > 0;
+                  const showDot = navCfg.unreadHrefs.includes(tab.href) && unread > 0;
                   return (
                     <Link key={tab.href} href={tab.href} className="relative flex-1 flex flex-col items-center gap-0.5 py-1">
                       <div className="relative">
@@ -291,17 +239,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </Link>
                   );
                 })}
-                {(userDbRole === "admin" || userDbRole === "counselor" || userDbRole === "support") ? (
+                {canSwitch ? (
                   <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => setShowRolePicker(true)}>
                     <ChevronRight size={22} style={{ color: "#9B8E82" }} strokeWidth={1.8} className="rotate-90" />
                     <span className="text-[10px] font-medium" style={{ color: "#9B8E82" }}>切换</span>
                   </button>
-                ) : (
+                ) : navRole === "client" ? (
                   <button className="flex-1 flex flex-col items-center gap-0.5 py-1" onClick={() => router.push("/profile")}>
                     <User size={22} style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }} strokeWidth={pathname === "/profile" ? 2.2 : 1.8} />
                     <span className="text-[10px] font-medium" style={{ color: pathname === "/profile" ? "#9CB48A" : "#9B8E82" }}>我的</span>
                   </button>
-                )}
+                ) : null}
               </>
             );
           })()}
@@ -332,7 +280,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
               <div className="px-5 pb-4 space-y-2">
                 {visibleRoleItems.map(item => {
-                  const isActive = item.role === role;
+                  const isActive = item.role === activePort;
                   return (
                     <button
                       key={item.role}

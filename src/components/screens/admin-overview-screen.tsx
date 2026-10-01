@@ -10,11 +10,16 @@ type Stats = {
   monthOrders: number; orderChange: number; totalOrders: number;
   activeCounselors: number; pendingCounselors: number;
   monthRevenue: number; totalRevenue: number;
+  svcMonthRevenue?: number; svcTotalRevenue?: number; svcMonthOrders?: number;
+  bkMonthOrders?: number; bkTotalOrders?: number;
+  bkMonthRevenue?: number; bkTotalRevenue?: number;
+  svcTotalOrders?: number;
+  pendingOrders?: number; pendingBookingOrders?: number; pendingSvcOrders?: number;
 };
 
 const SHORTCUTS = [
-  { label: "审核申请", sub: "咨询师入驻审核", href: "/admin/counselors", color: "#E8A87C", badgeKey: "pendingCounselors" },
-  { label: "订单管理", sub: "查看全部订单", href: "/admin/orders", color: "#8BB5C8", badgeKey: "monthOrders" },
+  { label: "审核申请", sub: "专业人员入驻审核", href: "/admin/counselors", color: "#E8A87C", badgeKey: "pendingCounselors" },
+  { label: "订单管理", sub: "咨询 + 个性服务订单", href: "/admin/orders", color: "#8BB5C8", badgeKey: "newOrders" },
   { label: "账单导出", sub: "月度收入明细", href: "/admin/billing", color: "#9CB48A", badgeKey: null },
 ];
 
@@ -47,15 +52,16 @@ export default function AdminOverviewScreen() {
 
   const STATS_DATA = stats ? [
     { label: "平台用户", value: fmt(stats.totalUsers), sub: `本月新增 +${stats.monthUsers}`, icon: Users, color: "#9CB48A", href: "/admin/users" },
-    { label: "本月订单", value: fmt(stats.monthOrders), sub: stats.orderChange >= 0 ? `较上月 +${stats.orderChange}%` : `较上月 ${stats.orderChange}%`, icon: ClipboardList, color: "#B8A99A", href: "/admin/orders" },
-    { label: "咨询师已上线", value: fmt(stats.activeCounselors), sub: "入驻审核通过", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
-    { label: "本月应收", value: fmtMoney(stats.monthRevenue), sub: "已完成订单", icon: TrendingUp, color: "#8BB5C8", href: "/admin/billing?type=monthly" },
-    { label: "累计订单", value: fmt(stats.totalOrders), sub: "历史总计", icon: BarChart2, color: "#C4A0C0", href: "/admin/orders" },
-    { label: "累计应收", value: fmtMoney(stats.totalRevenue), sub: "历史总计", icon: DollarSign, color: "#E8A87C", href: "/admin/billing?type=total" },
+    { label: "本月订单", value: fmt(stats.monthOrders), sub: `咨询 ${fmt(stats.bkMonthOrders ?? 0)} · 个性服务 ${fmt(stats.svcMonthOrders ?? 0)}`, icon: ClipboardList, color: "#B8A99A", href: "/admin/orders" },
+    { label: "专业人员在线", value: fmt(stats.activeCounselors), sub: "咨询师 / 评估师", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
+    { label: "本月应收", value: fmtMoney(stats.monthRevenue), sub: `咨询 ${fmtMoney(stats.bkMonthRevenue ?? 0)} · 个性服务 ${fmtMoney(stats.svcMonthRevenue ?? 0)}`, icon: TrendingUp, color: "#8BB5C8", href: "/admin/billing?type=monthly" },
+    { label: "累计订单", value: fmt(stats.totalOrders), sub: `咨询 ${fmt(stats.bkTotalOrders ?? 0)} · 个性服务 ${fmt(stats.svcTotalOrders ?? 0)}`, icon: BarChart2, color: "#C4A0C0", href: "/admin/orders" },
+    { label: "累计应收", value: fmtMoney(stats.totalRevenue), sub: `咨询 ${fmtMoney(stats.bkTotalRevenue ?? 0)} · 个性服务 ${fmtMoney(stats.svcTotalRevenue ?? 0)}`, icon: DollarSign, color: "#E8A87C", href: "/admin/billing?type=total" },
+    { label: "待处理订单", value: fmt(stats.pendingOrders ?? 0), sub: `咨询 ${fmt(stats.pendingBookingOrders ?? 0)} · 个性服务 ${fmt(stats.pendingSvcOrders ?? 0)}`, icon: ClipboardList, color: "#E8A87C", href: "/admin/orders" },
   ] : [
     { label: "平台用户", value: "—", sub: "加载中…", icon: Users, color: "#9CB48A", href: "/admin/users" },
     { label: "本月订单", value: "—", sub: "加载中…", icon: ClipboardList, color: "#B8A99A", href: "/admin/orders" },
-    { label: "咨询师已上线", value: "—", sub: "加载中…", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
+    { label: "专业人员在线", value: "—", sub: "加载中…", icon: Star, color: "#9CB48A", href: "/admin/counselors" },
     { label: "本月应收", value: "—", sub: "加载中…", icon: TrendingUp, color: "#8BB5C8", href: "/admin/billing?type=monthly" },
     { label: "累计订单", value: "—", sub: "加载中…", icon: BarChart2, color: "#C4A0C0", href: "/admin/orders" },
     { label: "累计应收", value: "—", sub: "加载中…", icon: DollarSign, color: "#E8A87C", href: "/admin/billing?type=total" },

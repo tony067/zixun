@@ -47,7 +47,7 @@ export default function AdminCounselorsScreen() {
         <button onClick={() => router.push("/admin")} className="p-1.5 rounded-full" style={{ background: "#EBE7DF" }}>
           <ArrowLeft className="w-4 h-4" style={{ color: "#5A4E44" }} />
         </button>
-        <h1 className="text-base font-bold" style={{ color: "#2C2420" }}>咨询师审核</h1>
+        <h1 className="text-base font-bold" style={{ color: "#2C2420" }}>专业人员审核（咨询师 / 评估师）</h1>
       </div>
 
       {/* Tab */}
@@ -81,7 +81,7 @@ export default function AdminCounselorsScreen() {
                   <p className="text-sm font-bold" style={{ color: "#2C2420" }}>{c.displayName || "未填写"}</p>
                   {showBadge && (
                     <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                      style={{ background: "#FEF3C7", color: "#D97706" }}>待审核</span>
+                      style={{ background: "#FAE9DD", color: "#C66B2E" }}>待审核</span>
                   )}
                 </div>
                 <p className="text-xs" style={{ color: "#9B8E82" }}>

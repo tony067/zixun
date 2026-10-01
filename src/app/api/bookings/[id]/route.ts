@@ -8,8 +8,35 @@ import { checkSlotAvailable } from "@/lib/scheduling/slots";
 import { syncBookingProgress } from "@/lib/db/queries/bookings";
 import { notifyClientBookingConfirmed, notifyClientBookingRejected, notifyUser } from "@/lib/notifications/notify";
 import { ALL_BOOKING_STATUSES } from "@/lib/booking-status";
+import {
+  ensurePackageForPaidBooking, consumePackageSession, releasePackageSession, refundPackageByOrder,
+} from "@/lib/db/queries/packages";
 
 const VALID_STATUSES = ALL_BOOKING_STATUSES;
+
+// 套餐副作用（在状态变更落库后调用）：
+//   →paid：套餐购买单生成账户；子预约从待确认被确认 → 核销1次（咨询师确认时锁定）
+//   →cancelled/rejected：已锁定（曾到过 paid/in_progress）的子预约 → 释放1次
+//   →refunded：套餐购买单退款 → 套餐整体作废
+async function applyPackageEffects(
+  booking: typeof bookings.$inferSelect, nextStatus: string, current: string,
+) {
+  try {
+    if (nextStatus === "paid") {
+      if (booking.packageId) {
+        if (current === "pending_confirmation") await consumePackageSession(booking.packageId);
+      } else {
+        await ensurePackageForPaidBooking(booking);
+      }
+    }
+    if ((nextStatus === "cancelled" || nextStatus === "rejected") && booking.packageId) {
+      if (["paid", "in_progress"].includes(current)) await releasePackageSession(booking.packageId);
+    }
+    if (nextStatus === "refunded" && !booking.packageId && (booking.sessionNumber ?? 1) > 1) {
+      await refundPackageByOrder(booking.id);
+    }
+  } catch (e) { console.error("[package effects]", e); }
+}
 
 async function loadBookingWithRole(id: string, userId: string, role: string) {
   const [row] = await db.select().from(bookings).where(eq(bookings.id, id));
@@ -69,6 +96,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     sessionMode: row.sessionMode ?? "视频",
     priceAmount: row.priceAmount ?? 0,
     sessionNumber: row.sessionNumber ?? 1,
+    packageId: row.packageId ?? null,
     applicationForm: row.applicationForm,
     agreementSigned: row.agreementSigned,
     createdAt: row.createdAt,
@@ -145,8 +173,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       (status === "paid" && ["pending_payment", "confirmed"].includes(current)) ||
       (status === "refunded" && ["pending_confirmation", "pending_payment", "paid", "in_progress", "completed"].includes(current));
   } else if (actor === "client") {
-    // 来访：取消自己的订单（已支付未开始的）
-    allowed = status === "cancelled" && ["pending_confirmation", "pending_payment", "paid"].includes(current);
+    // 来访：取消自己的订单；待支付订单可补支付（如线下转账单后改线上支付）
+    allowed =
+      (status === "cancelled" && ["pending_confirmation", "pending_payment", "paid"].includes(current)) ||
+      (status === "paid" && current === "pending_payment");
   } else {
     // 咨询师
     allowed =
@@ -209,6 +239,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         bookingId: id,
       });
     } catch (e) { console.error("[notify confirmed]", e); }
+    await applyPackageEffects(booking, "paid", current);
     return NextResponse.json(updated);
   }
 
@@ -226,6 +257,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         data: { bookingId: id },
       });
     } catch (e) { console.error("[notify refunded]", e); }
+    await applyPackageEffects(booking, "refunded", current);
     return NextResponse.json(updated);
   }
 
@@ -242,14 +274,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         bookingId: id,
       });
     } catch (e) { console.error("[notify rejected]", e); }
+    await applyPackageEffects(booking, "rejected", current);
     return NextResponse.json(updated);
   }
 
   // 其他状态变更
   const extra: Partial<typeof bookings.$inferInsert> = {};
   if (status === "paid" && !booking.paidAt) {
-    extra.paymentMethod = body.paymentMethod ?? "online";
     extra.paidAt = new Date();
+    // 支付方式：来访补支付用弹窗选择的方式；管理员/客服确认收款保留原方式（如 offline），不覆盖
+    extra.paymentMethod = actor === "client"
+      ? (body.paymentMethod ?? "online")
+      : (booking.paymentMethod ?? "online");
   }
   if (status === "paid" && actor === "admin") {
     if (body.meetingLink) extra.meetingLink = String(body.meetingLink);
@@ -259,5 +295,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .set({ status, ...extra })
     .where(eq(bookings.id, id))
     .returning();
+  // 通用流转同样要处理套餐副作用：管理员/客服确认收款 → 生成套餐；取消 → 释放已锁次数
+  await applyPackageEffects(booking, status, current);
   return NextResponse.json(updated);
 }

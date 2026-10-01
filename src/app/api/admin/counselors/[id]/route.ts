@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { counselors } from "@/lib/db/schema/counselors";
 import { users } from "@/lib/db/schema/users";
@@ -15,7 +15,7 @@ function parseListField(arr: string[] | null | undefined) {
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth(req);
+  const auth = await requireAdmin(req);
   if (!auth.ok) return auth.response;
   const { id } = await params;
   const [c] = await db.select().from(counselors).where(eq(counselors.id, id));
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth(req);
+  const auth = await requireAdmin(req);
   if (!auth.ok) return auth.response;
   const { id } = await params;
   const { action, reason } = await req.json();

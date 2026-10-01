@@ -194,3 +194,21 @@ export async function deleteRule(id: string, counselorId: string) {
   await db.delete(scheduleRules)
     .where(and(eq(scheduleRules.id, id), eq(scheduleRules.counselorId, counselorId)));
 }
+
+// 编辑规则：仅更新传入的字段（时间段、重复、有效期、类型等），归属校验防越权
+export async function updateRule(id: string, counselorId: string, data: {
+  type?: string;
+  weekdays?: string;
+  startTime?: string;
+  durationMinutes?: number;
+  validFrom?: string | null;
+  validUntil?: string | null;
+  fixedClientId?: string | null;
+  blockNote?: string | null;
+}) {
+  const [r] = await db.update(scheduleRules)
+    .set(data)
+    .where(and(eq(scheduleRules.id, id), eq(scheduleRules.counselorId, counselorId)))
+    .returning();
+  return r ?? null;
+}

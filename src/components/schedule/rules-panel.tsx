@@ -151,7 +151,7 @@ export function RulesPanel({
                   <button key={t} onClick={() => set("type", t)}
                     className="flex-1 py-2 rounded-xl text-xs font-semibold border transition-colors"
                     style={{
-                      background: form.type === t ? (t === "blocked" ? "#DC2626" : t === "fixed" ? "#D97706" : "var(--color-mp-primary)") : "var(--color-mp-surface)",
+                      background: form.type === t ? (t === "blocked" ? "#DC2626" : t === "fixed" ? "#C66B2E" : "var(--color-mp-primary)") : "var(--color-mp-surface)",
                       color: form.type === t ? "#fff" : "var(--color-mp-muted)",
                       borderColor: form.type === t ? "transparent" : "var(--color-mp-border)",
                     }}>

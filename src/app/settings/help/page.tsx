@@ -149,7 +149,7 @@ export default function HelpPage() {
               background: submitted ? "#6B9070" : "var(--color-primary)",
               opacity: !feedback.trim() && !submitted ? 0.5 : 1
             }}>
-            {submitted ? "已提交，感谢你的反馈 ✓" : "提交反馈"}
+            {submitted ? "已提交，感谢你的反馈" : "提交反馈"}
           </button>
         </div>
       </div>

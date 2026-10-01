@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
-import { getRules, createRule, deleteRule, findOverlappingRule } from "@/lib/db/queries/schedules";
+import { getRules, createRule, updateRule, deleteRule, findOverlappingRule } from "@/lib/db/queries/schedules";
 import { getOrCreateCounselorForUser } from "@/lib/db/queries/counselors";
 
 function timeEnd(start: string, dur: number): string {
@@ -85,5 +85,58 @@ export async function DELETE(req: NextRequest) {
   const { id } = await req.json();
   await deleteRule(id, c.id);
   return NextResponse.json({ ok: true });
+}
+
+// 编辑规则（PUT）：重叠检查时排除自身，避免和自己冲突
+export async function PUT(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) return auth.response;
+  const c = await getOrCreateCounselorForUser(auth.user.id, auth.user.name || "咨询师");
+  if (!c) return NextResponse.json({ error: "not counselor" }, { status: 403 });
+  const body = await req.json();
+  if (!body.id) return NextResponse.json({ error: "missing id" }, { status: 400 });
+
+  const weekdays = Array.isArray(body.weekdays) ? body.weekdays
+    : typeof body.weekdays === "string" ? body.weekdays.split(",").map(Number).filter((n: number) => !isNaN(n))
+    : [];
+  const isSingle = body.mode === "single" || body.isSingle === true;
+  const startTime = body.startTime;
+  const duration = body.durationMinutes || 50;
+
+  const overlap = await findOverlappingRule(c.id, {
+    weekdays: isSingle ? "" : weekdays.join(","),
+    startTime,
+    durationMinutes: duration,
+    isSingle,
+    singleDate: isSingle ? (body.singleDate || body.date || null) : null,
+    singleTime: isSingle ? (body.singleTime || startTime || null) : null,
+    validFrom: body.validFrom || null,
+    validUntil: body.validUntil || null,
+    excludeId: body.id,
+  });
+  if (overlap) {
+    const rStart = overlap.startTime ?? "?";
+    const rEnd = overlap.endTime ?? "?";
+    const ctx = overlap.singleDate
+      ? `${overlap.singleDate} ${rStart}–${rEnd}`
+      : `周${"一二三四五六日"[overlap.weekday ?? 0]} ${rStart}–${rEnd}`;
+    return NextResponse.json({
+      error: "overlap",
+      message: `该时间段与已有规则冲突：${ctx}（你设置的是 ${startTime}–${timeEnd(startTime, duration)}）`,
+    }, { status: 409 });
+  }
+
+  const rule = await updateRule(body.id, c.id, {
+    type: body.type || "available",
+    weekdays: isSingle ? "" : weekdays.join(","),
+    startTime,
+    durationMinutes: duration,
+    validFrom: body.validFrom || null,
+    validUntil: body.validUntil || null,
+    fixedClientId: body.fixedClientId || null,
+    blockNote: body.blockNote || null,
+  });
+  if (!rule) return NextResponse.json({ error: "not found" }, { status: 404 });
+  return NextResponse.json(rule);
 }
 

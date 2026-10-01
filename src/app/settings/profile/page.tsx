@@ -70,7 +70,7 @@ export default function ProfileSettingsPage() {
         <button onClick={handleSave}
           className="w-full mt-5 py-3.5 rounded-2xl text-white text-sm font-semibold"
           style={{ background: saved ? "#6B9070" : "#9CB48A" }}>
-          {saved ? "已保存 ✓" : "保存修改"}
+          {saved ? "已保存" : "保存修改"}
         </button>
       </div>
     </div>

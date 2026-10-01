@@ -207,12 +207,18 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [savingFavorite, setSavingFavorite] = useState(false);
+  const [svc, setSvc] = useState<{ id: string; name: string; tagline: string | null; price: number }[]>([]);
 
   useEffect(() => {
     fetch(`/api/counselors/${counselorId}`)
       .then((r) => r.json())
       .then((d) => { setC(d); setLoading(false); })
       .catch(() => setLoading(false));
+    // 该老师上架的个性服务（评估等）
+    fetch(`/api/services?counselorId=${counselorId}`)
+      .then((r) => r.json())
+      .then((d) => setSvc(Array.isArray(d) ? d : []))
+      .catch(() => {});
   }, [counselorId]);
 
   useEffect(() => {
@@ -254,12 +260,6 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
         body: JSON.stringify({ counselorId: c?.id ?? counselorId }),
       });
       if (!res.ok) throw new Error("收藏操作失败");
-
-      const ids: string[] = JSON.parse(localStorage.getItem("favorite_counselors") ?? "[]");
-      const nextIds = nextSaved
-        ? Array.from(new Set([...ids, counselorId]))
-        : ids.filter((id) => id !== counselorId);
-      localStorage.setItem("favorite_counselors", JSON.stringify(nextIds));
     } catch (err) {
       setSaved(!nextSaved);
       window.alert(err instanceof Error ? err.message : "收藏操作失败，请重试");
@@ -492,6 +492,29 @@ export function CounselorDetailScreen({ counselorId }: { counselorId: string }) 
           <div className="py-5">
             <SectionTitle>咨询过程与方式</SectionTitle>
             <MultiPara text={c.sessionDescription} />
+          </div>
+        )}
+
+        {/* 个性服务（评估测评等，购买后按指引完成） */}
+        {svc.length > 0 && (
+          <div className="py-5">
+            <SectionTitle>个性服务</SectionTitle>
+            <div className="space-y-3">
+              {svc.map((s) => (
+                <button key={s.id} onClick={() => router.push(`/services/${s.id}`)}
+                  className="w-full rounded-2xl p-4 flex items-start justify-between gap-3 text-left"
+                  style={{ background: "white", border: "1px solid #EBE7DF", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold" style={{ color: "#2C2420" }}>{s.name}</p>
+                    {s.tagline && <p className="text-xs mt-1 line-clamp-2" style={{ color: "#9B8E82" }}>{s.tagline}</p>}
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-base font-black" style={{ color: "#9CB48A" }}>¥{s.price}</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: "#C4BDB5" }}>购买后按指引完成</p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>

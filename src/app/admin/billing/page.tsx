@@ -6,6 +6,7 @@ import { request } from "@/lib/api/request";
 
 interface BillItem {
   id: string;
+  type: "booking" | "service";
   scheduledDate: string;
   scheduledTime: string;
   priceAmount: number;
@@ -13,14 +14,14 @@ interface BillItem {
   counselorName: string;
   clientId: string;
   clientName: string;
-  clientNote: string;
+  note: string;
 }
 
 function exportCSV(items: BillItem[], year: number, month: number, total: number) {
-  const header = ["订单编号","日期","时间","咨询师","来访者","金额(元)","备注"].join(",");
+  const header = ["订单编号","类型","日期","时间","老师","来访者","金额(元)","备注"].join(",");
   const rows = items.map(r =>
-    [r.id, r.scheduledDate, r.scheduledTime ?? "", `"${r.counselorName}"`,
-     `"${r.clientName}"`, r.priceAmount, `"${r.clientNote}"`].join(",")
+    [r.id, r.type === "service" ? "个性服务" : "咨询", r.scheduledDate, r.scheduledTime ?? "", `"${r.counselorName}"`,
+     `"${r.clientName}"`, r.priceAmount, `"${r.note}"`].join(",")
   );
   const footer = `,,,,合计,${total},`;
   const csv = ["\uFEFF" + header, ...rows, footer].join("\n");
@@ -164,9 +165,9 @@ function BillingContent() {
         </div>
 
         <div className="rounded-2xl px-5 py-4" style={{ background: "#9CB48A" }}>
-          <p className="text-sm font-medium text-white/80 mb-1">{year}年{month}月完成订单总额</p>
+          <p className="text-sm font-medium text-white/80 mb-1">{year}年{month}月完成订单总额（咨询 + 个性服务）</p>
           <p className="text-3xl font-bold text-white">¥{total.toLocaleString()}</p>
-          <p className="text-xs text-white/70 mt-1">共 {items.length} 笔已完成订单</p>
+          <p className="text-xs text-white/70 mt-1">共 {items.length} 笔已付款订单</p>
         </div>
 
         {loading ? (
@@ -184,6 +185,12 @@ function BillingContent() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded font-medium flex-none"
+                        style={item.type === "service"
+                          ? { background: "#FEF9EE", color: "#B07D2A" }
+                          : { background: "#E4F0DC", color: "#3A6228" }}>
+                        {item.type === "service" ? "个性服务" : "咨询"}
+                      </span>
                       <span className="text-sm font-semibold" style={{ color: "#2C2420" }}>
                         {item.counselorName}
                       </span>
@@ -193,9 +200,9 @@ function BillingContent() {
                     <p className="text-xs" style={{ color: "#9B8E82" }}>
                       {item.scheduledDate}{item.scheduledTime ? ` · ${item.scheduledTime}` : ""}
                     </p>
-                    {item.clientNote && (
+                    {item.note && (
                       <p className="text-xs mt-0.5 truncate" style={{ color: "#C4BDB5" }}>
-                        {item.clientNote}
+                        {item.note}
                       </p>
                     )}
                   </div>
