@@ -1,11 +1,10 @@
 {
   "miniprogramRoot": "dist/",
-  "cloudfunctionRoot": "cloudfunctions/",
   "projectname": "taro_template",
   "description": "taro_template",
-  "appid": "touristappid",
+  "appid": "wxb6a5d97b73651ab3",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "es6": false,
     "enhance": false,
     "compileHotReLoad": false,
@@ -17,10 +16,33 @@
     "coverView": true,
     "showShadowRootInWxmlPanel": false,
     "scopeDataCheck": false,
-    "useCompilerModule": false
+    "useCompilerModule": false,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
   },
   "compileType": "miniprogram",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
-  "condition": {}
+  "condition": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
 }

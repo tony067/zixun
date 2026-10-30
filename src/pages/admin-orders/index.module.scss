@@ -82,6 +82,8 @@
 .orderStatus {
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-sm;
 }
 
 .orderInfo {
@@ -115,13 +117,35 @@
 .orderFooter {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 16rpx;
 }
 
 .orderPrice {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   color: $color-primary;
+}
+
+// admin 全场可退：琥珀次级按钮
+.refundButton {
+  border: 1rpx solid #F0E3C4;
+  background: #FEF9EE;
+  border-radius: $radius-md;
+  padding: 10rpx 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.refundButtonText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: #B07D2A;
 }
 
 .unauthorized {

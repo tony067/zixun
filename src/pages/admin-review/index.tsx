@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useUserStore } from '@/stores/user';
-import CustomTabBar from '@/custom-tab-bar';
+import CustomTabBar from '@/components/TabBar';
 
 const AdminReviewPage: React.FC = () => {
   const { currentRole } = useUserStore();

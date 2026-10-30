@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from '@tarojs/components';
 
 type IconName =
   | 'home'
@@ -27,7 +28,12 @@ type IconName =
   | 'heart'
   | 'close'
   | 'chevronDown'
-  | 'share';
+  | 'share'
+  | 'camera'
+  | 'headphones'
+  | 'logOut'
+  | 'chevronLeft'
+  | 'send';
 
 interface IconProps {
   name: IconName;
@@ -64,12 +70,53 @@ const iconPaths: Record<IconName, string> = {
   close: 'M6 18L18 6M6 6l12 12',
   chevronDown: 'M19 9l-7 7-7-7',
   share: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4',
+  camera: 'M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3zM15 13a3 3 0 11-6 0 3 3 0 016 0z',
+  headphones: 'M3 14h3a2 2 0 012 2v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a9 9 0 0118 0v7a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3',
+  logOut: 'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9',
+  chevronLeft: 'M15 18l-6-6 6-6',
+  send: 'M22 2L15 22l-4-9-9-4z',
+};
+
+// 微信端 <image>/内联 svg 均不可靠，改用 background-image(base64 data URI)，仅处理 ASCII 内容
+const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const toBase64 = (s: string): string => {
+  let out = '';
+  for (let i = 0; i < s.length; i += 3) {
+    const a = s.charCodeAt(i);
+    const b = s.charCodeAt(i + 1);
+    const c = s.charCodeAt(i + 2);
+    const hasB = !Number.isNaN(b);
+    const hasC = !Number.isNaN(c);
+    out += B64[a >> 2];
+    out += B64[((a & 3) << 4) | (hasB ? b >> 4 : 0)];
+    out += hasB ? B64[((b & 15) << 2) | (hasC ? c >> 6 : 0)] : '=';
+    out += hasC ? B64[c & 63] : '=';
+  }
+  return out;
+};
+
+const buildSvgStyle = (path: string, size: number, color: string): React.CSSProperties => {
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${color}" ` +
+    `stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${path}"/></svg>`;
+  return {
+    width: `${size}px`,
+    height: `${size}px`,
+    display: 'block',
+    backgroundImage: `url("data:image/svg+xml;base64,${toBase64(svg)}")`,
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
+  };
 };
 
 const Icon: React.FC<IconProps> = ({ name, size = 24, color = '#9B8E82', className }) => {
   const path = iconPaths[name];
   if (!path) {
     return null;
+  }
+  // 小程序端：内联 <svg> 标签不会被渲染，用背景图方式实现
+  if (process.env.TARO_ENV === 'weapp') {
+    return <View className={className} style={buildSvgStyle(path, size, color)} />;
   }
   return (
     <svg

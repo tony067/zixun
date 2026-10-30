@@ -116,11 +116,47 @@
 .userFooter {
   border-top: 1rpx solid $color-border;
   padding-top: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
 }
 
 .userDate {
   font-size: $font-size-xs;
   color: $color-text-tertiary;
+}
+
+// 设为客服 / 移回来访 操作按钮
+.actionButton {
+  border-radius: $radius-md;
+  padding: 8rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.actionButtonPrimary {
+  background: $color-primary;
+}
+
+.actionButtonMuted {
+  border: 1rpx solid $color-border;
+  background: $color-bg-muted;
+}
+
+.actionButtonText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.actionButtonMuted .actionButtonText {
+  color: $color-text-secondary;
 }
 
 .unauthorized {

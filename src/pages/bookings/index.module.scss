@@ -75,6 +75,27 @@
   padding: 0 $page-padding;
 }
 
+.cancelButton {
+  margin-bottom: 24rpx;
+  border: 1rpx solid $color-border;
+  border-radius: $radius-md;
+  padding: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-card;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.cancelButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+}
+
 .empty {
   display: flex;
   flex-direction: column;

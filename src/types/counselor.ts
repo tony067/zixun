@@ -119,20 +119,21 @@ export function getNextDays(n = 14): Date[] {
   return days;
 }
 
-export function generateMockSlots(days: Date[]): Record<string, TimeSlot[]> {
-  const result: Record<string, TimeSlot[]> = {};
-  const morning = [{ start: '09:00', end: '09:50' }, { start: '10:00', end: '10:50' }, { start: '11:00', end: '11:50' }];
-  const afternoon = [{ start: '14:00', end: '14:50' }, { start: '15:00', end: '15:50' }, { start: '16:00', end: '16:50' }];
-  const evening = [{ start: '19:00', end: '19:50' }, { start: '20:00', end: '20:50' }];
+/** 服务器 /available-slots 返回的单日档期（slots 为可约开始时间，如 "10:30"） */
+export interface AvailableDay {
+  date: string;
+  label: string;
+  weekday: string;
+  starts: string[];
+}
 
-  days.forEach((d, i) => {
-    const key = d.toISOString().slice(0, 10);
-    const all = [
-      ...morning.map((t, j) => ({ id: `${key}-m${j}`, ...t, period: 'morning' as const, available: Math.random() > 0.3 })),
-      ...afternoon.map((t, j) => ({ id: `${key}-a${j}`, ...t, period: 'afternoon' as const, available: Math.random() > 0.3 })),
-      ...evening.map((t, j) => ({ id: `${key}-e${j}`, ...t, period: 'evening' as const, available: i % 3 !== 0 })),
-    ];
-    result[key] = all;
+/** 由开始时间 + 时长构造展示用时间段 */
+export function buildTimeSlots(dateKey: string, starts: string[], durationMinutes: number): TimeSlot[] {
+  return (starts || []).map((start) => {
+    const [h, m] = start.split(':').map(Number);
+    const endTotal = h * 60 + m + durationMinutes;
+    const end = `${String(Math.floor(endTotal / 60)).padStart(2, '0')}:${String(endTotal % 60).padStart(2, '0')}`;
+    const period: TimeSlot['period'] = h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening';
+    return { id: `${dateKey}-${start}`, start, end, period, available: true };
   });
-  return result;
 }

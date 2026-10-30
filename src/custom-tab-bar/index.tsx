@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useUserStore } from '@/stores/user';
+import { fetchUnreadCount } from '@/services/api';
 import Icon from '@/components/Icon/index';
+import { UNREAD_REFRESH_EVENT } from '@/constants/events';
 
 interface TabItem {
   pagePath: string;
@@ -11,10 +13,15 @@ interface TabItem {
   icon: string;
 }
 
-type Role = 'client' | 'counselor' | 'admin';
+type Role = 'client' | 'counselor' | 'admin' | 'support';
 
 const CLIENT_TABS: TabItem[] = [
   { pagePath: '/pages/index/index', text: '首页', icon: 'home' },
+  { pagePath: '/pages/messages/index', text: '消息', icon: 'message' },
+];
+
+const SUPPORT_TABS: TabItem[] = [
+  { pagePath: '/pages/cs-orders/index', text: '订单', icon: 'list' },
   { pagePath: '/pages/messages/index', text: '消息', icon: 'message' },
 ];
 
@@ -36,18 +43,43 @@ const ROLE_ITEMS = [
   { role: 'client' as Role, label: '来访者', sub: '浏览咨询师・预约・消息', icon: 'user' },
   { role: 'counselor' as Role, label: '咨询师', sub: '管理预约・档期・档案', icon: 'stethoscope' },
   { role: 'admin' as Role, label: '管理员', sub: '审核・数据・系统设置', icon: 'settings' },
+  { role: 'support' as Role, label: '客服', sub: '订单促进・消息跟进', icon: 'headphones' },
 ];
 
 const MY_ROUTE: Record<Role, string> = {
   client: '/pages/profile/index',
   counselor: '/pages/counselor-bookings/index',
   admin: '/pages/admin-dashboard/index',
+  support: '/pages/cs-orders/index',
+};
+
+/** 微信 tabBar.list 上限 10 项，cs-orders 未注册在内，只能 redirectTo 到达 */
+const NATIVE_TAB_PAGES = new Set([
+  '/pages/index/index',
+  '/pages/messages/index',
+  '/pages/profile/index',
+  '/pages/counselor-bookings/index',
+  '/pages/counselor-schedule/index',
+  '/pages/counselor-profile/index',
+  '/pages/admin-dashboard/index',
+  '/pages/admin-review/index',
+  '/pages/admin-orders/index',
+  '/pages/admin-users/index',
+]);
+
+const gotoTab = (url: string) => {
+  if (NATIVE_TAB_PAGES.has(url)) {
+    Taro.switchTab({ url });
+  } else {
+    Taro.redirectTo({ url });
+  }
 };
 
 const CustomTabBar: React.FC = () => {
   const { isLoggedIn, user, currentRole, setRole } = useUserStore();
   const [current, setCurrent] = useState('');
   const [showRolePicker, setShowRolePicker] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const userDbRole = user?.role || user?.userType || user?.type || 'visitor';
 
@@ -55,6 +87,7 @@ const CustomTabBar: React.FC = () => {
     if (item.role === 'client') return true;
     if (item.role === 'counselor') return userDbRole === 'counselor' || userDbRole === 'admin';
     if (item.role === 'admin') return userDbRole === 'admin';
+    if (item.role === 'support') return userDbRole === 'admin' || userDbRole === 'support';
     return false;
   });
 
@@ -74,6 +107,14 @@ const CustomTabBar: React.FC = () => {
       switch (currentRole) {
         case 'counselor': return COUNSELOR_TABS;
         case 'admin': return ADMIN_TABS;
+        case 'support': return SUPPORT_TABS;
+        default: return CLIENT_TABS;
+      }
+    }
+
+    if (userDbRole === 'support') {
+      switch (currentRole) {
+        case 'support': return SUPPORT_TABS;
         default: return CLIENT_TABS;
       }
     }
@@ -81,11 +122,36 @@ const CustomTabBar: React.FC = () => {
     switch (currentRole) {
       case 'counselor': return COUNSELOR_TABS;
       case 'admin': return ADMIN_TABS;
+      case 'support': return SUPPORT_TABS;
       default: return CLIENT_TABS;
     }
   };
 
   const tabs = getTabs();
+
+  const refreshUnread = useCallback(async () => {
+    if (!isLoggedIn) {
+      setUnreadCount(0);
+      return;
+    }
+    const n = await fetchUnreadCount();
+    setUnreadCount(n);
+  }, [isLoggedIn]);
+
+  // 登录后立即拉取并每 15 秒轮询未读数；登出清零并停止轮询
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setUnreadCount(0);
+      return;
+    }
+    refreshUnread();
+    const timer = setInterval(refreshUnread, 15000);
+    Taro.eventCenter.on(UNREAD_REFRESH_EVENT, refreshUnread);
+    return () => {
+      clearInterval(timer);
+      Taro.eventCenter.off(UNREAD_REFRESH_EVENT, refreshUnread);
+    };
+  }, [isLoggedIn, refreshUnread]);
 
   useEffect(() => {
     const pages = Taro.getCurrentPages();
@@ -101,6 +167,8 @@ const CustomTabBar: React.FC = () => {
     if (currentPage) {
       setCurrent('/' + currentPage.route);
     }
+    // 页面 onShow 时立即刷新未读数
+    refreshUnread();
   });
 
   const handleClick = (item: TabItem) => {
@@ -111,9 +179,7 @@ const CustomTabBar: React.FC = () => {
       return;
     }
 
-    Taro.switchTab({
-      url: item.pagePath
-    });
+    gotoTab(item.pagePath);
   };
 
   const handleRoleSwitch = (targetRole: Role) => {
@@ -123,12 +189,10 @@ const CustomTabBar: React.FC = () => {
       return;
     }
     setRole(targetRole);
-    Taro.switchTab({
-      url: MY_ROUTE[targetRole]
-    });
+    gotoTab(MY_ROUTE[targetRole]);
   };
 
-  const needsRoleSwitch = isLoggedIn && (userDbRole === 'admin' || userDbRole === 'counselor');
+  const needsRoleSwitch = isLoggedIn && (userDbRole === 'admin' || userDbRole === 'counselor' || userDbRole === 'support');
 
   return (
     <>
@@ -142,6 +206,11 @@ const CustomTabBar: React.FC = () => {
             >
               <View className={styles.tabIcon}>
                 <Icon name={item.icon as any} size={22} color={current === item.pagePath ? '#9CB48A' : '#9B8E82'} />
+                {item.pagePath === '/pages/messages/index' && unreadCount > 0 && (
+                  <View className={styles.tabBadge}>
+                    <Text className={styles.tabBadgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+                  </View>
+                )}
               </View>
               <Text className={`${styles.tabText} ${current === item.pagePath ? styles.tabTextActive : ''}`}>
                 {item.text}

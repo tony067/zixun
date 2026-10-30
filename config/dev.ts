@@ -9,6 +9,7 @@ export default {
     devServer: {
       open: false,
       port: 10086,
+      host: 'localhost',
       proxy: {
         '/api': {
           target: 'http://123.207.40.7:3001',

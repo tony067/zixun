@@ -53,6 +53,8 @@
 .bookingStatus {
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-sm;
 }
 
 .bookingDate {
@@ -110,4 +112,16 @@
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
   color: $color-text-white;
+}
+
+// 退款 / 拒绝并退款：琥珀次级按钮（覆盖 actionButton 主色）
+.refundButton {
+  background: #FEF9EE;
+  border: 1rpx solid #F0E3C4;
+}
+
+.refundButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #B07D2A;
 }

@@ -4,7 +4,7 @@ import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import CategoryGrid, { type Category } from '@/components/CategoryGrid';
 import CounselorCard from '@/components/CounselorCard';
-import CustomTabBar from '@/custom-tab-bar';
+import CustomTabBar from '@/components/TabBar';
 import { fetchCounselors } from '@/services/api';
 import { getGreeting } from '@/utils/date';
 import { useUserStore } from '@/stores/user';
@@ -15,6 +15,7 @@ import {
   directionOptions,
   GUIDE_SECTIONS
 } from '@/data/counselors';
+import { getCitiesForProvince } from '@/data/regions';
 import type { Counselor } from '@/types/counselor';
 import Icon from '@/components/Icon';
 
@@ -48,6 +49,7 @@ const IndexPage: React.FC = () => {
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [filterProvince, setFilterProvince] = useState('');
   const [filterCity, setFilterCity] = useState('');
   const [filterPrice, setFilterPrice] = useState('');
   const [filterDir, setFilterDir] = useState<string[]>([]);
@@ -100,7 +102,18 @@ const IndexPage: React.FC = () => {
         }
       }
 
-      if (filterCity && filterCity !== '全国/线上') {
+      if (filterProvince && filterProvince !== '全国/线上') {
+        if (filterCity) {
+          if (!item.location.includes(filterCity)) {
+            return false;
+          }
+        } else {
+          const matchNames = getCitiesForProvince(filterProvince);
+          if (!matchNames.some(n => item.location.includes(n))) {
+            return false;
+          }
+        }
+      } else if (filterCity && filterCity !== '全国/线上') {
         if (!item.location.includes(filterCity)) {
           return false;
         }
@@ -134,9 +147,9 @@ const IndexPage: React.FC = () => {
 
       return true;
     });
-  }, [counselors, searchKeyword, selectedCategory, filterCity, filterPrice, filterDir, filterTime, filterGender, filterMode]);
+  }, [counselors, searchKeyword, selectedCategory, filterProvince, filterCity, filterPrice, filterDir, filterTime, filterGender, filterMode]);
 
-  const activeFilterCount = (filterCity && filterCity !== '全国/线上' ? 1 : 0)
+  const activeFilterCount = ((filterProvince && filterProvince !== '全国/线上') || (filterCity && filterCity !== '全国/线上') ? 1 : 0)
     + (filterPrice && filterPrice !== '不限' ? 1 : 0)
     + (filterTime ? 1 : 0)
     + (filterGender && filterGender !== '不限' ? 1 : 0)
@@ -159,6 +172,7 @@ const IndexPage: React.FC = () => {
   const handleClearFilters = () => {
     setSelectedCategory('');
     setSearchKeyword('');
+    setFilterProvince('');
     setFilterCity('');
     setFilterPrice('');
     setFilterDir([]);
@@ -260,7 +274,7 @@ const IndexPage: React.FC = () => {
 
         <View className={styles.filterBar}>
           {[
-            { key: 'city', label: filterCity || '地区', active: !!filterCity },
+            { key: 'city', label: filterCity || filterProvince || '地区', active: !!(filterCity || filterProvince) },
             { key: 'price', label: filterPrice || '价格', active: !!filterPrice },
             { key: 'direction', label: filterDir.length ? `方向(${filterDir.length})` : '咨询方向', active: filterDir.length > 0 },
           ].map(f => (
@@ -355,24 +369,60 @@ const IndexPage: React.FC = () => {
               {(filterTab === null || filterTab === 'city') && (
                 <View className={styles.filterSection}>
                   <Text className={styles.filterSectionTitle}>地区</Text>
-                  <View className={styles.optionWrap}>
-                    {provinceOptions.slice(0, showMoreProvinces ? provinceOptions.length : 8).map(p => (
-                      <View
-                        key={p}
-                        className={`${styles.optionItem} ${filterCity === p ? styles.optionActive : ''}`}
-                        onClick={() => {
-                          setFilterCity(filterCity === p ? '' : p);
-                        }}
-                      >
-                        <Text className={styles.optionText}>{p}</Text>
+                  {filterProvince && filterProvince !== '全国/线上' ? (
+                    <>
+                      <View className={styles.regionBackRow}>
+                        <View
+                          className={styles.filterMore}
+                          onClick={() => {
+                            setFilterProvince('');
+                            setFilterCity('');
+                          }}
+                        >
+                          <Text className={styles.filterMoreArrowBack}>‹</Text>
+                          <Text className={styles.filterMoreText}>返回省份</Text>
+                        </View>
+                        <Text className={styles.regionSelectedText}>已选：{filterProvince}</Text>
                       </View>
-                    ))}
-                  </View>
-                  {provinceOptions.length > 8 && (
-                    <View className={styles.filterMore} onClick={() => setShowMoreProvinces(!showMoreProvinces)}>
-                      <Text className={styles.filterMoreText}>{showMoreProvinces ? '收起' : '更多'}</Text>
-                      <Text className={styles.filterMoreArrow}>›</Text>
-                    </View>
+                      <View className={styles.optionWrap}>
+                        {getCitiesForProvince(filterProvince).map(city => (
+                          <View
+                            key={city}
+                            className={`${styles.optionItem} ${filterCity === city ? styles.optionActive : ''}`}
+                            onClick={() => {
+                              setFilterCity(city);
+                              if (filterTab === 'city') setShowFilter(false);
+                            }}
+                          >
+                            <Text className={styles.optionText}>{city}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <View className={styles.optionWrap}>
+                        {provinceOptions.slice(0, showMoreProvinces ? provinceOptions.length : 8).map(p => (
+                          <View
+                            key={p}
+                            className={`${styles.optionItem} ${filterProvince === p ? styles.optionActive : ''}`}
+                            onClick={() => {
+                              setFilterProvince(p);
+                              setFilterCity('');
+                              if (p === '全国/线上' && filterTab === 'city') setShowFilter(false);
+                            }}
+                          >
+                            <Text className={styles.optionText}>{p}</Text>
+                          </View>
+                        ))}
+                      </View>
+                      {provinceOptions.length > 8 && (
+                        <View className={styles.filterMore} onClick={() => setShowMoreProvinces(!showMoreProvinces)}>
+                          <Text className={styles.filterMoreText}>{showMoreProvinces ? '收起' : '更多'}</Text>
+                          <Text className={styles.filterMoreArrow}>›</Text>
+                        </View>
+                      )}
+                    </>
                   )}
                 </View>
               )}
@@ -386,7 +436,8 @@ const IndexPage: React.FC = () => {
                         key={p}
                         className={`${styles.optionItem} ${filterPrice === p ? styles.optionActive : ''}`}
                         onClick={() => {
-                          setFilterPrice(filterPrice === p ? '' : p);
+                          setFilterPrice(p);
+                          if (filterTab === 'price') setShowFilter(false);
                         }}
                       >
                         <Text className={styles.optionText}>{p}</Text>
@@ -444,6 +495,7 @@ const IndexPage: React.FC = () => {
                         className={`${styles.optionItem} ${filterDir.includes(d) ? styles.optionActive : ''}`}
                         onClick={() => {
                           setFilterDir(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
+                          if (filterTab === 'direction') setShowFilter(false);
                         }}
                       >
                         <Text className={styles.optionText}>{d}</Text>
@@ -472,14 +524,16 @@ const IndexPage: React.FC = () => {
                 </View>
               )}
             </ScrollView>
-            <View className={styles.filterPanelFooter}>
-              <View className={styles.filterPanelButton} onClick={handleClearFilters}>
-                <Text className={styles.filterPanelButtonText}>清除全部</Text>
+            {filterTab === null && (
+              <View className={styles.filterPanelFooter}>
+                <View className={styles.filterPanelButton} onClick={handleClearFilters}>
+                  <Text className={styles.filterPanelButtonText}>清除全部</Text>
+                </View>
+                <View className={styles.filterPanelButtonPrimary} onClick={applyFilters}>
+                  <Text className={styles.filterPanelButtonPrimaryText}>应用筛选</Text>
+                </View>
               </View>
-              <View className={styles.filterPanelButtonPrimary} onClick={applyFilters}>
-                <Text className={styles.filterPanelButtonPrimaryText}>应用筛选</Text>
-              </View>
-            </View>
+            )}
           </View>
         </View>
       )}

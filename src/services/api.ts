@@ -1,8 +1,21 @@
 import Taro from '@tarojs/taro';
-import type { Counselor } from '@/types/counselor';
+import type { Counselor, AvailableDay } from '@/types/counselor';
 import type { Booking, BookingStatus } from '@/types/booking';
 
-const API_BASE = process.env.NODE_ENV === 'development' ? '' : 'http://123.207.40.7:3001';
+// 小程序端没有 dev-server 代理，必须直接用完整地址；H5 开发模式走代理故用相对路径
+const API_BASE =
+  process.env.TARO_ENV === 'weapp' || process.env.NODE_ENV !== 'development'
+    ? 'http://123.207.40.7:3001'
+    : '';
+
+/** 服务器返回的图片/头像是相对路径（如 /uploads/x.jpg），
+ *  H5 浏览器会自动补 origin，小程序 <Image> 必须完整地址 */
+export const resolveAssetUrl = (url?: string | null): string | null => {
+  if (!url) return null;
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith('/')) return `${API_BASE}${url}`;
+  return url;
+};
 
 function getToken(): string | null {
   try {
@@ -74,7 +87,7 @@ function normalizeCounselor(raw: any): Counselor {
     reviewStatus: raw.reviewStatus || 'approved',
     reviewNote: raw.reviewNote || '',
     location: raw.location || '',
-    avatarUrl: raw.avatarUrl || null,
+    avatarUrl: resolveAssetUrl(raw.avatarUrl),
     approaches: raw.approaches || [],
     customApproaches: raw.customApproaches || [],
     workingGroups: raw.workingGroups || [],
@@ -97,7 +110,7 @@ function normalizeBooking(raw: any): Booking {
     counselor: {
       id: counselor.id || '',
       name: counselor.displayName || counselor.name || '',
-      avatarUrl: counselor.avatarUrl || null,
+      avatarUrl: resolveAssetUrl(counselor.avatarUrl),
       title: counselor.title || '',
     },
     scheduledAt: raw.scheduledAt,
@@ -133,6 +146,22 @@ export async function fetchCounselorDetail(id: string): Promise<Counselor | null
   } catch (err) {
     console.error(`[Counselor] 获取咨询师 ${id} 详情失败`, err);
     return null;
+  }
+}
+
+// 咨询师可预约档期（服务器返回未来 30 天，slots 内为可约开始时间）
+export async function fetchAvailableSlots(counselorId: string): Promise<AvailableDay[]> {
+  try {
+    const data = await request<any>(`/api/counselors/${counselorId}/available-slots`);
+    return (data?.days || []).map((day: any) => ({
+      date: day.date,
+      label: day.label || '',
+      weekday: day.weekday || '',
+      starts: Array.isArray(day.slots) ? day.slots : []
+    }));
+  } catch (err) {
+    console.error(`[Counselor] 获取咨询师 ${counselorId} 可预约时段失败`, err);
+    return [];
   }
 }
 
@@ -244,6 +273,10 @@ export interface CreateBookingParams {
   scheduledAt: string;
   sessionMode?: string;
   clientNote?: string;
+  pricingOptionId?: string;
+  durationMinutes?: number;
+  priceAmount?: number;
+  sessionNumber?: number;
 }
 
 export async function fetchMyBookings(): Promise<Booking[]> {
@@ -269,6 +302,15 @@ export async function createBooking(params: CreateBookingParams): Promise<Bookin
   return normalizeBooking(data);
 }
 
+// 更新订单状态（取消/退款/标记已支付等，服务端校验角色与状态流转）
+export async function updateBookingStatus(id: string, status: string): Promise<Booking> {
+  const data = await request<any>(`/api/bookings/${id}`, {
+    method: 'PATCH',
+    data: { status }
+  });
+  return normalizeBooking(data);
+}
+
 // 消息相关
 export interface Message {
   id: string;
@@ -279,6 +321,25 @@ export interface Message {
   type: 'text' | 'system';
   createdAt: string;
   unread: boolean;
+}
+
+/** 当前用户全部会话总未读数 */
+export async function fetchUnreadCount(): Promise<number> {
+  try {
+    const data = await request<{ count: number }>('/api/messages/unread');
+    return data?.count || 0;
+  } catch (err) {
+    return 0;
+  }
+}
+
+/** 将某会话内对方发来的未读消息全部置为已读 */
+export async function markConversationRead(conversationId: string): Promise<void> {
+  try {
+    await request(`/api/messages/${conversationId}/read`, { method: 'POST' });
+  } catch (err) {
+    console.error('[Message] 标记已读失败', err);
+  }
 }
 
 export async function fetchMessages(): Promise<Message[]> {

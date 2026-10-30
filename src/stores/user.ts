@@ -20,8 +20,8 @@ interface UserStore {
   login: (userInfo: UserInfo) => void;
   logout: () => void;
   init: () => Promise<void>;
-  setRole: (role: 'client' | 'counselor' | 'admin') => void;
-  currentRole: 'client' | 'counselor' | 'admin';
+  setRole: (role: 'client' | 'counselor' | 'admin' | 'support') => void;
+  currentRole: 'client' | 'counselor' | 'admin' | 'support';
 }
 
 const STORAGE_KEY = 'mindpace_user';

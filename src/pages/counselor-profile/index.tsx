@@ -3,7 +3,7 @@ import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useUserStore } from '@/stores/user';
-import CustomTabBar from '@/custom-tab-bar';
+import CustomTabBar from '@/components/TabBar';
 import Icon from '@/components/Icon';
 
 const CounselorProfilePage: React.FC = () => {

@@ -9,61 +9,280 @@
   height: calc(100vh - 160rpx);
 }
 
+/* ===== 头部 ===== */
 .header {
-  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
-  padding: 48rpx $page-padding 40rpx;
-}
-
-.userCard {
   display: flex;
   align-items: center;
-  background: $color-bg-card;
-  border-radius: $radius-lg;
-  padding: 40rpx;
-  box-shadow: $shadow-card;
+  padding: 64rpx $page-padding 40rpx;
 }
 
 .avatarWrapper {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: $radius-round;
-  background: $color-bg-hover;
-  margin-right: 28rpx;
-  overflow: hidden;
+  position: relative;
+  width: 140rpx;
+  height: 140rpx;
+  margin-right: 32rpx;
+  flex-shrink: 0;
   @include flex-center;
 }
 
 .avatar {
   width: 100%;
   height: 100%;
+  border-radius: $radius-round;
+  background: #8FA876;
+  background-size: cover;
+  background-position: center;
 }
 
 .avatarText {
-  font-size: 48rpx;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  font-size: 56rpx;
+  font-weight: $font-weight-bold;
+  color: #FFFFFF;
+}
+
+.cameraBadge {
+  position: absolute;
+  right: -4rpx;
+  bottom: -4rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  background: #FFFFFF;
+  border: 2rpx solid #E5E2DA;
+  @include flex-center;
 }
 
 .userInfo {
   flex: 1;
+  min-width: 0;
+}
+
+.userNameRow {
+  display: flex;
+  align-items: center;
 }
 
 .userName {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-semibold;
+  font-size: 34rpx;
+  font-weight: $font-weight-bold;
   color: $color-text-primary;
-  margin-bottom: 8rpx;
+  margin-right: 12rpx;
+  word-break: break-all;
+}
+
+.editButton {
+  flex-shrink: 0;
+  padding: 8rpx;
+  &:active {
+    opacity: 0.6;
+  }
 }
 
 .userDesc {
+  display: block;
   font-size: $font-size-sm;
-  color: $color-text-secondary;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
 }
 
-.logoutButton {
-  padding: 12rpx 24rpx;
-  background: $color-bg-hover;
-  border-radius: $radius-button;
+/* ===== 我的预约卡片 ===== */
+.bookingCard {
+  margin: 0 $page-padding;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.bookingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.bookingHeaderLeft {
+  display: flex;
+  align-items: center;
+}
+
+.bookingTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-left: 12rpx;
+}
+
+.bookingCountBadge {
+  min-width: 36rpx;
+  height: 36rpx;
+  padding: 0 10rpx;
+  border-radius: 18rpx;
+  background: #7A9A6A;
+  @include flex-center;
+  margin-left: 12rpx;
+}
+
+.bookingCountText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: #FFFFFF;
+}
+
+.bookingHeaderRight {
+  display: flex;
+  align-items: center;
+}
+
+.bookingAllText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-right: 4rpx;
+}
+
+.bookingItem {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.bookingAvatarWrapper {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: $radius-round;
+  background: #E8E4D8;
+  margin-right: 20rpx;
+  @include flex-center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.bookingAvatar {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.bookingAvatarText {
+  font-size: 32rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.bookingInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookingName {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.bookingTime {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+}
+
+.upcomingPill {
+  padding: 10rpx 24rpx;
+  border-radius: $radius-round;
+  background: #E3EDD9;
+  flex-shrink: 0;
+}
+
+.upcomingPillText {
+  font-size: $font-size-xs;
+  color: #5F7A4E;
+}
+
+.bookingEmpty {
+  padding: 40rpx 32rpx;
+  text-align: center;
+}
+
+.bookingEmptyText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+/* ===== 宫格菜单 ===== */
+.gridSection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 24rpx $page-padding 0;
+}
+
+.gridCard {
+  display: flex;
+  align-items: center;
+  width: calc(50% - 12rpx);
+  margin-bottom: 24rpx;
+  padding: 32rpx 28rpx;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  box-sizing: border-box;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.gridIconWrapper {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  background: #EDF2E4;
+  @include flex-center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.gridInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.gridTitle {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.gridDesc {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 6rpx;
+}
+
+/* ===== 退出登录 ===== */
+.logoutCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8rpx $page-padding 40rpx;
+  padding: 30rpx;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
 
   &:active {
     opacity: 0.8;
@@ -71,253 +290,13 @@
 }
 
 .logoutText {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-}
-
-.menuSection {
-  margin-top: 24rpx;
-  padding: 0 $page-padding;
-}
-
-.menuCard {
-  background: $color-bg-card;
-  border-radius: $radius-lg;
-  padding: 8rpx 32rpx;
-  box-shadow: $shadow-card;
-}
-
-.menuItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 28rpx 0;
-  border-bottom: 1rpx solid $color-divider;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:active {
-    opacity: 0.8;
-  }
-}
-
-.menuLeft {
-  display: flex;
-  align-items: center;
-}
-
-.menuIcon {
-  font-size: 36rpx;
-  margin-right: 20rpx;
-}
-
-.menuText {
-  font-size: $font-size-md;
-  color: $color-text-primary;
-}
-
-.menuArrow {
-  font-size: 28rpx;
-  color: $color-text-tertiary;
-}
-
-.guideCard {
-  margin: 24rpx $page-padding;
-  padding: 28rpx 32rpx;
-  background: $color-bg-card;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-card;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  &:active {
-    opacity: 0.8;
-  }
-}
-
-.guideLeft {
-  display: flex;
-  align-items: center;
-}
-
-.guideIcon {
-  font-size: 40rpx;
-  margin-right: 20rpx;
-}
-
-.guideInfo {
-  display: flex;
-  flex-direction: column;
-}
-
-.guideTitle {
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: #D9534F;
+  margin-left: 10rpx;
 }
 
-.guideDesc {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-top: 4rpx;
-}
-
-.favoritesSection {
-  margin: 24rpx $page-padding;
-}
-
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16rpx;
-}
-
-.sectionTitle {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-}
-
-.sectionCount {
-  font-size: $font-size-sm;
-  color: $color-text-tertiary;
-}
-
-.favoritesList {
-  background: $color-bg-card;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-card;
-  overflow: hidden;
-}
-
-.favoriteItem {
-  display: flex;
-  align-items: center;
-  padding: 24rpx;
-  border-bottom: 1rpx solid $color-divider;
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.favoriteAvatarWrapper {
-  width: 88rpx;
-  height: 88rpx;
-  border-radius: $radius-round;
-  background: $color-bg-hover;
-  margin-right: 20rpx;
-  @include flex-center;
-  overflow: hidden;
-}
-
-.favoriteAvatar {
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-}
-
-.favoriteAvatarText {
-  font-size: 32rpx;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-}
-
-.favoriteInfo {
-  flex: 1;
-}
-
-.favoriteName {
-  font-size: $font-size-md;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-  display: block;
-}
-
-.favoriteTitle {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  display: block;
-  margin-top: 4rpx;
-}
-
-.favoriteTags {
-  display: flex;
-  gap: 8rpx;
-  margin-top: 8rpx;
-}
-
-.favoriteTag {
-  font-size: $font-size-xs;
-  color: $color-text-secondary;
-  background: $color-bg-muted;
-  padding: 4rpx 12rpx;
-  border-radius: $radius-sm;
-}
-
-.favoritePrice {
-  display: flex;
-  align-items: baseline;
-  margin-right: 20rpx;
-}
-
-.favoritePriceValue {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  color: $color-price;
-}
-
-.favoritePriceUnit {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-left: 4rpx;
-}
-
-.favoriteRemove {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: $radius-round;
-  background: $color-bg-muted;
-  @include flex-center;
-}
-
-.removeIcon {
-  font-size: 32rpx;
-  color: $color-text-tertiary;
-}
-
-.emptySection {
-  margin: 60rpx $page-padding;
-  padding: 60rpx;
-  background: $color-bg-card;
-  border-radius: $radius-lg;
-  text-align: center;
-}
-
-.emptyIcon {
-  font-size: 64rpx;
-  display: block;
-  margin-bottom: 16rpx;
-}
-
-.emptyText {
-  font-size: $font-size-md;
-  color: $color-text-secondary;
-  display: block;
-}
-
-.emptyHint {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  display: block;
-  margin-top: 8rpx;
-}
-
+/* ===== 未登录底栏 ===== */
 .bottomBar {
   position: fixed;
   left: 0;

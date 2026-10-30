@@ -1,41 +1,121 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useUserStore } from '@/stores/user';
-import CustomTabBar from '@/custom-tab-bar';
+import { request } from '@/services/api';
+import CustomTabBar from '@/components/TabBar';
+
+interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+}
+
+type UserTab = 'all' | 'client' | 'counselor';
+
+// 非咨询师的普通用户（可授予/撤销客服）
+const ORDINARY_ROLES = ['visitor', 'client', 'tester'];
+
+const ROLE_TEXT: Record<string, string> = {
+  visitor: '来访者',
+  client: '来访者',
+  tester: '测试',
+  counselor: '咨询师',
+  admin: '管理员',
+  support: '客服'
+};
+
+const ROLE_COLOR: Record<string, string> = {
+  visitor: '#7A9A6A',
+  client: '#7A9A6A',
+  tester: '#9B8E82',
+  counselor: '#E6A23C',
+  admin: '#2563EB',
+  support: '#B07D2A'
+};
+
+function fmtDate(iso: string): string {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
 
 const AdminUsersPage: React.FC = () => {
   const { currentRole } = useUserStore();
-  const [activeTab, setActiveTab] = useState<'all' | 'client' | 'counselor'>('all');
+  const [activeTab, setActiveTab] = useState<UserTab>('all');
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const users = [
-    { id: '1', name: '张三', email: 'zhangsan@example.com', role: 'client', createdAt: '2024-01-10' },
-    { id: '2', name: '李四', email: 'lisi@example.com', role: 'client', createdAt: '2024-01-12' },
-    { id: '3', name: '王咨询师', email: 'wang@example.com', role: 'counselor', createdAt: '2024-01-05' },
-    { id: '4', name: '李咨询师', email: 'li@example.com', role: 'counselor', createdAt: '2024-01-08' },
-    { id: '5', name: '王五', email: 'wangwu@example.com', role: 'client', createdAt: '2024-01-14' },
-    { id: '6', name: '赵六', email: 'zhaoliu@example.com', role: 'counselor', createdAt: '2024-01-15' },
-  ];
+  const loadUsers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await request<any[]>('/api/admin/users');
+      setUsers(
+        Array.isArray(data)
+          ? data.map(u => ({
+              id: u?.id || '',
+              name: u?.name || u?.email || '未设置昵称',
+              email: u?.email || '',
+              role: u?.role || 'visitor',
+              createdAt: u?.createdAt || ''
+            }))
+          : []
+      );
+    } catch (err) {
+      Taro.showToast({
+        title: err instanceof Error ? err.message : '加载用户失败，请稍后重试',
+        icon: 'none'
+      });
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const filteredUsers = activeTab === 'all' 
-    ? users 
-    : users.filter(u => u.role === activeTab);
+  useDidShow(() => {
+    loadUsers();
+  });
 
-  const getRoleText = (role: string) => {
-    const map: Record<string, string> = {
-      client: '来访者',
-      counselor: '咨询师'
-    };
-    return map[role] || role;
-  };
+  const filteredUsers = activeTab === 'all'
+    ? users
+    : users.filter(u => (activeTab === 'counselor' ? u.role === 'counselor' : ORDINARY_ROLES.includes(u.role)));
 
-  const getRoleColor = (role: string) => {
-    const map: Record<string, string> = {
-      client: '#7A9A6A',
-      counselor: '#E6A23C'
-    };
-    return map[role] || '#909399';
+  const getRoleText = (role: string) => ROLE_TEXT[role] || role;
+  const getRoleColor = (role: string) => ROLE_COLOR[role] || '#909399';
+
+  // 授予/撤销客服权限（客服仅开放：消息收件箱 + 订单促进[标记已支付/退款]）
+  const handleToggleSupport = (user: AdminUser) => {
+    const toSupport = user.role !== 'support';
+    const label = toSupport ? '设为客服' : '移回来访者';
+    Taro.showModal({
+      title: label,
+      content: `确认将用户「${user.name}」${label}吗？`,
+      confirmText: '确认',
+      cancelText: '取消',
+      success: async (res) => {
+        if (!res.confirm) return;
+        try {
+          // Taro.request.Option 类型要求 url 字段；request() 实际以第一个参数 path 为准
+          await request(`/api/admin/users/${user.id}`, {
+            url: `/api/admin/users/${user.id}`,
+            method: 'PATCH',
+            data: { role: toSupport ? 'support' : 'visitor' }
+          });
+          Taro.showToast({ title: `${label}成功`, icon: 'success' });
+          loadUsers();
+        } catch (err) {
+          Taro.showToast({
+            title: err instanceof Error ? err.message : '操作失败，请稍后重试',
+            icon: 'none'
+          });
+        }
+      }
+    });
   };
 
   if (currentRole !== 'admin') {
@@ -53,7 +133,7 @@ const AdminUsersPage: React.FC = () => {
       <View className={styles.header}>
         <Text className={styles.title}>用户管理</Text>
       </View>
-      
+
       <View className={styles.tabBar}>
         <View
           className={`${styles.tabItem} ${activeTab === 'all' ? styles.tabActive : ''}`}
@@ -74,11 +154,11 @@ const AdminUsersPage: React.FC = () => {
           <Text className={styles.tabText}>咨询师</Text>
         </View>
       </View>
-      
+
       <ScrollView className={styles.scrollContent} scrollY>
         {filteredUsers.length === 0 ? (
           <View className={styles.empty}>
-            <Text className={styles.emptyText}>暂无用户</Text>
+            <Text className={styles.emptyText}>{loading ? '加载中…' : '暂无用户'}</Text>
           </View>
         ) : (
           <View className={styles.userList}>
@@ -97,7 +177,17 @@ const AdminUsersPage: React.FC = () => {
                   </Text>
                 </View>
                 <View className={styles.userFooter}>
-                  <Text className={styles.userDate}>注册时间: {user.createdAt}</Text>
+                  <Text className={styles.userDate}>注册时间: {fmtDate(user.createdAt)}</Text>
+                  {(ORDINARY_ROLES.includes(user.role) || user.role === 'support') && (
+                    <View
+                      className={`${styles.actionButton} ${user.role === 'support' ? styles.actionButtonMuted : styles.actionButtonPrimary}`}
+                      onClick={() => handleToggleSupport(user)}
+                    >
+                      <Text className={styles.actionButtonText}>
+                        {user.role === 'support' ? '移回来访' : '设为客服'}
+                      </Text>
+                    </View>
+                  )}
                 </View>
               </View>
             ))}

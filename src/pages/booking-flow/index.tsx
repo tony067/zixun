@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Textarea, Button, Input } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { fetchCounselorDetail } from '@/services/api';
-import type { Counselor, TimeSlot, ApplicationForm } from '@/types/counselor';
-import { getNextDays, generateMockSlots, WEEKDAY_LABELS, PERIOD_LABELS, EMPTY_FORM, PURPOSE_OPTIONS } from '@/types/counselor';
+import { fetchCounselorDetail, fetchAvailableSlots, createBooking } from '@/services/api';
+import type { Counselor, TimeSlot, ApplicationForm, AvailableDay } from '@/types/counselor';
+import { buildTimeSlots, EMPTY_FORM, PURPOSE_OPTIONS } from '@/types/counselor';
 import Icon from '@/components/Icon';
 
 type Step = 0 | 1 | 2;
@@ -53,8 +53,9 @@ const BookingFlowPage: React.FC = () => {
   const [selectedPricing, setSelectedPricing] = useState(0);
 
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
-  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+  const [availableDays, setAvailableDays] = useState<AvailableDay[]>([]);
   const [showCoordinate, setShowCoordinate] = useState(false);
   const [coordMsg, setCoordMsg] = useState('');
   const [coordAccept, setCoordAccept] = useState<string | null>(null);
@@ -64,9 +65,7 @@ const BookingFlowPage: React.FC = () => {
   const [agreed, setAgreed] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-
-  const days = useMemo(() => getNextDays(14), []);
-  const slots = useMemo(() => generateMockSlots(days), [days]);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const { id } = router.params || {};
@@ -84,30 +83,35 @@ const BookingFlowPage: React.FC = () => {
       }).catch(err => {
         console.error('[BookingFlow] 加载咨询师失败', err);
       });
-    }
-    if (days.length > 0) {
-      setSelectedDay(days[0]);
-    }
-  }, [router.params, days]);
 
-  const dayKey = selectedDay?.toISOString().slice(0, 10) || '';
-  const daySlots = slots[dayKey] ?? [];
+      fetchAvailableSlots(id).then(days => {
+        setAvailableDays(days);
+        const firstWithSlots = days.find(d => d.starts.length > 0);
+        setSelectedDay((firstWithSlots || days[0])?.date ?? null);
+      }).catch(err => {
+        console.error('[BookingFlow] 加载可预约时段失败', err);
+      });
+    }
+  }, [router.params]);
+
+  const hasPricingOptions = counselor?.pricingOptions && counselor.pricingOptions.length > 0;
+  const currentPricing = hasPricingOptions ? counselor?.pricingOptions?.[selectedPricing] : null;
+  const durationMinutes = currentPricing?.duration ?? counselor?.sessionDuration ?? 50;
+  const priceAmount = currentPricing?.price ?? counselor?.pricePerSession ?? 0;
+
+  const selectedDayObj = availableDays.find(d => d.date === selectedDay) || null;
+  const daySlots = buildTimeSlots(selectedDay || '', selectedDayObj?.starts ?? [], durationMinutes);
   const morning = daySlots.filter(s => s.period === 'morning');
   const afternoon = daySlots.filter(s => s.period === 'afternoon');
   const evening = daySlots.filter(s => s.period === 'evening');
 
   const canNext = selectedMode && selectedSlot;
 
-  const hasPricingOptions = counselor?.pricingOptions && counselor.pricingOptions.length > 0;
-  const currentPricing = hasPricingOptions ? counselor.pricingOptions[selectedPricing] : null;
-  const durationMinutes = currentPricing?.duration ?? counselor?.sessionDuration ?? 50;
-  const priceAmount = currentPricing?.price ?? counselor?.pricePerSession ?? 0;
-
   const setFormField = <K extends keyof ApplicationForm>(k: K, v: ApplicationForm[K]) => {
     setForm(prev => ({ ...prev, [k]: v }));
   };
 
-  const handleSubmitStep2 = () => {
+  const handleSubmitStep2 = async () => {
     setErrorMsg('');
     if (!form.name.trim()) {
       setErrorMsg('请填写真实姓名');
@@ -125,10 +129,44 @@ const BookingFlowPage: React.FC = () => {
       setErrorMsg('请阅读并勾选《MindPace 用户服务协议》');
       return;
     }
-    Taro.showToast({ title: '预约申请已提交', icon: 'success' });
-    setTimeout(() => {
-      Taro.navigateTo({ url: '/pages/bookings/index' });
-    }, 1200);
+    if (!counselor || !selectedSlot || !selectedDay) {
+      setErrorMsg('请先选择咨询时间');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const [h, m] = selectedSlot.start.split(':').map(Number);
+      const scheduled = new Date(`${selectedDay}T00:00:00`);
+      scheduled.setHours(h, m, 0, 0);
+
+      await createBooking({
+        counselorId: counselor.id,
+        scheduledAt: scheduled.toISOString(),
+        sessionMode: selectedMode || undefined,
+        clientNote: [
+          `姓名：${form.name}`,
+          `手机号：${form.phone}`,
+          form.wechat ? `微信号：${form.wechat}` : '',
+          `咨询目的：${form.purposes.join('、')}${form.purposeOther ? `（${form.purposeOther}）` : ''}`,
+          form.additionalNote ? `补充说明：${form.additionalNote}` : '',
+        ].filter(Boolean).join('；'),
+        ...(currentPricing?.id ? { pricingOptionId: currentPricing.id } : {}),
+        durationMinutes,
+        priceAmount,
+        sessionNumber: currentPricing?.sessions ?? 1,
+      });
+
+      Taro.showToast({ title: '预约申请已提交', icon: 'success' });
+      setTimeout(() => {
+        Taro.navigateTo({ url: '/pages/bookings/index' });
+      }, 1200);
+    } catch (err) {
+      console.error('[BookingFlow] 提交预约失败', err);
+      setErrorMsg(err instanceof Error && err.message ? err.message : '提交失败，请稍后重试');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const renderStep0 = () => {
@@ -215,18 +253,17 @@ const BookingFlowPage: React.FC = () => {
             最早可约24小时后 · 每次 {durationMinutes} 分钟
           </Text>
           <View className={styles.dateList}>
-            {days.map(d => {
-              const k = d.toISOString().slice(0, 10);
-              const hasFree = (slots[k] || []).some(s => s.available);
-              const active = k === dayKey;
+            {availableDays.map(d => {
+              const hasFree = d.starts.length > 0;
+              const active = d.date === selectedDay;
               return (
                 <View
-                  key={k}
+                  key={d.date}
                   className={`${styles.dateItem} ${active ? styles.dateActive : ''} ${!hasFree ? styles.dateDisabled : ''}`}
-                  onClick={() => { setSelectedDay(d); setSelectedSlot(null); }}
+                  onClick={() => { setSelectedDay(d.date); setSelectedSlot(null); }}
                 >
-                  <Text className={styles.dateWeek}>{WEEKDAY_LABELS[d.getDay()]}</Text>
-                  <Text className={styles.dateDay}>{d.getMonth() + 1}.{d.getDate()}</Text>
+                  <Text className={styles.dateWeek}>{d.weekday}</Text>
+                  <Text className={styles.dateDay}>{d.label}</Text>
                 </View>
               );
             })}
@@ -357,7 +394,7 @@ const BookingFlowPage: React.FC = () => {
         <View className={styles.bottomBarStep1}>
           {selectedSlot && (
             <Text className={styles.selectedInfo}>
-              已选：{selectedDay?.getMonth() + 1}/{selectedDay?.getDate()} {selectedSlot.start}–{selectedSlot.end}
+              已选：{selectedDayObj?.label} {selectedSlot.start}–{selectedSlot.end}
             </Text>
           )}
           <Button
@@ -372,9 +409,8 @@ const BookingFlowPage: React.FC = () => {
   );
 
   const renderStep2 = () => {
-    const WEEKDAY = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-    const dateStr = selectedDay
-      ? `${selectedDay.getMonth() + 1}月${selectedDay.getDate()}日 ${WEEKDAY[selectedDay.getDay()]} ${selectedSlot?.start}–${selectedSlot?.end}`
+    const dateStr = selectedDayObj
+      ? `${selectedDayObj.label.replace('/', '月')}日 ${selectedDayObj.weekday} ${selectedSlot?.start}–${selectedSlot?.end}`
       : '';
 
     return (
@@ -631,7 +667,12 @@ const BookingFlowPage: React.FC = () => {
           <Button className={styles.backButton} onClick={() => setStep(hasPricingOptions ? 0 : 1)}>
             上一步
           </Button>
-          <Button className={styles.submitButton} onClick={handleSubmitStep2}>
+          <Button
+            className={styles.submitButton}
+            loading={submitting}
+            disabled={submitting}
+            onClick={handleSubmitStep2}
+          >
             提交预约 · ￥{priceAmount || 0}
           </Button>
         </View>

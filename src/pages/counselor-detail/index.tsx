@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Button, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { fetchCounselorDetail, addFavorite, removeFavorite, fetchFavorites } from '@/services/api';
+import { fetchCounselorDetail, fetchAvailableSlots, addFavorite, removeFavorite, fetchFavorites } from '@/services/api';
 import { useUserStore } from '@/stores/user';
-import type { Counselor, PricingOption } from '@/types/counselor';
-import { getNextDays, generateMockSlots, WEEKDAY_LABELS } from '@/types/counselor';
+import type { Counselor, PricingOption, AvailableDay } from '@/types/counselor';
+import { buildTimeSlots } from '@/types/counselor';
 import Icon from '@/components/Icon';
 
 const TAG_COLORS = [
@@ -32,8 +32,9 @@ function toStrings(arr?: (string | { id: string; value: string })[] | null): str
 
 const CounselorDetailPage: React.FC = () => {
   const router = useRouter();
-  const { isLoggedIn, user } = useUserStore();
+  const { isLoggedIn } = useUserStore();
   const [counselor, setCounselor] = useState<Counselor | null>(null);
+  const [availableDays, setAvailableDays] = useState<AvailableDay[]>([]);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [savingFavorite, setSavingFavorite] = useState(false);
@@ -57,6 +58,12 @@ const CounselorDetailPage: React.FC = () => {
       setLoading(true);
       const data = await fetchCounselorDetail(id);
       setCounselor(data);
+      if (data) {
+        const days = await fetchAvailableSlots(id);
+        setAvailableDays(days);
+      } else {
+        setAvailableDays([]);
+      }
     } catch (err) {
       console.error('[CounselorDetail] 加载失败', err);
     } finally {
@@ -174,13 +181,9 @@ const CounselorDetailPage: React.FC = () => {
   const we = toStrings(counselor.workExperiences);
   const hasBackground = ql.length || ed.length || tr.length || we.length;
 
-  const days7 = getNextDays(7);
-  const slots = generateMockSlots(days7);
-
-  const availableDays = days7.filter(d => {
-    const key = d.toISOString().slice(0, 10);
-    return (slots[key] || []).some(s => s.available);
-  });
+  const daysWithSlots = availableDays
+    .map(d => ({ ...d, slots: buildTimeSlots(d.date, d.starts, counselor.sessionDuration || 50) }))
+    .filter(d => d.slots.length > 0);
 
   return (
     <View className={styles.container}>
@@ -342,18 +345,16 @@ const CounselorDetailPage: React.FC = () => {
             </View>
           )}
 
-          {counselor.isAccepting && availableDays.length > 0 && (
+          {counselor.isAccepting && daysWithSlots.length > 0 && (
             <View className={styles.timesList}>
-              {availableDays.map(d => {
-                const key = d.toISOString().slice(0, 10);
-                const daySlots = (slots[key] || []).filter(s => s.available);
+              {daysWithSlots.map(day => {
                 return (
-                  <View key={key} className={styles.timeDay}>
+                  <View key={day.date} className={styles.timeDay}>
                     <Text className={styles.timeDayLabel}>
-                      周{WEEKDAY_LABELS[d.getDay()]} {d.getMonth() + 1}/{d.getDate()}
+                      {day.weekday} {day.label}
                     </Text>
                     <View className={styles.timeSlots}>
-                      {daySlots.map(slot => (
+                      {day.slots.map(slot => (
                         <View
                           key={slot.id}
                           className={styles.timeSlot}
@@ -372,7 +373,7 @@ const CounselorDetailPage: React.FC = () => {
             </View>
           )}
 
-          {counselor.isAccepting && availableDays.length === 0 && (
+          {counselor.isAccepting && daysWithSlots.length === 0 && (
             <View className={styles.noTimesCard}>
               <Text className={styles.noTimesText}>暂无可预约时段，可与咨询师协调时间</Text>
             </View>

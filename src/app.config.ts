@@ -14,7 +14,8 @@ export default defineAppConfig({
     'pages/admin-dashboard/index',
     'pages/admin-review/index',
     'pages/admin-orders/index',
-    'pages/admin-users/index'
+    'pages/admin-users/index',
+    'pages/cs-orders/index'
   ],
   window: {
     backgroundTextStyle: 'light',

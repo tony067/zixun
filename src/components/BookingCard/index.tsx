@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import styles from './index.module.scss';
 import type { Booking } from '@/types/booking';
-import { bookingStatusText } from '@/types/booking';
+import { getBookingStatusMeta } from '@/types/booking';
 import { formatDateTime } from '@/utils/date';
 
 interface BookingCardProps {
@@ -10,18 +10,8 @@ interface BookingCardProps {
   onClick?: (booking: Booking) => void;
 }
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  pending_confirmation: { bg: '#FFF7E6', text: '#D46B08' },
-  confirmed: { bg: '#F6FFED', text: '#389E0D' },
-  pending_payment: { bg: '#FFF2E8', text: '#FA541C' },
-  paid: { bg: '#E6FFFB', text: '#08979C' },
-  completed: { bg: '#F0F0F0', text: '#595959' },
-  cancelled: { bg: '#F5F5F5', text: '#8C8C8C' },
-  rejected: { bg: '#FFF1F0', text: '#CF1322' }
-};
-
 const BookingCard: React.FC<BookingCardProps> = ({ booking, onClick }) => {
-  const statusColor = STATUS_COLORS[booking.status] || STATUS_COLORS.pending_confirmation;
+  const statusMeta = getBookingStatusMeta(booking.status);
 
   return (
     <View className={styles.card} onClick={() => onClick?.(booking)}>
@@ -41,9 +31,9 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, onClick }) => {
         </View>
         <Text
           className={styles.statusTag}
-          style={{ backgroundColor: statusColor.bg, color: statusColor.text }}
+          style={{ backgroundColor: statusMeta.bg, color: statusMeta.color }}
         >
-          {bookingStatusText[booking.status]}
+          {statusMeta.label}
         </Text>
       </View>
 

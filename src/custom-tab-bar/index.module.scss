@@ -34,12 +34,36 @@
 }
 
 .tabIcon {
+  position: relative;
   width: 44rpx;
   height: 44rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 4rpx;
+}
+
+// 消息 tab 未读红点徽标
+.tabBadge {
+  position: absolute;
+  top: -10rpx;
+  right: -18rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 0 8rpx;
+  border-radius: $radius-round;
+  background: #EF4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.tabBadgeText {
+  font-size: 18rpx;
+  line-height: 1;
+  font-weight: 700;
+  color: #FFFFFF;
 }
 
 .tabIconText {

@@ -2,22 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
-import CustomTabBar from '@/custom-tab-bar';
+import CustomTabBar from '@/components/TabBar';
 import { useUserStore } from '@/stores/user';
-import { fetchFavorites, removeFavorite, fetchUserProfile } from '@/services/api';
-import type { Counselor, UserProfile } from '@/services/api';
+import { fetchUserProfile, fetchMyBookings, request } from '@/services/api';
+import type { UserProfile } from '@/services/api';
+import type { Booking } from '@/types/booking';
 import Icon from '@/components/Icon';
 
-const menuItems = [
-  { icon: 'calendar', label: '我的预约', path: '/pages/bookings/index', isTab: false },
-  { icon: 'heart', label: '我的收藏', path: '/pages/profile/favorites', isTab: false },
-  { icon: 'settings', label: '设置', path: '', isTab: false }
-];
+const UPCOMING_STATUSES = ['pending_confirmation', 'confirmed', 'pending_payment', 'paid'];
+
+/** 与消息页约定：待打开的客服会话 id，消息页 onShow 时消费 */
+const PENDING_OPEN_CONV_KEY = 'mindpace_pending_open_conv';
+
+const gridItems = [
+  { icon: 'heart', title: '我的收藏', desc: '收藏的咨询师', key: 'favorites' },
+  { icon: 'book', title: '新手必读', desc: '了解咨询', key: 'guide' },
+  { icon: 'headphones', title: '联系客服', desc: '在线帮助', key: 'service' },
+  { icon: 'settings', title: '更多设置', desc: '账号·通知', key: 'settings' }
+] as const;
+
+function formatBookingTime(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getMonth() + 1}月${d.getDate()}日 ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 const ProfilePage: React.FC = () => {
   const { isLoggedIn, user, logout } = useUserStore();
-  const [favoriteCounselors, setFavoriteCounselors] = useState<Counselor[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [upcomingBooking, setUpcomingBooking] = useState<Booking | null>(null);
+  const [upcomingCount, setUpcomingCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,12 +43,22 @@ const ProfilePage: React.FC = () => {
     setLoading(true);
     try {
       if (isLoggedIn) {
-        const [favs, prof] = await Promise.all([
-          fetchFavorites(),
-          fetchUserProfile()
+        const [prof, bookings] = await Promise.all([
+          fetchUserProfile(),
+          fetchMyBookings().catch(() => [])
         ]);
-        setFavoriteCounselors(favs);
         setProfile(prof);
+
+        const now = Date.now();
+        const upcoming = bookings
+          .filter(b => UPCOMING_STATUSES.includes(b.status) && new Date(b.scheduledAt).getTime() >= now)
+          .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
+        setUpcomingCount(upcoming.length);
+        setUpcomingBooking(upcoming[0] || null);
+      } else {
+        setProfile(null);
+        setUpcomingBooking(null);
+        setUpcomingCount(0);
       }
     } catch (err) {
       console.error('[Profile] 加载数据失败', err);
@@ -53,138 +78,186 @@ const ProfilePage: React.FC = () => {
       success: (res) => {
         if (res.confirm) {
           logout();
-          setFavoriteCounselors([]);
           setProfile(null);
+          setUpcomingBooking(null);
+          setUpcomingCount(0);
           Taro.showToast({ title: '已退出登录', icon: 'none' });
         }
       }
     });
   };
 
-  const handleViewGuide = () => {
-    Taro.navigateTo({ url: '/pages/guide/index' });
+  const handleEditProfile = () => {
+    Taro.showToast({ title: '资料编辑即将上线', icon: 'none' });
   };
 
-  const handleRemoveFavorite = async (id: string) => {
+  // 联系客服：创建/复用与官方客服的会话，然后跳到消息页打开聊天视图
+  const handleContactService = async () => {
+    if (!isLoggedIn) {
+      handleLogin();
+      return;
+    }
     try {
-      await removeFavorite(id);
-      setFavoriteCounselors(prev => prev.filter(c => c.id !== id));
-      Taro.showToast({ title: '已取消收藏', icon: 'none' });
+      // Taro.request.Option 类型要求 url 字段；request() 实际以第一个参数 path 为准
+      const data = await request<{ conversationId?: string; id?: string }>('/api/messages', {
+        url: '/api/messages',
+        method: 'POST',
+        data: { toAdmin: true }
+      });
+      const convId = data?.conversationId || data?.id;
+      if (!convId) throw new Error('未返回会话');
+      Taro.setStorageSync(PENDING_OPEN_CONV_KEY, convId);
+      Taro.switchTab({ url: '/pages/messages/index' });
     } catch (err) {
-      console.error('[Profile] 取消收藏失败', err);
-      Taro.showToast({ title: '取消收藏失败', icon: 'none' });
+      console.error('[Profile] 联系客服失败', err);
+      Taro.showToast({ title: '客服暂不可用，请稍后再试', icon: 'none' });
     }
   };
 
-  const handleViewCounselor = (id: string) => {
-    Taro.navigateTo({ url: `/pages/counselor-detail/index?id=${id}` });
+  const handleGridItem = (key: string) => {
+    switch (key) {
+      case 'guide':
+        Taro.navigateTo({ url: '/pages/guide/index' });
+        break;
+      case 'favorites':
+        Taro.showToast({ title: '收藏功能即将上线', icon: 'none' });
+        break;
+      case 'service':
+        handleContactService();
+        break;
+      case 'settings':
+        Taro.showToast({ title: '更多设置即将上线', icon: 'none' });
+        break;
+    }
   };
+
+  const handleViewBookings = () => {
+    if (!isLoggedIn) {
+      handleLogin();
+      return;
+    }
+    Taro.navigateTo({ url: '/pages/bookings/index' });
+  };
+
+  const handleViewBooking = (booking: Booking) => {
+    if (booking.counselorId) {
+      Taro.navigateTo({ url: `/pages/counselor-detail/index?id=${booking.counselorId}` });
+    }
+  };
+
+  const displayName = profile?.name || user?.name || (isLoggedIn ? '来访者' : '未登录');
+  const displayEmail = profile?.email || user?.email || '';
+  const avatarChar = (displayName || '访').charAt(0);
 
   return (
     <View className={styles.container}>
       <ScrollView scrollY className={styles.scrollContent}>
+        {/* 头部：头像 + 用户名/邮箱 */}
         <View className={styles.header}>
-          <View className={styles.userCard}>
-            <View className={styles.avatarWrapper}>
-              {profile?.avatarUrl ? (
-                <View className={styles.avatar} style={{ backgroundImage: `url(${profile.avatarUrl})` }} />
-              ) : (
-                <Text className={styles.avatarText}>
-                  {profile?.name?.charAt(0) || user?.name?.charAt(0) || '访'}
-                </Text>
+          <View className={styles.avatarWrapper}>
+            {profile?.avatarUrl ? (
+              <View className={styles.avatar} style={{ backgroundImage: `url(${profile.avatarUrl})` }} />
+            ) : (
+              <Text className={styles.avatarText}>{avatarChar}</Text>
+            )}
+            {isLoggedIn && (
+              <View className={styles.cameraBadge} onClick={handleEditProfile}>
+                <Icon name="camera" size={14} color="#8A8580" />
+              </View>
+            )}
+          </View>
+          <View className={styles.userInfo}>
+            <View className={styles.userNameRow}>
+              <Text className={styles.userName}>{isLoggedIn ? (displayEmail || displayName) : displayName}</Text>
+              {isLoggedIn && (
+                <View className={styles.editButton} onClick={handleEditProfile}>
+                  <Icon name="edit" size={16} color="#B0AAA3" />
+                </View>
               )}
             </View>
-            <View className={styles.userInfo}>
-              <Text className={styles.userName}>
-                {profile?.name || user?.name || '来访者'}
-              </Text>
-              <Text className={styles.userDesc}>
-                {isLoggedIn ? '已登录' : '登录后可查看完整信息'}
-              </Text>
-            </View>
-            {isLoggedIn && (
-              <View className={styles.logoutButton} onClick={handleLogout}>
-                <Text className={styles.logoutText}>退出</Text>
-              </View>
+            {isLoggedIn && displayEmail && displayName !== displayEmail && (
+              <Text className={styles.userDesc}>{displayName}</Text>
+            )}
+            {!isLoggedIn && (
+              <Text className={styles.userDesc}>登录后享受完整服务</Text>
             )}
           </View>
         </View>
 
-        <View className={styles.menuSection}>
-          <View className={styles.menuCard}>
-            {menuItems.map(item => (
-              <View
-                key={item.label}
-                className={styles.menuItem}
-                onClick={() => {
-                  if (!item.path) return;
-                  Taro.navigateTo({ url: item.path });
-                }}
-              >
-                <View className={styles.menuLeft}>
-                  <Icon name={item.icon as any} size={24} color="#9B8E82" />
-                  <Text className={styles.menuText}>{item.label}</Text>
-                </View>
-                <Icon name="chevronRight" size={20} color="#C2BDB7" />
+        {/* 我的预约卡片 */}
+        {isLoggedIn && (
+          <View className={styles.bookingCard}>
+            <View className={styles.bookingHeader} onClick={handleViewBookings}>
+              <View className={styles.bookingHeaderLeft}>
+                <Icon name="calendar" size={18} color="#6B7B5E" />
+                <Text className={styles.bookingTitle}>我的预约</Text>
+                {upcomingCount > 0 && (
+                  <View className={styles.bookingCountBadge}>
+                    <Text className={styles.bookingCountText}>{upcomingCount}</Text>
+                  </View>
+                )}
               </View>
-            ))}
-          </View>
-        </View>
-
-        <View className={styles.guideCard} onClick={handleViewGuide}>
-          <View className={styles.guideLeft}>
-            <Icon name="book" size={28} color="#9CB48A" />
-            <View className={styles.guideInfo}>
-              <Text className={styles.guideTitle}>新手必读</Text>
-              <Text className={styles.guideDesc}>了解心理咨询，找到适合自己的支持</Text>
+              <View className={styles.bookingHeaderRight}>
+                <Text className={styles.bookingAllText}>全部预约</Text>
+                <Icon name="chevronRight" size={14} color="#A8A29A" />
+              </View>
             </View>
-          </View>
-          <Icon name="chevronRight" size={20} color="#C2BDB7" />
-        </View>
 
-        {isLoggedIn && favoriteCounselors.length > 0 && (
-          <View className={styles.favoritesSection}>
-            <View className={styles.sectionHeader}>
-              <Text className={styles.sectionTitle}>我的收藏</Text>
-              <Text className={styles.sectionCount}>{favoriteCounselors.length}位咨询师</Text>
-            </View>
-            <View className={styles.favoritesList}>
-              {favoriteCounselors.map(counselor => (
-                <View key={counselor.id} className={styles.favoriteItem}>
-                  <View className={styles.favoriteAvatarWrapper} onClick={() => handleViewCounselor(counselor.id)}>
-                    {counselor.avatarUrl ? (
-                      <View className={styles.favoriteAvatar} style={{ backgroundImage: `url(${counselor.avatarUrl})` }} />
-                    ) : (
-                      <Text className={styles.favoriteAvatarText}>{counselor.displayName.charAt(0)}</Text>
-                    )}
-                  </View>
-                  <View className={styles.favoriteInfo} onClick={() => handleViewCounselor(counselor.id)}>
-                    <Text className={styles.favoriteName}>{counselor.displayName}</Text>
-                    <Text className={styles.favoriteTitle}>{counselor.title}</Text>
-                    <View className={styles.favoriteTags}>
-                      {counselor.specialties.slice(0, 2).map(tag => (
-                        <Text key={tag} className={styles.favoriteTag}>{tag}</Text>
-                      ))}
-                    </View>
-                  </View>
-                  <View className={styles.favoritePrice}>
-                    <Text className={styles.favoritePriceValue}>¥{counselor.pricePerSession}</Text>
-                    <Text className={styles.favoritePriceUnit}>/次</Text>
-                  </View>
-                  <View className={styles.favoriteRemove} onClick={() => handleRemoveFavorite(counselor.id)}>
-                    <Text className={styles.removeIcon}>×</Text>
-                  </View>
+            {upcomingBooking ? (
+              <View className={styles.bookingItem} onClick={() => handleViewBooking(upcomingBooking)}>
+                <View className={styles.bookingAvatarWrapper}>
+                  {upcomingBooking.counselor.avatarUrl ? (
+                    <View
+                      className={styles.bookingAvatar}
+                      style={{ backgroundImage: `url(${upcomingBooking.counselor.avatarUrl})` }}
+                    />
+                  ) : (
+                    <Text className={styles.bookingAvatarText}>
+                      {(upcomingBooking.counselor.name || '咨').charAt(0)}
+                    </Text>
+                  )}
                 </View>
-              ))}
-            </View>
+                <View className={styles.bookingInfo}>
+                  <Text className={styles.bookingName}>{upcomingBooking.counselor.name || '咨询师'}</Text>
+                  <Text className={styles.bookingTime}>
+                    {formatBookingTime(upcomingBooking.scheduledAt)}
+                    {upcomingBooking.sessionMode ? ` · ${upcomingBooking.sessionMode.replace(/咨询$/, '')}咨询` : ''}
+                  </Text>
+                </View>
+                <View className={styles.upcomingPill}>
+                  <Text className={styles.upcomingPillText}>即将咨询</Text>
+                </View>
+              </View>
+            ) : (
+              !loading && (
+                <View className={styles.bookingEmpty}>
+                  <Text className={styles.bookingEmptyText}>暂无预约</Text>
+                </View>
+              )
+            )}
           </View>
         )}
 
-        {isLoggedIn && favoriteCounselors.length === 0 && !loading && (
-          <View className={styles.emptySection}>
-            <Text className={styles.emptyIcon}>⭐</Text>
-            <Text className={styles.emptyText}>暂无收藏的咨询师</Text>
-            <Text className={styles.emptyHint}>在咨询师详情页点击收藏即可添加</Text>
+        {/* 宫格菜单 */}
+        <View className={styles.gridSection}>
+          {gridItems.map(item => (
+            <View key={item.key} className={styles.gridCard} onClick={() => handleGridItem(item.key)}>
+              <View className={styles.gridIconWrapper}>
+                <Icon name={item.icon} size={20} color="#7A9A6A" />
+              </View>
+              <View className={styles.gridInfo}>
+                <Text className={styles.gridTitle}>{item.title}</Text>
+                <Text className={styles.gridDesc}>{item.desc}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* 退出登录 */}
+        {isLoggedIn && (
+          <View className={styles.logoutCard} onClick={handleLogout}>
+            <Icon name="logOut" size={18} color="#D9534F" />
+            <Text className={styles.logoutText}>退出登录</Text>
           </View>
         )}
       </ScrollView>

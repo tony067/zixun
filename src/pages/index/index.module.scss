@@ -554,6 +554,24 @@
   margin-left: 8rpx;
 }
 
+.filterMoreArrowBack {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  margin-right: 8rpx;
+}
+
+.regionBackRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.regionSelectedText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
 .filterPanelFooter {
   display: flex;
   gap: 24rpx;
