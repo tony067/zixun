@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '档案编辑',
+  navigationBarTitleText: '编辑档案',
 });
