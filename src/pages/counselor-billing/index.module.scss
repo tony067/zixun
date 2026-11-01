@@ -1,0 +1,227 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 32rpx $page-padding;
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+}
+
+.title {
+  flex: 1;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+// 导出账单：哑光绿按钮（与 web 导出 CSV 一致）
+.exportButton {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: $color-primary;
+  border-radius: $radius-md;
+  padding: 14rpx 24rpx;
+}
+
+.exportButtonText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.scrollContent {
+  padding-bottom: 120rpx;
+}
+
+.body {
+  padding: 0 $page-padding;
+}
+
+.loading,
+.empty,
+.unauthorized {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx $page-padding;
+}
+
+.loadingText,
+.emptyText,
+.unauthorizedText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.emptyText {
+  margin-top: 24rpx;
+  text-align: center;
+  line-height: $line-height-normal;
+}
+
+// ============ 顶部统计卡 4 格 ============
+.statGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.statCard {
+  width: calc(50% - 10rpx);
+  box-sizing: border-box;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 28rpx 24rpx;
+}
+
+.statValue {
+  display: block;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-top: 12rpx;
+}
+
+.statLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+// ============ 累计收入概览 ============
+.revenueCard {
+  background: $color-primary;
+  border-radius: $radius-lg;
+  padding: 28rpx 32rpx;
+  margin-top: 20rpx;
+}
+
+.revenueLabel {
+  display: block;
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 8rpx;
+}
+
+.revenueValue {
+  display: block;
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.revenueHint {
+  display: block;
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 8rpx;
+}
+
+.sectionTitle {
+  display: block;
+  padding: 32rpx 4rpx 20rpx;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+// ============ 月度账单卡 ============
+.monthCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.monthHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.monthTitleWrap {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+}
+
+.monthLabel {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.monthCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.monthRight {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.monthTotal {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: #7A9A6A;
+}
+
+// 展开的订单明细
+.monthDetail {
+  margin-top: 20rpx;
+  padding-top: 8rpx;
+  border-top: 1rpx solid $color-divider;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 4rpx;
+  }
+}
+
+.detailLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.detailName {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.detailMeta {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.detailAmount {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  flex-shrink: 0;
+}

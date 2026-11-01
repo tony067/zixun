@@ -20,7 +20,18 @@ export default defineAppConfig({
     'pages/service-detail/index',
     'pages/my-services/index',
     'pages/my-service-detail/index',
-    'pages/counselor-services/index'
+    'pages/counselor-services/index',
+    'pages/booking-detail/index',
+    'pages/booking-reschedule/index',
+    'pages/favorites/index',
+    'pages/settings/index',
+    'pages/settings-profile/index',
+    'pages/settings-help/index',
+    'pages/counselor-clients/index',
+    'pages/counselor-billing/index',
+    'pages/counselor-card/index',
+    'pages/admin-counselors/index',
+    'pages/admin-billing/index'
   ],
   window: {
     backgroundTextStyle: 'light',

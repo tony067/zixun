@@ -122,7 +122,11 @@ const ProfilePage: React.FC = () => {
         Taro.navigateTo({ url: '/pages/guide/index' });
         break;
       case 'favorites':
-        Taro.showToast({ title: '收藏功能即将上线', icon: 'none' });
+        if (!isLoggedIn) {
+          handleLogin();
+          return;
+        }
+        Taro.navigateTo({ url: '/pages/favorites/index' });
         break;
       case 'services':
         Taro.navigateTo({ url: '/pages/services/index' });
@@ -138,7 +142,11 @@ const ProfilePage: React.FC = () => {
         handleContactService();
         break;
       case 'settings':
-        Taro.showToast({ title: '更多设置即将上线', icon: 'none' });
+        if (!isLoggedIn) {
+          handleLogin();
+          return;
+        }
+        Taro.navigateTo({ url: '/pages/settings/index' });
         break;
     }
   };

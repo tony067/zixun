@@ -136,7 +136,7 @@ const CounselorDetailPage: React.FC = () => {
   };
 
   const handleShare = () => {
-    Taro.showToast({ title: '分享功能开发中', icon: 'none' });
+    Taro.navigateTo({ url: `/pages/counselor-card/index?id=${id}` });
   };
 
   const handleMessage = () => {

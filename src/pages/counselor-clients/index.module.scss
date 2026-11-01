@@ -1,0 +1,414 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 32rpx $page-padding;
+  background: linear-gradient(180deg, #EDEAD5 0%, $color-bg-page 100%);
+}
+
+.title {
+  flex: 1;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.backBtn {
+  @include flex-center;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  border: 1rpx solid $color-border;
+}
+
+.scrollContent {
+  padding-bottom: 120rpx;
+}
+
+.loading,
+.empty,
+.unauthorized {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx $page-padding;
+}
+
+.loadingText,
+.emptyText,
+.unauthorizedText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.emptyText {
+  margin-top: 24rpx;
+  text-align: center;
+  line-height: $line-height-normal;
+}
+
+// ============ 列表视图：来访卡 ============
+.clientList {
+  padding: 0 $page-padding;
+}
+
+.clientCard {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.avatarFallback {
+  @include flex-center;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  flex-shrink: 0;
+
+  text {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-white;
+  }
+}
+
+.clientInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.clientName {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.clientMeta {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+// ============ 详情视图：来访头部 ============
+.profileCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 32rpx;
+  margin: 20rpx $page-padding;
+}
+
+.profileTop {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.profileAvatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.profileAvatarFallback {
+  @include flex-center;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  flex-shrink: 0;
+
+  text {
+    font-size: $font-size-xxl;
+    font-weight: $font-weight-bold;
+    color: $color-text-white;
+  }
+}
+
+.profileInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.profileName {
+  display: block;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.profileEmail {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 6rpx;
+}
+
+.profileTotal {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: #7A9A6A;
+}
+
+.statsRow {
+  display: flex;
+  gap: 16rpx;
+}
+
+.statItem {
+  flex: 1;
+  background: #F8F5F0;
+  border-radius: $radius-md;
+  padding: 20rpx 12rpx;
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.statLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 6rpx;
+}
+
+.sectionTitle {
+  display: block;
+  padding: 8rpx $page-padding 20rpx;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+// ============ 详情视图：预约历史卡 ============
+.historyCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin: 0 $page-padding 20rpx;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.sessionNo {
+  @include flex-center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: #E4F0DC;
+  flex-shrink: 0;
+
+  text {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    color: #3A6228;
+  }
+}
+
+.historyInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.historyMode {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.historyTime {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.badge {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+}
+
+.historyFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  border-top: 1rpx solid $color-divider;
+}
+
+.priceText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary-dark;
+}
+
+.packageBadge {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-round;
+  background: #F0F7EC;
+  color: #3A6228;
+}
+
+.formButton {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: #FAE9DD;
+  border-radius: $radius-md;
+  padding: 10rpx 20rpx;
+}
+
+.formButtonText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: #C66B2E;
+}
+
+// ============ 申请单底部弹层 ============
+.sheetMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.sheet {
+  background: $color-bg-card;
+  border-radius: $radius-xl $radius-xl 0 0;
+  padding: 32rpx 32rpx 64rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.sheetTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.sheetClose {
+  @include flex-center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: $color-bg-muted;
+}
+
+.formSection {
+  margin-bottom: 28rpx;
+}
+
+.formLabel {
+  display: block;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-tertiary;
+  margin-bottom: 10rpx;
+}
+
+.formValue {
+  display: block;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: $line-height-normal;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: #E4F0DC;
+  color: #3A6228;
+  font-size: $font-size-xs;
+  padding: 6rpx 20rpx;
+  border-radius: $radius-round;
+  margin: 0 12rpx 12rpx 0;
+}
+
+.formRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 10rpx 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.formRowLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.formRowValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  text-align: right;
+}
+
+.formEmpty {
+  display: block;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  text-align: center;
+  padding: 60rpx 0;
+}

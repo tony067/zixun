@@ -153,10 +153,10 @@ const BookingsPage: React.FC = () => {
           <Text style={{ textAlign: 'center', paddingTop: '80rpx', color: '#9B8E82' }}>加载中...</Text>
         ) : filteredBookings.length > 0 ? (
           filteredBookings.map(booking => (
-            <View key={booking.id}>
+            <View key={booking.id} onClick={() => Taro.navigateTo({ url: `/pages/booking-detail/index?id=${booking.id}` })}>
               <BookingCard booking={booking} />
               {CANCELLABLE_STATUSES.includes(booking.status) && (
-                <View className={styles.cancelButton} onClick={() => handleCancel(booking)}>
+                <View className={styles.cancelButton} onClick={(e) => { e.stopPropagation(); handleCancel(booking); }}>
                   <Text className={styles.cancelButtonText}>取消预约</Text>
                 </View>
               )}

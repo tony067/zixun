@@ -1,0 +1,155 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 24rpx $page-padding 60rpx;
+  box-sizing: border-box;
+}
+
+/* ===== 列表卡片 ===== */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  padding: 28rpx;
+  background: $color-bg-card;
+  border: 1rpx solid $color-border;
+  border-radius: $radius-lg;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.avatarWrapper {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  margin-right: 24rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+  @include flex-center;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.avatarText {
+  font-size: 36rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  margin-right: 16rpx;
+}
+
+.name {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.meta {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 6rpx;
+  @include text-ellipsis;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 12rpx;
+}
+
+.tag {
+  padding: 4rpx 14rpx;
+  border-radius: $radius-xs;
+  background: $color-tag-1;
+  font-size: $font-size-xs;
+  color: $color-tag-1-text;
+}
+
+/* ===== 右侧操作 ===== */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+
+.heartButton {
+  padding: 8rpx;
+
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+.bookButton {
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  background: $color-primary;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.bookButtonText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+/* ===== 空态 / 加载中 ===== */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 200rpx 0 0;
+}
+
+.emptyIcon {
+  @include flex-center;
+}
+
+.emptyText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: 24rpx;
+}
+
+.emptyButton {
+  margin-top: 32rpx;
+  padding: 20rpx 56rpx;
+  border-radius: $radius-button;
+  background: $color-primary;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.emptyButtonText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}

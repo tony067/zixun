@@ -644,3 +644,24 @@
     color: $color-text-tertiary;
   }
 }
+
+/* 工作台入口 */
+.sectionCard {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  margin: 24rpx 32rpx 0;
+  overflow: hidden;
+}
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 28rpx 28rpx;
+  border-bottom: 1rpx solid #F0EBE4;
+  &:last-child { border-bottom: none; }
+}
+.actionRowText {
+  flex: 1;
+  font-size: 28rpx;
+  color: #3F3A34;
+}

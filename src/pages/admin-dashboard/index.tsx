@@ -65,8 +65,9 @@ const AdminDashboardPage: React.FC = () => {
   const quickActions = [
     { label: '审核咨询师', path: '/pages/admin-review/index', icon: 'check' },
     { label: '管理订单', path: '/pages/admin-orders/index', icon: 'list' },
+    { label: '咨询师管理', path: '/pages/admin-counselors/index', icon: 'stethoscope' },
+    { label: '平台账单', path: '/pages/admin-billing/index', icon: 'chart' },
     { label: '用户管理', path: '/pages/admin-users/index', icon: 'user' },
-    { label: '系统设置', icon: 'settings' },
   ];
 
   if (currentRole !== 'admin') {

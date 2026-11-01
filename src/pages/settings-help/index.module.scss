@@ -1,0 +1,192 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 24rpx $page-padding 60rpx;
+  box-sizing: border-box;
+}
+
+.card {
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  background: $color-bg-card;
+  border: 1rpx solid $color-border;
+  border-radius: $radius-lg;
+}
+
+.cardTitle {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+}
+
+.rowBorder {
+  border-bottom: 1rpx solid #F5F0EA;
+}
+
+/* ===== 联系我们 ===== */
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 28rpx 0;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.contactIcon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  background: #E8F5E0;
+  flex-shrink: 0;
+  @include flex-center;
+}
+
+.contactInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.contactLabel {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.contactSub {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+  @include text-ellipsis;
+}
+
+/* ===== 常见问题 ===== */
+.faqRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 0;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.faqQuestion {
+  flex: 1;
+  margin-right: 24rpx;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.faqChevron {
+  flex-shrink: 0;
+  transition: transform $transition-fast;
+}
+
+.faqAnswer {
+  display: block;
+  padding: 0 0 28rpx;
+  font-size: $font-size-sm;
+  line-height: $line-height-loose;
+  color: #6B5E52;
+}
+
+/* ===== 意见反馈 ===== */
+.categoryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin: 20rpx 0 24rpx;
+}
+
+.categoryTag {
+  padding: 12rpx 28rpx;
+  border-radius: $radius-round;
+  background: $color-bg-page;
+}
+
+.categoryTagActive {
+  background: $color-primary;
+}
+
+.categoryText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: #6B5E52;
+}
+
+.categoryTextActive {
+  color: $color-text-white;
+}
+
+.feedbackInput {
+  width: 100%;
+  height: 220rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+  background: $color-bg-page;
+  border: 1rpx solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+}
+
+.feedbackPlaceholder {
+  color: $color-text-disabled;
+}
+
+.submitButton {
+  margin-top: 24rpx;
+  height: $button-height-md;
+  border-radius: $radius-md;
+  background: $color-primary;
+  @include flex-center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.submitButtonDisabled {
+  opacity: 0.5;
+}
+
+.submitButtonText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+/* ===== 底部联系客服 ===== */
+.contactButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 28rpx;
+  border-radius: $radius-lg;
+  background: $color-bg-card;
+  border: 2rpx solid $color-primary;
+  box-sizing: border-box;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.contactButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}

@@ -16,96 +16,305 @@
   color: $color-text-primary;
 }
 
-.daySelector {
-  display: flex;
-  padding: 16rpx $page-padding;
-  background: $color-bg-card;
-  gap: 8rpx;
-}
-
-.dayItem {
-  flex: 1;
-  padding: 12rpx 0;
-  border-radius: $radius-md;
-  text-align: center;
-  background: $color-bg-muted;
-}
-
-.dayActive {
-  background: $color-primary;
-  
-  .dayText {
-    color: $color-text-white;
-  }
-}
-
-.dayText {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
+.subtitle {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
 }
 
 .scrollContent {
   padding-bottom: 120rpx;
 }
 
-.timeList {
+.loading, .unauthorized {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.loadingText, .unauthorizedText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.ruleList {
   padding: 24rpx $page-padding;
 }
 
-.timeItem {
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0 48rpx;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.emptyHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  opacity: 0.7;
+  margin-top: 12rpx;
+}
+
+// ============ 规则卡片 ============
+.ruleCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.ruleHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20rpx;
-  border-radius: $radius-md;
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
 }
 
-.timeAvailable {
-  background: $color-bg-card;
+.ruleType {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-round;
 }
 
-.timeUnavailable {
+.typeAvailable {
+  background: rgba(156, 180, 138, 0.18);
+  color: #5A7A4A;
+}
+
+.typeBlocked {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.typeFixed {
+  background: #FAE9DD;
+  color: #C66B2E;
+}
+
+.deleteButton {
+  padding: 8rpx 20rpx;
+  border-radius: $radius-sm;
   background: $color-bg-muted;
-  
-  .timeText {
-    text-decoration: line-through;
-    color: $color-text-tertiary;
-  }
-  
-  .timeStatus {
-    color: $color-text-tertiary;
+}
+
+.deleteText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.ruleMain {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+}
+
+.ruleDuration {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-normal;
+  color: $color-text-tertiary;
+}
+
+.ruleMeta {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.ruleFixed {
+  display: block;
+  font-size: $font-size-xs;
+  color: #B45309;
+  margin-top: 4rpx;
+}
+
+// ============ 新增规则表单 ============
+.ruleForm {
+  background: $color-bg-card;
+  border: 1rpx solid rgba(156, 180, 138, 0.4);
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.segRow {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.segItem {
+  flex: 1;
+  padding: 14rpx 0;
+  border-radius: $radius-md;
+  background: $color-bg-muted;
+  border: 1rpx solid $color-bg-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.segActive {
+  background: $color-primary;
+  border-color: $color-primary;
+
+  .segText {
+    color: $color-text-white;
   }
 }
 
-.timeText {
+.segText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+}
+
+.formLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 12rpx;
+}
+
+.weekRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.weekChip {
+  width: calc(25% - 9rpx);
+  padding: 14rpx 0;
+  border-radius: $radius-md;
+  background: $color-bg-muted;
+  border: 1rpx solid $color-bg-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.weekActive {
+  background: $color-primary;
+  border-color: $color-primary;
+
+  .weekText {
+    color: $color-text-white;
+  }
+}
+
+.weekText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+}
+
+.fieldRow {
+  display: flex;
+  gap: 20rpx;
+}
+
+.fieldCol {
+  flex: 1;
+}
+
+.pickerBox {
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 16rpx 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.pickerText {
   font-size: $font-size-md;
   color: $color-text-primary;
 }
 
-.timeStatus {
-  font-size: $font-size-sm;
-  color: $color-primary;
+.formInput {
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 16rpx 20rpx;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  margin-bottom: 20rpx;
+}
+
+.formActions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 8rpx;
+}
+
+.ghostButton {
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-md;
+  background: $color-bg-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ghostButtonText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.primaryButton {
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-md;
+  background: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primaryButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.buttonDisabled {
+  opacity: 0.5;
+}
+
+// 新增入口：虚线边框按钮
+.addToggle {
+  height: 96rpx;
+  border: 2rpx dashed $color-text-tertiary;
+  border-radius: $radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+
+.addToggleText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
 }
 
 .tips {
   text-align: center;
-  padding: 32rpx;
+  padding: 32rpx 24rpx;
 }
 
 .tipsText {
   font-size: $font-size-xs;
   color: $color-text-tertiary;
-}
-
-.unauthorized {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 200rpx 0;
-  
-  .unauthorizedText {
-    font-size: $font-size-md;
-    color: $color-text-tertiary;
-  }
+  line-height: $line-height-normal;
 }

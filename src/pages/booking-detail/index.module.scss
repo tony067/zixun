@@ -1,0 +1,593 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 24rpx $page-padding 220rpx;
+  box-sizing: border-box;
+}
+
+.loadingText {
+  display: block;
+  text-align: center;
+  padding-top: 160rpx;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding-top: 200rpx;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+// ---------- 卡片通用 ----------
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.divider {
+  height: 1rpx;
+  background: $color-divider;
+  margin: 24rpx 0;
+}
+
+// ---------- 状态卡 ----------
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.statusBadge {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  padding: 8rpx 24rpx;
+  border-radius: $radius-round;
+}
+
+.packageBadge {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: #3A6228;
+  background: #E4F0DC;
+  padding: 6rpx 18rpx;
+  border-radius: $radius-round;
+}
+
+.statusDesc {
+  display: block;
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+  color: $color-text-tertiary;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 20rpx;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.infoLabelWrap {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.infoLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.infoValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  text-align: right;
+}
+
+.sectionBlock {
+  margin-top: 24rpx;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.noteText {
+  display: block;
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+  margin-top: 6rpx;
+  white-space: pre-wrap;
+}
+
+.hintText {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+}
+
+// ---------- 咨询师卡 ----------
+.counselorRow {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding-bottom: 8rpx;
+}
+
+.avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: $radius-round;
+  background: #E8DFCC;
+  @include flex-center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+}
+
+.avatarText {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: #7A6248;
+}
+
+.counselorMeta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.counselorType {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.counselorName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+// ---------- 咨询链接卡 ----------
+.meetingCard {
+  background: #E8F4E4;
+  border-radius: $radius-lg;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.meetingTitle {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: #4A7A36;
+  margin-bottom: 12rpx;
+}
+
+.meetingLink {
+  display: block;
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+  word-break: break-all;
+  margin-bottom: 20rpx;
+}
+
+.meetingActions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.meetingCopyBtn {
+  border: 1rpx solid #9CB48A;
+  border-radius: $radius-md;
+  padding: 16rpx 32rpx;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.meetingCopyText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: #4A7A36;
+}
+
+// ---------- 申请单 / 协议入口 ----------
+.entryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 28rpx 0;
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  & + .entryRow {
+    border-top: 1rpx solid $color-divider;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.entryText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.signedBadge {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  background: #E4F0DC;
+  border-radius: $radius-round;
+  padding: 4rpx 16rpx;
+}
+
+.signedText {
+  font-size: $font-size-xs;
+  color: #3A6228;
+}
+
+.unsignedText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+// ---------- 订单信息 ----------
+.orderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 20rpx;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.orderLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+}
+
+.orderPrice {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.orderNoWrap {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+}
+
+.orderNo {
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  word-break: break-all;
+}
+
+.copyBtn {
+  border: 1rpx solid $color-border;
+  border-radius: $radius-xs;
+  padding: 4rpx 14rpx;
+  flex-shrink: 0;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.copyText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.orderValue {
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  text-align: right;
+}
+
+// ---------- 底部操作条 ----------
+.bottomBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx $page-padding calc(env(safe-area-inset-bottom) + 24rpx);
+  background: rgba(245, 240, 232, 0.95);
+  backdrop-filter: blur(8rpx);
+  z-index: 10;
+}
+
+.bottomBtnGhost {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-lg;
+  border-radius: $radius-lg;
+  border: 1rpx solid #9CB48A;
+  background: $color-bg-card;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.bottomBtnGhostText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #7A9A6A;
+}
+
+.bottomBtnPrimary {
+  @include button-reset;
+  flex: 2;
+  height: $button-height-lg;
+  border-radius: $radius-lg;
+  background: $color-primary;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.bottomBtnPrimaryText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.bottomBtnDanger {
+  @include button-reset;
+  flex: 2;
+  height: $button-height-lg;
+  border-radius: $radius-lg;
+  background: #DC2626;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.bottomBtnDangerText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.btnDisabled {
+  opacity: 0.6;
+}
+
+// ---------- 底部弹层 ----------
+.modalMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.modalBody {
+  background: $color-bg-card;
+  border-radius: 32rpx 32rpx 0 0;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 32rpx 16rpx;
+  flex-shrink: 0;
+}
+
+.modalTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.modalClose {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: $color-bg-hover;
+  @include flex-center;
+}
+
+.modalContent {
+  padding: 8rpx 32rpx calc(env(safe-area-inset-bottom) + 40rpx);
+  overflow-y: auto;
+}
+
+.modalEmpty {
+  display: block;
+  text-align: center;
+  padding: 80rpx 0;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+// 申请单字段
+.formRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.formLabel {
+  width: 200rpx;
+  flex-shrink: 0;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  padding-top: 4rpx;
+}
+
+.formValue {
+  flex: 1;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+  word-break: break-all;
+}
+
+// 协议
+.agreementText {
+  display: block;
+  font-size: $font-size-sm;
+  line-height: $line-height-loose;
+  color: $color-text-primary;
+  white-space: pre-wrap;
+}
+
+.agreementFooter {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid $color-divider;
+}
+
+.agreementSigned {
+  font-size: $font-size-xs;
+  color: #9CB48A;
+}
+
+.agreementUnsigned {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+// 支付弹层
+.payAmountCard {
+  background: $color-bg-muted;
+  border-radius: $radius-lg;
+  padding: 36rpx;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.payAmountLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.payAmount {
+  display: block;
+  font-size: 64rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 8rpx 0;
+}
+
+.payAmountHint {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.payMethodList {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+}
+
+.payMethodItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1rpx solid $color-border;
+  border-radius: $radius-lg;
+  padding: 24rpx 28rpx;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.payMethodLeft {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.payMethodDot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: $radius-round;
+}
+
+.payMethodLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.payConfirmBtn {
+  width: 100%;
+  flex: none;
+}
+
+.payNote {
+  display: block;
+  text-align: center;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 20rpx;
+}

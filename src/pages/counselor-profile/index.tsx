@@ -1029,6 +1029,25 @@ const CounselorProfilePage: React.FC = () => {
           </View>
         )}
 
+        {/* 工作台入口 */}
+        <View className={styles.sectionCard}>
+          <View className={styles.actionRow} onClick={() => Taro.navigateTo({ url: '/pages/counselor-clients/index' })}>
+            <Icon name="users" size={20} color="#7A9A6A" />
+            <Text className={styles.actionRowText}>来访管理</Text>
+            <Icon name="chevronRight" size={16} color="#C2BDB7" />
+          </View>
+          <View className={styles.actionRow} onClick={() => Taro.navigateTo({ url: '/pages/counselor-billing/index' })}>
+            <Icon name="chart" size={20} color="#7A9A6A" />
+            <Text className={styles.actionRowText}>统计账单</Text>
+            <Icon name="chevronRight" size={16} color="#C2BDB7" />
+          </View>
+          <View className={styles.actionRow} onClick={() => Taro.navigateTo({ url: '/pages/counselor-services/index' })}>
+            <Icon name="list" size={20} color="#7A9A6A" />
+            <Text className={styles.actionRowText}>评估服务</Text>
+            <Icon name="chevronRight" size={16} color="#C2BDB7" />
+          </View>
+        </View>
+
         {/* 退出登录 */}
         <View className={styles.logoutBtn} onClick={handleLogout}>
           <Icon name="logOut" size={16} color="#EF4444" />

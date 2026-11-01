@@ -1,0 +1,139 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 0 $page-padding 60rpx;
+  box-sizing: border-box;
+}
+
+/* ===== 头像 ===== */
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48rpx 0 40rpx;
+}
+
+.avatarWrapper {
+  position: relative;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 32rpx;
+  background: #E8DFCC;
+  @include flex-center;
+  overflow: visible;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 32rpx;
+  background-color: #E8DFCC;
+  background-size: cover;
+  background-position: center;
+}
+
+.avatarText {
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+  color: #7A6248;
+}
+
+.cameraBadge {
+  position: absolute;
+  right: -10rpx;
+  bottom: -10rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  border: 4rpx solid $color-bg-page;
+  box-sizing: border-box;
+  @include flex-center;
+}
+
+.avatarTip {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 24rpx;
+}
+
+/* ===== 表单 ===== */
+.formCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 28rpx 32rpx;
+}
+
+.formRowBorder {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 28rpx 32rpx;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.formIcon {
+  flex-shrink: 0;
+  @include flex-center;
+}
+
+.formInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.formLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 8rpx;
+}
+
+.formInput {
+  width: 100%;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.formPlaceholder {
+  color: $color-text-disabled;
+}
+
+.formStatic {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+/* ===== 保存按钮 ===== */
+.saveButton {
+  margin-top: 40rpx;
+  height: $button-height-lg;
+  border-radius: $radius-lg;
+  background: $color-primary;
+  @include flex-center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.saveButtonDisabled {
+  background: $color-primary-dark;
+  opacity: 0.7;
+}
+
+.saveButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
