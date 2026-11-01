@@ -1,0 +1,353 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 24rpx $page-padding 200rpx;
+}
+
+.stateText {
+  display: block;
+  text-align: center;
+  padding-top: 120rpx;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding-top: 180rpx;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.heroCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: 32rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-card;
+}
+
+.serviceName {
+  display: block;
+  font-size: 40rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: $line-height-tight;
+}
+
+.tagline {
+  display: block;
+  margin-top: 12rpx;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+}
+
+.price {
+  display: block;
+  margin-top: 20rpx;
+  font-size: 52rpx;
+  font-weight: $font-weight-bold;
+  color: #C66B2E;
+  line-height: 1;
+}
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 20rpx;
+}
+
+.counselorCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.avatar {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: $radius-round;
+  background: $color-bg-muted;
+  flex-shrink: 0;
+}
+
+.avatarFallback {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: $radius-round;
+  background: #EAF5E4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatarFallbackText {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-primary-dark;
+}
+
+.counselorText {
+  flex: 1;
+  min-width: 0;
+}
+
+.counselorLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.counselorName {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: $line-height-tight;
+}
+
+.counselorTitle {
+  display: block;
+  margin-top: 6rpx;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.para {
+  margin-bottom: 16rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.paraText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.flowList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8rpx;
+}
+
+.flowStep {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.flowNum {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: #EAF5E4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flowNumText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-primary-dark;
+}
+
+.flowText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-align: center;
+  line-height: $line-height-tight;
+}
+
+.flowArrow {
+  position: absolute;
+  top: 24rpx;
+  right: -14rpx;
+}
+
+.bottomBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $color-bg-card;
+  padding: 20rpx $page-padding calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  z-index: 10;
+}
+
+.secondaryBtn {
+  padding: 0 32rpx;
+  height: 88rpx;
+  border-radius: $radius-button;
+  background: #FAE9DD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.secondaryText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: #C66B2E;
+  white-space: nowrap;
+}
+
+.primaryBtn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: $radius-button;
+  background: $color-primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.primaryText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal {
+  width: 100%;
+  background: $color-bg-card;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 40rpx 32rpx calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.modalTitle {
+  display: block;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.payOption {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-lg;
+  margin-bottom: 20rpx;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.payOptionActive {
+  border-color: $color-primary-dark;
+  background: #F4F8F0;
+}
+
+.payBadge {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.payBadgeText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.payOptionLabel {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.modalConfirm {
+  margin-top: 16rpx;
+  height: 88rpx;
+  border-radius: $radius-button;
+  background: $color-primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.modalConfirmText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}

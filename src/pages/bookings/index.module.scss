@@ -75,6 +75,105 @@
   padding: 0 $page-padding;
 }
 
+// 咨询套餐区块
+.packageSection {
+  margin-bottom: 24rpx;
+}
+
+.packageHeader {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx 0 16rpx;
+}
+
+.packageTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.packageCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.packageCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.packageInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.packageName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.packageCounselor {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.packageUsage {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.packageRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.packageBadge {
+  font-size: $font-size-xs;
+  color: #3A6228;
+  background: #E4F0DC;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+}
+
+.packageBadgeDone {
+  color: #9B8E82;
+  background: #EBE7DF;
+}
+
+.packageUseButton {
+  @include button-reset;
+  padding: 0 28rpx;
+  height: $button-height-sm;
+  background: $color-primary;
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.packageUseButtonDisabled {
+  background: $color-text-disabled;
+}
+
 .cancelButton {
   margin-bottom: 24rpx;
   border: 1rpx solid $color-border;

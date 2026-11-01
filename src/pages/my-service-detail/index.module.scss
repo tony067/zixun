@@ -1,0 +1,582 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 24rpx $page-padding 48rpx;
+}
+
+.withBar {
+  padding-bottom: 200rpx;
+}
+
+.stateText {
+  display: block;
+  text-align: center;
+  padding-top: 120rpx;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding-top: 180rpx;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-card;
+}
+
+// ===== 状态卡 =====
+.statusCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: 32rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-card;
+}
+
+.badge {
+  align-self: flex-start;
+  display: inline-flex;
+  padding: 10rpx 28rpx;
+  border-radius: $radius-round;
+}
+
+.badgeText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+}
+
+.statusDesc {
+  display: block;
+  margin-top: 20rpx;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.orderMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid $color-divider;
+}
+
+.orderName {
+  flex: 1;
+  min-width: 0;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orderPrice {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: #C66B2E;
+}
+
+// ===== 老师卡 =====
+.counselorRow {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.avatar {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: $radius-round;
+  background: $color-bg-muted;
+  flex-shrink: 0;
+}
+
+.avatarFallback {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: $radius-round;
+  background: #EAF5E4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatarFallbackText {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-primary-dark;
+}
+
+.counselorText {
+  flex: 1;
+  min-width: 0;
+}
+
+.counselorLabel {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.counselorName {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: $line-height-tight;
+}
+
+.counselorTitle {
+  display: block;
+  margin-top: 6rpx;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contactBtn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 14rpx 26rpx;
+  border-radius: $radius-round;
+  background: #FAE9DD;
+  flex-shrink: 0;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.contactBtnText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: #C66B2E;
+}
+
+// ===== 通用段落 =====
+.sectionTitle {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 20rpx;
+}
+
+.sectionDesc {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+  margin-bottom: 20rpx;
+}
+
+.para {
+  margin-bottom: 16rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.paraText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+// ===== 外链问卷 =====
+.linkBox {
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.linkText {
+  font-size: $font-size-sm;
+  color: $color-info;
+  word-break: break-all;
+  line-height: $line-height-normal;
+}
+
+.btnRow {
+  display: flex;
+  gap: 16rpx;
+}
+
+.secondaryBtn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: $radius-button;
+  background: #FAE9DD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.secondaryText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: #C66B2E;
+}
+
+.primaryBtn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: $radius-button;
+  background: $color-primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.primaryText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+// ===== 问卷 =====
+.questionItem {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 8rpx;
+  }
+}
+
+.questionTitle {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: $line-height-normal;
+  margin-bottom: 20rpx;
+}
+
+.required {
+  color: #D66D6D;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.option {
+  padding: 14rpx 28rpx;
+  border-radius: $radius-round;
+  border: 2rpx solid $color-border;
+  background: $color-bg-muted;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.optionActive {
+  border-color: $color-primary-dark;
+  background: #EAF5E4;
+}
+
+.optionText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.optionTextActive {
+  color: $color-primary-dark;
+  font-weight: $font-weight-medium;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 160rpx;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 20rpx;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: $line-height-normal;
+}
+
+.scaleRow {
+  display: flex;
+  gap: 16rpx;
+}
+
+.scaleItem {
+  flex: 1;
+  height: 72rpx;
+  border-radius: $radius-md;
+  border: 2rpx solid $color-border;
+  background: $color-bg-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.scaleItemActive {
+  border-color: $color-primary-dark;
+  background: #EAF5E4;
+}
+
+.scaleText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.scaleTextActive {
+  color: $color-primary-dark;
+  font-weight: $font-weight-bold;
+}
+
+.submitBtn {
+  margin-top: 24rpx;
+  height: 88rpx;
+  border-radius: $radius-button;
+  background: $color-primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.submitBtnText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+// ===== 只读回填 =====
+.readonlyValue {
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 18rpx 20rpx;
+}
+
+.readonlyText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: $line-height-normal;
+}
+
+.readonlyHint {
+  display: block;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+// ===== 报告 =====
+.reportBtn {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx;
+  border-radius: $radius-md;
+  background: #E4F2F0;
+  margin-top: 20rpx;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.reportBtnText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: #3A9B8E;
+}
+
+// ===== 底部操作条 =====
+.bottomBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $color-bg-card;
+  padding: 20rpx $page-padding calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  z-index: 10;
+}
+
+.cancelBtn {
+  padding: 0 40rpx;
+  height: 88rpx;
+  border-radius: $radius-button;
+  border: 1rpx solid $color-border;
+  background: $color-bg-card;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.cancelBtnText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.payNowBtn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: $radius-button;
+  background: $color-primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.payNowText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+// ===== 支付弹窗 =====
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal {
+  width: 100%;
+  background: $color-bg-card;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 40rpx 32rpx calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.modalTitle {
+  display: block;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.payOption {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-lg;
+  margin-bottom: 20rpx;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.payOptionActive {
+  border-color: $color-primary-dark;
+  background: #F4F8F0;
+}
+
+.payBadge {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.payBadgeText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.payOptionLabel {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.modalConfirm {
+  margin-top: 16rpx;
+  height: 88rpx;
+  border-radius: $radius-button;
+  background: $color-primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.modalConfirmText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}

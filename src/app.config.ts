@@ -15,7 +15,12 @@ export default defineAppConfig({
     'pages/admin-review/index',
     'pages/admin-orders/index',
     'pages/admin-users/index',
-    'pages/cs-orders/index'
+    'pages/cs-orders/index',
+    'pages/services/index',
+    'pages/service-detail/index',
+    'pages/my-services/index',
+    'pages/my-service-detail/index',
+    'pages/counselor-services/index'
   ],
   window: {
     backgroundTextStyle: 'light',

@@ -1,0 +1,159 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 24rpx $page-padding 48rpx;
+}
+
+.orderCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-card;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.serviceName {
+  flex: 1;
+  min-width: 0;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: $line-height-tight;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  padding: 8rpx 20rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.badgeText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16rpx;
+}
+
+.date {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.price {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: #C66B2E;
+}
+
+.statusDesc {
+  display: block;
+  margin-top: 16rpx;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+}
+
+.actionBtn {
+  margin-top: 24rpx;
+  height: 72rpx;
+  border-radius: $radius-button;
+  background: $color-primary-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.actionText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+.stateText {
+  display: block;
+  text-align: center;
+  padding-top: 120rpx;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.errorWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32rpx;
+}
+
+.errorWrap .stateText {
+  padding-top: 160rpx;
+}
+
+.retryBtn {
+  padding: 16rpx 56rpx;
+  border-radius: $radius-round;
+  background: $color-primary-dark;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.retryText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding-top: 160rpx;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.browseBtn {
+  margin-top: 16rpx;
+  padding: 20rpx 72rpx;
+  border-radius: $radius-button;
+  background: $color-primary-dark;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.browseText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}

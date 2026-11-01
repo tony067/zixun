@@ -1,6 +1,13 @@
 import Taro from '@tarojs/taro';
 import type { Counselor, AvailableDay } from '@/types/counselor';
 import type { Booking, BookingStatus } from '@/types/booking';
+import type {
+  AssessmentService,
+  ConsultationPackage,
+  ServiceAnswer,
+  ServiceOrder,
+  ServiceQuestion
+} from '@/types/service';
 
 // 小程序端没有 dev-server 代理，必须直接用完整地址；H5 开发模式走代理故用相对路径
 const API_BASE =
@@ -119,6 +126,7 @@ function normalizeBooking(raw: any): Booking {
     priceAmount: raw.priceAmount || 0,
     status: raw.status as BookingStatus,
     clientNote: raw.clientNote || '',
+    packageId: raw.packageId || null,
     createdAt: raw.createdAt || '',
     updatedAt: raw.updatedAt || '',
   };
@@ -270,13 +278,21 @@ export async function removeFavorite(counselorId: string): Promise<void> {
 // 预约相关
 export interface CreateBookingParams {
   counselorId: string;
-  scheduledAt: string;
+  scheduledAt?: string;
   sessionMode?: string;
   clientNote?: string;
   pricingOptionId?: string;
   durationMinutes?: number;
   priceAmount?: number;
   sessionNumber?: number;
+  /** 套餐核销子预约：0 元下单，咨询师确认时扣次 */
+  packageId?: string;
+  /** 线下转账单：status=pending_payment，由客服确认收款 */
+  offline?: boolean;
+  paymentMethod?: string;
+  applicationForm?: Record<string, unknown>;
+  agreementSigned?: boolean;
+  adjustRequest?: string;
 }
 
 export async function fetchMyBookings(): Promise<Booking[]> {
@@ -364,4 +380,213 @@ export async function fetchMessageDetail(id: string): Promise<Message | null> {
     console.error(`[Message] 获取消息 ${id} 详情失败`, err);
     return null;
   }
+}
+
+// ============ 个性服务（评估系统） ============
+
+export async function fetchServices(counselorId?: string): Promise<AssessmentService[]> {
+  const qs = counselorId ? `?counselorId=${encodeURIComponent(counselorId)}` : '';
+  const data = await request<any[]>(`/api/services${qs}`);
+  return (data || []).map((s) => ({
+    ...s,
+    price: Number(s.price) || 0,
+    questions: s.questions || [],
+    counselorName: s.counselorName || s.counselor?.displayName || '',
+    counselor: s.counselor
+      ? { ...s.counselor, avatarUrl: resolveAssetUrl(s.counselor.avatarUrl) }
+      : undefined
+  }));
+}
+
+export async function fetchServiceDetail(id: string): Promise<AssessmentService | null> {
+  try {
+    const s = await request<any>(`/api/services/${id}`);
+    return {
+      ...s,
+      price: Number(s.price) || 0,
+      questions: s.questions || [],
+      counselorName: s.counselorName || s.counselor?.displayName || '',
+      counselor: s.counselor
+        ? { ...s.counselor, avatarUrl: resolveAssetUrl(s.counselor.avatarUrl) }
+        : undefined
+    };
+  } catch (err) {
+    console.error(`[Service] 获取服务 ${id} 详情失败`, err);
+    return null;
+  }
+}
+
+/** 来访下单：offline=true 生成待支付单（线下转账），否则模拟支付直接 paid */
+export async function createServiceOrder(params: {
+  serviceId: string;
+  paymentMethod?: string;
+  offline?: boolean;
+}): Promise<ServiceOrder> {
+  return await request<ServiceOrder>('/api/service-orders', {
+    method: 'POST',
+    data: params
+  });
+}
+
+/** 按角色返回服务订单：来访=自己的；老师=挂自己服务的+自己买的；staff=全部 */
+export async function fetchServiceOrders(): Promise<ServiceOrder[]> {
+  const data = await request<any[]>('/api/service-orders');
+  return (data || []).map(normalizeServiceOrder);
+}
+
+export async function fetchServiceOrderDetail(id: string): Promise<ServiceOrder | null> {
+  try {
+    const o = await request<any>(`/api/service-orders/${id}`);
+    return normalizeServiceOrder(o);
+  } catch (err) {
+    console.error(`[ServiceOrder] 获取订单 ${id} 详情失败`, err);
+    return null;
+  }
+}
+
+function normalizeServiceOrder(o: any): ServiceOrder {
+  return {
+    ...o,
+    price: Number(o.price) || 0,
+    answers: o.answers || [],
+    questions: o.questions || [],
+    counselor: o.counselor
+      ? { ...o.counselor, avatarUrl: resolveAssetUrl(o.counselor.avatarUrl) }
+      : undefined
+  };
+}
+
+export type ServiceOrderAction =
+  | 'pay'
+  | 'confirm_paid'
+  | 'submit'
+  | 'set_link'
+  | 'report'
+  | 'refund'
+  | 'cancel';
+
+export async function patchServiceOrder(
+  id: string,
+  body: {
+    action: ServiceOrderAction;
+    paymentMethod?: string;
+    answers?: ServiceAnswer[];
+    link?: string;
+    report?: string;
+    reportLink?: string;
+    reportFileUrl?: string;
+  }
+): Promise<ServiceOrder> {
+  const o = await request<any>(`/api/service-orders/${id}`, {
+    method: 'PATCH',
+    data: body
+  });
+  return normalizeServiceOrder(o);
+}
+
+// ============ 咨询师端：评估服务管理 ============
+
+export async function fetchCounselorServices(): Promise<AssessmentService[]> {
+  const data = await request<any[]>('/api/counselor/services');
+  return (data || []).map((s) => ({
+    ...s,
+    price: Number(s.price) || 0,
+    questions: s.questions || []
+  }));
+}
+
+export async function createCounselorService(params: {
+  name: string;
+  tagline?: string;
+  description?: string;
+  price: number;
+  questions?: ServiceQuestion[];
+  questionnaireLink?: string;
+}): Promise<AssessmentService> {
+  return await request<AssessmentService>('/api/counselor/services', {
+    method: 'POST',
+    data: params
+  });
+}
+
+export async function updateCounselorService(
+  id: string,
+  params: Partial<{
+    name: string;
+    tagline: string;
+    description: string;
+    price: number;
+    questions: ServiceQuestion[];
+    questionnaireLink: string;
+    status: 'active' | 'inactive';
+  }>
+): Promise<AssessmentService> {
+  return await request<AssessmentService>(`/api/counselor/services/${id}`, {
+    method: 'PUT',
+    data: params
+  });
+}
+
+/** 上传评估报告文件（仅老师），返回相对 url 填入 reportFileUrl */
+export async function uploadReportFile(filePath: string): Promise<string> {
+  const token = getToken();
+  const res = await Taro.uploadFile({
+    url: `${API_BASE}/api/upload/report`,
+    filePath,
+    name: 'file',
+    header: token ? { Authorization: `Bearer ${token}` } : {}
+  });
+  if (res.statusCode >= 200 && res.statusCode < 300) {
+    const body = JSON.parse(res.data);
+    return body.url as string;
+  }
+  throw new Error(`报告文件上传失败: ${res.statusCode}`);
+}
+
+// ============ 咨询套餐 ============
+
+export async function fetchUserPackages(): Promise<ConsultationPackage[]> {
+  const data = await request<any[]>('/api/user/packages');
+  return (data || []).map((p) => ({
+    ...p,
+    totalSessions: Number(p.totalSessions) || 0,
+    usedSessions: Number(p.usedSessions) || 0
+  }));
+}
+
+// ============ 管理端：红点与统计 ============
+
+/** 管理员进订单页后调用，清除"新订单"红点 */
+export async function markAdminOrdersSeen(): Promise<void> {
+  await request<{ ok: boolean }>('/api/admin/orders/seen', { method: 'PATCH' });
+}
+
+export interface AdminStats {
+  totalUsers?: number;
+  monthUsers?: number;
+  lastMonthUsers?: number;
+  monthOrders?: number;
+  totalOrders?: number;
+  orderChange?: number;
+  bkMonthOrders?: number;
+  svcMonthOrders?: number;
+  bkTotalOrders?: number;
+  svcTotalOrders?: number;
+  monthRevenue?: number;
+  totalRevenue?: number;
+  bkMonthRevenue?: number;
+  bkTotalRevenue?: number;
+  svcMonthRevenue?: number;
+  svcTotalRevenue?: number;
+  pendingOrders?: number;
+  pendingBookingOrders?: number;
+  pendingSvcOrders?: number;
+  /** 新订单红点数（进订单页 markAdminOrdersSeen 后归零） */
+  newOrders?: number;
+  activeCounselors?: number;
+  pendingCounselors?: number;
+}
+
+export async function fetchAdminStats(): Promise<AdminStats> {
+  return await request<AdminStats>('/api/admin/stats');
 }

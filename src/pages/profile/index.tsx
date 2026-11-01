@@ -17,6 +17,8 @@ const PENDING_OPEN_CONV_KEY = 'mindpace_pending_open_conv';
 const gridItems = [
   { icon: 'heart', title: '我的收藏', desc: '收藏的咨询师', key: 'favorites' },
   { icon: 'book', title: '新手必读', desc: '了解咨询', key: 'guide' },
+  { icon: 'list', title: '评估服务', desc: '测评·报告', key: 'services' },
+  { icon: 'stethoscope', title: '我的订单', desc: '评估进度', key: 'myServices' },
   { icon: 'headphones', title: '联系客服', desc: '在线帮助', key: 'service' },
   { icon: 'settings', title: '更多设置', desc: '账号·通知', key: 'settings' }
 ] as const;
@@ -121,6 +123,16 @@ const ProfilePage: React.FC = () => {
         break;
       case 'favorites':
         Taro.showToast({ title: '收藏功能即将上线', icon: 'none' });
+        break;
+      case 'services':
+        Taro.navigateTo({ url: '/pages/services/index' });
+        break;
+      case 'myServices':
+        if (!isLoggedIn) {
+          handleLogin();
+          return;
+        }
+        Taro.navigateTo({ url: '/pages/my-services/index' });
         break;
       case 'service':
         handleContactService();

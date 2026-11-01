@@ -69,6 +69,11 @@ const CounselorProfilePage: React.FC = () => {
         </View>
         
         <View className={styles.actionCard}>
+          <View className={styles.actionItem} onClick={() => Taro.navigateTo({ url: '/pages/counselor-services/index' })}>
+            <Icon name="list" size={24} color="#9B8E82" />
+            <Text className={styles.actionText}>评估服务</Text>
+            <Icon name="chevronRight" size={20} color="#C2BDB7" />
+          </View>
           <View className={styles.actionItem} onClick={() => Taro.showToast({ title: '编辑资料功能开发中', icon: 'none' })}>
             <Icon name="edit" size={24} color="#9B8E82" />
             <Text className={styles.actionText}>编辑资料</Text>

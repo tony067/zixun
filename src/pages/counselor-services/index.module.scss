@@ -1,0 +1,805 @@
+@use '@/styles/variables.scss' as *;
+
+// ============================================
+// 咨询师端 · 个性服务工作台（纸叠暖色系）
+// ============================================
+$svc-bg: #F5F0E8;
+$svc-card: #FFFFFF;
+$svc-green: #7A9A6A;
+$svc-green-light: #EDF3E7;
+$svc-ink: #3F3A34;
+$svc-muted: #9B8E82;
+$svc-orange: #C66B2E;
+$svc-orange-bg: #FAE9DD;
+$svc-teal: #3A9B8E;
+$svc-teal-bg: #E4F2F0;
+$svc-badge: #9CB48A;
+
+.container {
+  min-height: 100vh;
+  background: $svc-bg;
+}
+
+// ---------- 顶部 ----------
+.header {
+  padding: 32rpx $page-padding 20rpx;
+  background: linear-gradient(180deg, #EDEAD5 0%, $svc-bg 100%);
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $svc-ink;
+}
+
+.subtitle {
+  display: block;
+  margin-top: 8rpx;
+  font-size: $font-size-sm;
+  color: $svc-muted;
+}
+
+// ---------- 双 Tab ----------
+.tabs {
+  display: flex;
+  margin: 0 $page-padding;
+  background: $svc-card;
+  border-radius: $radius-xl;
+  padding: 8rpx;
+}
+
+.tabItem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18rpx 0;
+  border-radius: 14rpx;
+}
+
+.tabText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $svc-muted;
+}
+
+.tabActive {
+  background: $svc-green;
+}
+
+.tabActiveText {
+  color: #FFFFFF;
+}
+
+// ---------- 滚动区 ----------
+.scrollContent {
+  padding: 20rpx $page-padding 160rpx;
+  box-sizing: border-box;
+}
+
+.loading,
+.empty,
+.unauthorized {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 0;
+}
+
+.loadingText,
+.emptyText,
+.unauthorizedText {
+  font-size: $font-size-md;
+  color: $svc-muted;
+}
+
+// ---------- 订单统计 ----------
+.statsGrid {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.statCard {
+  flex: 1;
+  background: $svc-card;
+  border-radius: $radius-xl;
+  padding: 24rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $svc-green;
+}
+
+.statValueOrange {
+  color: $svc-orange;
+}
+
+.statLabel {
+  margin-top: 8rpx;
+  font-size: $font-size-xs;
+  color: $svc-muted;
+}
+
+// ---------- 服务卡 ----------
+.serviceCard {
+  background: $svc-card;
+  border-radius: $radius-xl;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.serviceTop {
+  display: flex;
+  align-items: center;
+}
+
+.statusDot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: $radius-round;
+  background: $svc-green;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.dotInactive {
+  background: #C9C2B8;
+}
+
+.serviceName {
+  flex: 1;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $svc-ink;
+}
+
+.statusText {
+  font-size: $font-size-xs;
+  color: $svc-muted;
+  flex-shrink: 0;
+}
+
+.serviceTagline {
+  display: block;
+  margin-top: 10rpx;
+  font-size: $font-size-sm;
+  color: $svc-muted;
+}
+
+.serviceMeta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.servicePrice {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $svc-orange;
+}
+
+.serviceQuestions {
+  font-size: $font-size-xs;
+  color: $svc-muted;
+  background: $color-bg-muted;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+}
+
+.serviceActions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.toggleButton {
+  padding: 14rpx 28rpx;
+  background: #F1EDE3;
+  border-radius: $radius-round;
+}
+
+.toggleText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $svc-ink;
+}
+
+.editButton {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 14rpx 28rpx;
+  background: $svc-green-light;
+  border-radius: $radius-round;
+}
+
+.editText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $svc-green;
+}
+
+// 列表底部虚线「+ 新建服务」
+.createButton {
+  margin-top: 8rpx;
+  padding: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  border: 2rpx dashed $svc-green;
+  border-radius: $radius-xl;
+  background: transparent;
+}
+
+.createText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $svc-green;
+}
+
+// ---------- 订单卡 ----------
+.orderCard {
+  background: $svc-card;
+  border-radius: $radius-xl;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.orderTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.orderService {
+  flex: 1;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $svc-ink;
+  margin-right: 16rpx;
+}
+
+.orderBadge {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  padding: 6rpx 14rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+}
+
+.orderInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12rpx;
+}
+
+.orderClient {
+  font-size: $font-size-sm;
+  color: $svc-muted;
+}
+
+.orderDate {
+  font-size: $font-size-sm;
+  color: $svc-muted;
+}
+
+.orderBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16rpx;
+}
+
+.orderPrice {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $svc-orange;
+}
+
+.orderAction {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  background: $svc-green;
+  border-radius: $radius-round;
+  padding: 12rpx 24rpx;
+}
+
+.orderActionText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: #FFFFFF;
+}
+
+// ---------- 编辑弹窗（全屏遮罩 + 底部面板） ----------
+.overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(63, 58, 52, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.overlayInner {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(63, 58, 52, 0.5);
+  z-index: 1100;
+  display: flex;
+  align-items: flex-end;
+}
+
+.panel {
+  width: 100%;
+  height: 86vh;
+  background: $svc-bg;
+  border-radius: 32rpx 32rpx 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx 16rpx;
+  background: $svc-bg;
+}
+
+.panelTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $svc-ink;
+}
+
+.panelClose {
+  padding: 8rpx;
+}
+
+.panelBody {
+  flex: 1;
+  min-height: 0;
+  height: 0;
+  padding: 0 32rpx;
+  box-sizing: border-box;
+}
+
+.panelFooter {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: $svc-card;
+}
+
+.footerCancel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22rpx 0;
+  background: #F1EDE3;
+  border-radius: $radius-md;
+}
+
+.footerCancelText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $svc-muted;
+}
+
+.footerSave {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22rpx 0;
+  background: $svc-green;
+  border-radius: $radius-md;
+}
+
+.footerSaveText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #FFFFFF;
+}
+
+// ---------- 表单字段 ----------
+.field {
+  margin-top: 20rpx;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $svc-ink;
+  margin-bottom: 12rpx;
+}
+
+.required {
+  color: $svc-orange;
+}
+
+.fieldInput {
+  height: 84rpx;
+  background: $svc-card;
+  border-radius: $radius-md;
+  padding: 0 24rpx;
+  font-size: $font-size-md;
+  color: $svc-ink;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  background: $svc-card;
+  border-radius: $radius-md;
+  padding: 0 24rpx;
+  height: 84rpx;
+}
+
+.priceSymbol {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $svc-orange;
+  margin-right: 12rpx;
+}
+
+.priceInput {
+  flex: 1;
+  height: 84rpx;
+  font-size: $font-size-md;
+  color: $svc-ink;
+}
+
+.fieldTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  height: 180rpx;
+  background: $svc-card;
+  border-radius: $radius-md;
+  padding: 20rpx 24rpx;
+  font-size: $font-size-md;
+  color: $svc-ink;
+}
+
+// ---------- 问卷编辑器 ----------
+.qSectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 32rpx 0 16rpx;
+}
+
+.qSectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $svc-ink;
+}
+
+.qSectionTip {
+  font-size: $font-size-xs;
+  color: $svc-muted;
+}
+
+.qItem {
+  background: $svc-card;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+}
+
+.qRow {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+}
+
+.qType {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  padding: 6rpx 14rpx;
+  border-radius: $radius-sm;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.qMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.qTitle {
+  display: block;
+  font-size: $font-size-md;
+  color: $svc-ink;
+}
+
+.qTitlePlaceholder {
+  color: $svc-muted;
+}
+
+.qSub {
+  display: block;
+  margin-top: 6rpx;
+  font-size: $font-size-xs;
+  color: $svc-muted;
+}
+
+.qDelete {
+  padding: 8rpx 8rpx 8rpx 16rpx;
+  flex-shrink: 0;
+}
+
+.qEdit {
+  border-top: 1rpx solid #F0EBE3;
+  padding: 20rpx;
+}
+
+.qTitleInput {
+  height: 76rpx;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 0 20rpx;
+  font-size: $font-size-md;
+  color: $svc-ink;
+}
+
+.qReqRow {
+  display: flex;
+  align-items: center;
+  margin-top: 18rpx;
+}
+
+.reqSwitch {
+  width: 76rpx;
+  height: 40rpx;
+  border-radius: $radius-round;
+  background: #D8D2C8;
+  position: relative;
+}
+
+.reqSwitchOn {
+  background: $svc-green;
+}
+
+.reqKnob {
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: $radius-round;
+  background: #FFFFFF;
+}
+
+.reqKnobOn {
+  left: 40rpx;
+}
+
+.reqLabel {
+  margin-left: 16rpx;
+  font-size: $font-size-sm;
+  color: $svc-muted;
+}
+
+.optList {
+  margin-top: 20rpx;
+}
+
+.optRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.optMark {
+  width: 44rpx;
+  font-size: $font-size-sm;
+  color: $svc-muted;
+  flex-shrink: 0;
+}
+
+.optInput {
+  flex: 1;
+  height: 68rpx;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 0 16rpx;
+  font-size: $font-size-sm;
+  color: $svc-ink;
+}
+
+.optDel {
+  padding: 12rpx;
+  flex-shrink: 0;
+}
+
+.addOption {
+  margin-top: 4rpx;
+  padding: 14rpx;
+  border: 2rpx dashed #C9C2B8;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addOptionText {
+  font-size: $font-size-sm;
+  color: $svc-muted;
+}
+
+.qHint {
+  display: block;
+  margin-top: 16rpx;
+  font-size: $font-size-xs;
+  color: $svc-muted;
+  background: $color-bg-muted;
+  border-radius: $radius-sm;
+  padding: 12rpx 16rpx;
+}
+
+// 题型添加按钮
+.addTypeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin: 8rpx 0 20rpx;
+}
+
+.addTypeBtn {
+  padding: 12rpx 22rpx;
+  background: $svc-card;
+  border: 1rpx solid #EBE7DF;
+  border-radius: $radius-round;
+}
+
+.addTypeText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $svc-green;
+}
+
+.importButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 18rpx;
+  background: $svc-orange-bg;
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.importButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $svc-orange;
+}
+
+.panelFooterSpace {
+  height: 24rpx;
+}
+
+// ---------- 批量导入弹层 ----------
+.importPanel {
+  width: 100%;
+  background: $svc-bg;
+  border-radius: 32rpx 32rpx 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.importBody {
+  padding: 0 32rpx 32rpx;
+}
+
+.importHint {
+  display: block;
+  font-size: $font-size-xs;
+  color: $svc-muted;
+  line-height: $line-height-loose;
+  margin-bottom: 16rpx;
+}
+
+.importTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  height: 340rpx;
+  background: $svc-card;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: $font-size-sm;
+  color: $svc-ink;
+}
+
+.importActions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.importBtnSecondary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 0;
+  background: #F1EDE3;
+  border-radius: $radius-md;
+}
+
+.importBtnSecondaryText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $svc-muted;
+}
+
+.importBtnPrimary {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 0;
+  background: $svc-orange;
+  border-radius: $radius-md;
+}
+
+.importBtnPrimaryText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #FFFFFF;
+}
+
+.parseCount {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $svc-ink;
+  margin: 8rpx 0 16rpx;
+}
+
+.previewList {
+  max-height: 42vh;
+}
+
+.previewItem {
+  display: flex;
+  align-items: center;
+  background: $svc-card;
+  border-radius: $radius-md;
+  padding: 16rpx 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.previewTitle {
+  flex: 1;
+  min-width: 0;
+  font-size: $font-size-sm;
+  color: $svc-ink;
+  margin: 0 12rpx;
+}
+
+.previewOpt {
+  font-size: $font-size-xs;
+  color: $svc-muted;
+  flex-shrink: 0;
+}

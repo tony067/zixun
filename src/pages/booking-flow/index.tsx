@@ -2,12 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Textarea, Button, Input } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { fetchCounselorDetail, fetchAvailableSlots, createBooking } from '@/services/api';
+import {
+  fetchCounselorDetail,
+  fetchAvailableSlots,
+  createBooking,
+  fetchUserPackages,
+  fetchBookingDetail,
+} from '@/services/api';
 import type { Counselor, TimeSlot, ApplicationForm, AvailableDay } from '@/types/counselor';
 import { buildTimeSlots, EMPTY_FORM, PURPOSE_OPTIONS } from '@/types/counselor';
+import type { ConsultationPackage } from '@/types/service';
 import Icon from '@/components/Icon';
 
 type Step = 0 | 1 | 2;
+
+type PaymentMethod = 'wechat' | 'alipay' | 'card' | 'offline';
+
+const PAYMENT_METHODS: { value: PaymentMethod; label: string; desc: string }[] = [
+  { value: 'wechat', label: '微信支付', desc: '推荐，即时完成支付' },
+  { value: 'alipay', label: '支付宝', desc: '跳转支付宝完成付款' },
+  { value: 'card', label: '银行卡支付', desc: '使用银行卡快捷支付' },
+  { value: 'offline', label: '线下转账', desc: '联系客服转账，确认收款后预约生效' },
+];
 
 const MODE_MAP: Record<string, { label: string; icon: string }> = {
   '视频': { label: '视频咨询', icon: 'video' },
@@ -67,9 +83,54 @@ const BookingFlowPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // 套餐核销模式：?package=<pkgId> 时生效
+  const [redeemPkg, setRedeemPkg] = useState<ConsultationPackage | null>(null);
+  const [reusedForm, setReusedForm] = useState<Record<string, unknown> | null>(null);
+  const [reusedAgreement, setReusedAgreement] = useState(false);
+  // 支付方式（普通/套餐购买流程用，核销模式不走支付）
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('wechat');
+
   useEffect(() => {
-    const { id } = router.params || {};
+    const { id, package: packageId } = router.params || {};
     if (id) {
+      if (packageId) {
+        // 套餐核销：校验套餐可用（active 且有剩余次数且属于当前咨询师），失败则返回上一页
+        fetchUserPackages()
+          .then(pkgs => {
+            const pkg = pkgs.find(p => p.id === packageId);
+            if (
+              !pkg ||
+              pkg.status !== 'active' ||
+              pkg.usedSessions >= pkg.totalSessions ||
+              pkg.counselorId !== id
+            ) {
+              Taro.showToast({ title: '套餐不可用', icon: 'none' });
+              setTimeout(() => Taro.navigateBack(), 1500);
+              return;
+            }
+            setRedeemPkg(pkg);
+            setStep(1); // 核销模式跳过定价选择，直接从选时间开始
+            // 复用套餐购买单的预约表单与协议勾选（宽松取原始字段，缺失则不传）
+            fetchBookingDetail(pkg.orderId)
+              .then(detail => {
+                const raw = detail as unknown as {
+                  applicationForm?: Record<string, unknown>;
+                  agreementSigned?: boolean;
+                } | null;
+                if (raw?.applicationForm) setReusedForm(raw.applicationForm);
+                if (raw?.agreementSigned) setReusedAgreement(true);
+              })
+              .catch(err => {
+                console.error('[BookingFlow] 加载套餐购买单失败', err);
+              });
+          })
+          .catch(err => {
+            console.error('[BookingFlow] 套餐校验失败', err);
+            Taro.showToast({ title: '套餐不可用', icon: 'none' });
+            setTimeout(() => Taro.navigateBack(), 1500);
+          });
+      }
+
       fetchCounselorDetail(id).then(data => {
         setCounselor(data);
         if (data.sessionModes.length > 0) {
@@ -98,6 +159,11 @@ const BookingFlowPage: React.FC = () => {
   const currentPricing = hasPricingOptions ? counselor?.pricingOptions?.[selectedPricing] : null;
   const durationMinutes = currentPricing?.duration ?? counselor?.sessionDuration ?? 50;
   const priceAmount = currentPricing?.price ?? counselor?.pricePerSession ?? 0;
+
+  // 套餐核销模式：跳过定价/表单/支付
+  const isRedeem = !!redeemPkg;
+  // 套餐购买模式：选中 sessions>1 的方案，跳过选时间直接进表单
+  const isPackagePurchase = !isRedeem && !!currentPricing && currentPricing.sessions > 1;
 
   const selectedDayObj = availableDays.find(d => d.date === selectedDay) || null;
   const daySlots = buildTimeSlots(selectedDay || '', selectedDayObj?.starts ?? [], durationMinutes);
@@ -129,21 +195,32 @@ const BookingFlowPage: React.FC = () => {
       setErrorMsg('请阅读并勾选《MindPace 用户服务协议》');
       return;
     }
-    if (!counselor || !selectedSlot || !selectedDay) {
+    if (!counselor) {
+      setErrorMsg('信息加载中，请稍后重试');
+      return;
+    }
+    // 套餐购买不选时间；普通预约必须先选时间
+    if (!isPackagePurchase && (!selectedSlot || !selectedDay)) {
       setErrorMsg('请先选择咨询时间');
       return;
     }
 
     setSubmitting(true);
     try {
-      const [h, m] = selectedSlot.start.split(':').map(Number);
-      const scheduled = new Date(`${selectedDay}T00:00:00`);
-      scheduled.setHours(h, m, 0, 0);
+      const isOffline = paymentMethod === 'offline';
+      let scheduledIso: string | undefined;
+      if (selectedSlot && selectedDay) {
+        const [h, m] = selectedSlot.start.split(':').map(Number);
+        const scheduled = new Date(`${selectedDay}T00:00:00`);
+        scheduled.setHours(h, m, 0, 0);
+        scheduledIso = scheduled.toISOString();
+      }
 
       await createBooking({
         counselorId: counselor.id,
-        scheduledAt: scheduled.toISOString(),
-        sessionMode: selectedMode || undefined,
+        // 套餐购买不传 scheduledAt，由服务端 +30 天占位，购买后逐次预约
+        ...(isPackagePurchase ? {} : { scheduledAt: scheduledIso }),
+        ...(isPackagePurchase ? {} : { sessionMode: selectedMode || undefined }),
         clientNote: [
           `姓名：${form.name}`,
           `手机号：${form.phone}`,
@@ -155,15 +232,72 @@ const BookingFlowPage: React.FC = () => {
         durationMinutes,
         priceAmount,
         sessionNumber: currentPricing?.sessions ?? 1,
+        // 线下转账：不做模拟支付，status 由服务端置 pending_payment
+        ...(isOffline ? { offline: true, paymentMethod: 'offline' } : {}),
       });
 
-      Taro.showToast({ title: '预约申请已提交', icon: 'success' });
+      let toastTitle = '预约申请已提交';
+      if (isPackagePurchase) {
+        toastTitle = isOffline
+          ? '订单已提交！客服确认收款后套餐即生效'
+          : `购买成功！你的 ${currentPricing?.sessions ?? 1} 次套餐已生效，可在「我的预约」页使用套餐发起预约`;
+      } else if (isOffline) {
+        toastTitle = '订单已提交！请联系客服完成转账，客服确认后预约生效';
+      }
+      if (isPackagePurchase || isOffline) {
+        Taro.showToast({ title: toastTitle, icon: 'none', duration: 3000 });
+      } else {
+        Taro.showToast({ title: toastTitle, icon: 'success' });
+      }
       setTimeout(() => {
         Taro.navigateTo({ url: '/pages/bookings/index' });
-      }, 1200);
+      }, isPackagePurchase || isOffline ? 2000 : 1200);
     } catch (err) {
       console.error('[BookingFlow] 提交预约失败', err);
       setErrorMsg(err instanceof Error && err.message ? err.message : '提交失败，请稍后重试');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // 套餐核销提交：0 元下单，咨询师确认时扣次；跳过表单与支付
+  const handleSubmitRedeem = async () => {
+    if (!redeemPkg || !counselor || !selectedSlot || !selectedDay || submitting) return;
+
+    setSubmitting(true);
+    try {
+      const [h, m] = selectedSlot.start.split(':').map(Number);
+      const scheduled = new Date(`${selectedDay}T00:00:00`);
+      scheduled.setHours(h, m, 0, 0);
+
+      await createBooking({
+        counselorId: counselor.id,
+        scheduledAt: scheduled.toISOString(),
+        sessionMode: selectedMode || undefined,
+        durationMinutes,
+        priceAmount: 0,
+        sessionNumber: 1,
+        ...(currentPricing?.id ? { pricingOptionId: currentPricing.id } : {}),
+        paymentMethod: 'package',
+        packageId: redeemPkg.id,
+        ...(reusedForm ? { applicationForm: reusedForm } : {}),
+        ...(reusedAgreement ? { agreementSigned: true } : {}),
+      });
+
+      Taro.showToast({
+        title: '已提交预约！将由咨询师确认时扣除套餐次数',
+        icon: 'none',
+        duration: 3000,
+      });
+      setTimeout(() => {
+        Taro.navigateTo({ url: '/pages/bookings/index' });
+      }, 2000);
+    } catch (err) {
+      console.error('[BookingFlow] 套餐核销提交失败', err);
+      Taro.showToast({
+        title: err instanceof Error && err.message ? err.message : '提交失败，请稍后重试',
+        icon: 'none',
+      });
     } finally {
       setSubmitting(false);
     }
@@ -209,7 +343,10 @@ const BookingFlowPage: React.FC = () => {
         </View>
 
         <View className={styles.bottomBar}>
-          <Button className={styles.nextButton} onClick={() => setStep(1)}>
+          <Button
+            className={styles.nextButton}
+            onClick={() => setStep(isPackagePurchase ? 2 : 1)}
+          >
             下一步
           </Button>
         </View>
@@ -398,10 +535,17 @@ const BookingFlowPage: React.FC = () => {
             </Text>
           )}
           <Button
-            className={`${styles.nextButton} ${!canNext ? styles.buttonDisabled : ''}`}
-            onClick={() => canNext && setStep(2)}
+            className={`${styles.nextButton} ${!canNext || (isRedeem && submitting) ? styles.buttonDisabled : ''}`}
+            onClick={() => {
+              if (!canNext) return;
+              if (isRedeem) {
+                handleSubmitRedeem();
+              } else {
+                setStep(2);
+              }
+            }}
           >
-            下一步：填写预约信息
+            {isRedeem ? '提交预约' : '下一步：填写预约信息'}
           </Button>
         </View>
       </View>
@@ -409,9 +553,11 @@ const BookingFlowPage: React.FC = () => {
   );
 
   const renderStep2 = () => {
-    const dateStr = selectedDayObj
-      ? `${selectedDayObj.label.replace('/', '月')}日 ${selectedDayObj.weekday} ${selectedSlot?.start}–${selectedSlot?.end}`
-      : '';
+    const dateStr = isPackagePurchase
+      ? `${currentPricing?.sessions ?? 1} 次套餐 · 购买后逐次预约`
+      : selectedDayObj
+        ? `${selectedDayObj.label.replace('/', '月')}日 ${selectedDayObj.weekday} ${selectedSlot?.start}–${selectedSlot?.end}`
+        : '';
 
     return (
       <View className={styles.step2}>
@@ -663,6 +809,33 @@ const BookingFlowPage: React.FC = () => {
           )}
         </View>
 
+        <View className={styles.section}>
+          <View className={styles.formCard}>
+            <View className={styles.paymentHeader}>
+              <Text className={styles.paymentTitle}>支付方式</Text>
+              {isPackagePurchase && <Text className={styles.paymentBadge}>套餐购买</Text>}
+            </View>
+            <View className={styles.paymentList}>
+              {PAYMENT_METHODS.map(m => {
+                const active = paymentMethod === m.value;
+                return (
+                  <View
+                    key={m.value}
+                    className={`${styles.paymentOption} ${active ? styles.paymentOptionActive : ''}`}
+                    onClick={() => setPaymentMethod(m.value)}
+                  >
+                    <View className={styles.paymentInfo}>
+                      <Text className={styles.paymentLabel}>{m.label}</Text>
+                      <Text className={styles.paymentDesc}>{m.desc}</Text>
+                    </View>
+                    <View className={`${styles.paymentRadio} ${active ? styles.paymentRadioActive : ''}`} />
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        </View>
+
         <View className={styles.bottomBar}>
           <Button className={styles.backButton} onClick={() => setStep(hasPricingOptions ? 0 : 1)}>
             上一步
@@ -680,10 +853,19 @@ const BookingFlowPage: React.FC = () => {
     );
   };
 
+  // 套餐购买模式：表单步骤返回键回到定价选择，而非退出页面
+  const handleHeaderBack = () => {
+    if (isPackagePurchase && step === 2) {
+      setStep(0);
+      return;
+    }
+    Taro.navigateBack();
+  };
+
   return (
     <View className={styles.container}>
       <View className={styles.header}>
-        <View className={styles.backButton} onClick={() => Taro.navigateBack()}>
+        <View className={styles.backButton} onClick={handleHeaderBack}>
           <Text className={styles.backIcon}>‹</Text>
         </View>
         <Text className={styles.headerTitle}>预约咨询</Text>
@@ -701,6 +883,13 @@ const BookingFlowPage: React.FC = () => {
       </View>
 
       <ScrollView scrollY className={styles.scrollContent}>
+        {isRedeem && redeemPkg && (
+          <View className={styles.packageBanner}>
+            <Text className={styles.packageBannerText}>
+              套餐核销模式 · 剩余 {redeemPkg.totalSessions - redeemPkg.usedSessions} 次 · 提交后由咨询师确认时扣除
+            </Text>
+          </View>
+        )}
         {step === 0 && renderStep0()}
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}

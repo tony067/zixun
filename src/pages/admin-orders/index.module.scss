@@ -16,6 +16,46 @@
   color: $color-text-primary;
 }
 
+// 业务类型一级 tab（下划线式，主绿高亮）
+.bizTabBar {
+  display: flex;
+  padding: 0 $page-padding;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-border;
+}
+
+.bizTab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 8rpx 0;
+  margin-right: 56rpx;
+}
+
+.bizTabText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.bizTabLine {
+  width: 48rpx;
+  height: 6rpx;
+  margin-top: 10rpx;
+  border-radius: $radius-round;
+  background: transparent;
+}
+
+.bizTabActive {
+  .bizTabText {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+
+  .bizTabLine {
+    background: $color-primary;
+  }
+}
+
 .tabBar {
   display: flex;
   padding: 0 $page-padding;
@@ -62,9 +102,127 @@
 
 .orderCard {
   background: $color-bg-card;
+  border: 1rpx solid transparent;
   border-radius: $radius-lg;
   padding: 24rpx;
   margin-bottom: 16rpx;
+}
+
+// 待支付（线下转账）订单：橙色高亮提示
+.orderCardPending {
+  background: #FBEFE3;
+  border: 1rpx solid #E8A87C;
+  border-left: 6rpx solid #E8A87C;
+}
+
+.offlineHint {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.offlineHintText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: #B07D2A;
+}
+
+// 评估订单卡
+.svcCard {
+  background: $color-bg-card;
+  border: 1rpx solid $color-border;
+  border-radius: $radius-lg;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.svcCardPending {
+  background: #FBEFE3;
+  border: 1rpx solid #E8A87C;
+  border-left: 6rpx solid #E8A87C;
+}
+
+.svcName {
+  flex: 1;
+  min-width: 0;
+  margin-right: 16rpx;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.svcMeta {
+  display: block;
+  margin-bottom: 16rpx;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.svcPrice {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+// 评估订单状态子筛选（横向滚动 pill）
+.svcPillBar {
+  padding: 20rpx $page-padding;
+  background: $color-bg-card;
+  white-space: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.svcPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 28rpx;
+  margin-right: 16rpx;
+  border-radius: $radius-round;
+  background: $color-bg-muted;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.svcPillActive {
+  background: $color-primary;
+
+  .svcPillText {
+    color: $color-text-white;
+  }
+}
+
+.svcPillText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+// 确认收款（主绿实底按钮）
+.confirmButton {
+  border: none;
+  background: $color-primary;
+  border-radius: $radius-md;
+  padding: 10rpx 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.confirmButtonText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
 }
 
 .orderHeader {

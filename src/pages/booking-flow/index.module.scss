@@ -785,3 +785,94 @@
   font-weight: $font-weight-medium;
   color: $color-primary;
 }
+
+// 套餐核销模式提示条
+.packageBanner {
+  margin: 20rpx $page-padding 0;
+  padding: 20rpx 24rpx;
+  border-radius: $radius-lg;
+  background: #E4F0DC;
+}
+
+.packageBannerText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: #3A6228;
+  line-height: $line-height-normal;
+}
+
+// 支付方式选择
+.paymentHeader {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx 24rpx 12rpx;
+}
+
+.paymentTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+}
+
+.paymentBadge {
+  font-size: $font-size-xs;
+  color: #3A6228;
+  background: #E4F0DC;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+}
+
+.paymentOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid $color-bg-muted;
+  transition: background $transition-fast;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.paymentOptionActive {
+  background: #F0F7EC;
+}
+
+.paymentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  flex: 1;
+}
+
+.paymentLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.paymentOptionActive .paymentLabel {
+  color: #3A6228;
+}
+
+.paymentDesc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.paymentRadio {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: $radius-round;
+  border: 2rpx solid $color-border;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.paymentRadioActive {
+  background: $color-primary;
+  border-color: $color-primary;
+}
