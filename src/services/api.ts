@@ -10,9 +10,10 @@ import type {
 } from '@/types/service';
 
 // 小程序端没有 dev-server 代理，必须直接用完整地址；H5 开发模式走代理故用相对路径
+// 生产统一走 https 域名（TrustAsia 证书，2026-12 到期），满足微信合法域名校验
 const API_BASE =
   process.env.TARO_ENV === 'weapp' || process.env.NODE_ENV !== 'development'
-    ? 'http://123.207.40.7:3001'
+    ? 'https://mythoughtprint.cn'
     : '';
 
 /** 服务器返回的图片/头像是相对路径（如 /uploads/x.jpg），

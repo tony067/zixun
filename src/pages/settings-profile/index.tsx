@@ -8,7 +8,7 @@ import { fetchCurrentUser, updateUserProfile, resolveAssetUrl } from '@/services
 // 与 services/api.ts 相同的 API_BASE 逻辑（头像上传 Taro.uploadFile 需要完整地址）
 const API_BASE =
   process.env.TARO_ENV === 'weapp' || process.env.NODE_ENV !== 'development'
-    ? 'http://123.207.40.7:3001'
+    ? 'https://mythoughtprint.cn'
     : '';
 
 /** web 版契约：POST /api/upload/avatar（FormData file）→ { url }，再 PATCH 资料 avatarUrl */
